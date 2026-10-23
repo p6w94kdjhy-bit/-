@@ -1,0 +1,41 @@
+* Y1 = A'B' + AB' + AB  vs  Y2 = A + B'
+* 74LS04 / 74LS08 / 74LS32, XSPICE digital gate models (typ. delays)
+
+* --- inputs: clock, start LOW, IN_1 period 1us, IN_2 period 2us, 0-5V ---
+VA in_a 0 PULSE(0 5 500n 2n 2n 498n 1u)
+VB in_b 0 PULSE(0 5 1u 2n 2n 998n 2u)
+RA in_a 0 1Meg
+RB in_b 0 1Meg
+
+* TTL input thresholds VIL=0.8V, VIH=2.0V
+AIN [in_a in_b] [a b] ttl_in
+.model ttl_in adc_bridge(in_low=0.8 in_high=2.0)
+
+* --- circuit 1: Y1 = A'B' + AB' + AB ---
+AU1A a na ls04
+AU1B b nb ls04
+AU3A [na nb] p1 ls08
+AU3B [a nb] p2 ls08
+AU3C [a b] p3 ls08
+AU4A [p1 p2] s1 ls32
+AU4B [s1 p3] y1 ls32
+
+* --- circuit 2: Y2 = A + B' ---
+AU2A b nb2 ls04
+AU5A [a nb2] y2 ls32
+
+.model ls04 d_inverter(rise_delay=9n fall_delay=10n)
+.model ls08 d_and(rise_delay=8n fall_delay=10n)
+.model ls32 d_or(rise_delay=14n fall_delay=14n)
+
+* TTL outputs VOL=0.35V, VOH=3.4V
+AOUT [y1 y2] [out_y1 out_y2] ttl_out
+.model ttl_out dac_bridge(out_low=0.35 out_high=3.4 t_rise=6n t_fall=4n)
+RY1 out_y1 0 10k
+RY2 out_y2 0 10k
+
+.control
+tran 0.5n 4u
+wrdata spice/out/lab_tran.txt v(in_a) v(in_b) v(out_y1) v(out_y2)
+.endc
+.end

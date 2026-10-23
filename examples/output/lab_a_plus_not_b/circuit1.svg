@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="350" viewBox="0 0 880 350" font-family="sans-serif">
-<rect width="880" height="350" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="350" viewBox="0 0 900 350" font-family="Arial, Helvetica, sans-serif">
+<rect width="900" height="350" fill="#ffffff"/>
 <text x="16" y="28" font-size="16" text-anchor="start" fill="#222" font-weight="bold">회로 1:  Y1 = A'·B' + A·B' + A·B</text>
 <path d="M200,46 L228,60 L200,74 Z" stroke="#222" stroke-width="2" fill="#fff"/>
 <circle cx="232" cy="60" r="4" stroke="#222" stroke-width="2" fill="#fff"/>
@@ -54,9 +54,9 @@
 <path d="M430,200 L490,200 L490,160 L525,160" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
 <path d="M575,150 L620,150 L620,215 L665,215" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
 <path d="M430,300 L640,300 L640,235 L665,235" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
-<text x="446" y="92" font-size="12" text-anchor="start" fill="#1f5fbf">A'B'</text>
-<text x="446" y="192" font-size="12" text-anchor="start" fill="#1f5fbf">AB'</text>
-<text x="446" y="292" font-size="12" text-anchor="start" fill="#1f5fbf">AB</text>
+<text x="446" y="92" font-size="13" text-anchor="start" fill="#1f5fbf">A'B'</text>
+<text x="446" y="192" font-size="13" text-anchor="start" fill="#1f5fbf">AB'</text>
+<text x="446" y="292" font-size="13" text-anchor="start" fill="#1f5fbf">AB</text>
 <path d="M715,225 L770,225" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
 <circle cx="90" cy="60" r="5" fill="#fff" stroke="#222" stroke-width="2"/>
 <text x="80" y="65" font-size="15" text-anchor="end" fill="#222" font-weight="bold">A (IN_1)</text>

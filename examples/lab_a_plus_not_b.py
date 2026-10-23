@@ -16,6 +16,7 @@ OUT_DIR = Path(__file__).parent / "output" / "lab_a_plus_not_b"
 
 # 클럭 "multiplied by" 1칸을 100ns로 가정 → A 주기 1µs, B 주기 2µs
 UNIT_NS = 100
+SHEET_DATE = "2026-10-23"
 A_PERIOD_NS = 10 * UNIT_NS
 B_PERIOD_NS = 20 * UNIT_NS
 T_END_NS = 2 * B_PERIOD_NS
@@ -79,8 +80,11 @@ def glitch_widths(history, max_ns=50):
     return [t2 - t1 for (t1, _), (t2, _) in zip(history, history[1:]) if t2 - t1 < max_ns]
 
 
-def schematic_circuit1():
-    s = Schematic(880, 350, "회로 1:  Y1 = A'·B' + A·B' + A·B")
+def schematic_circuit1(theme="classic"):
+    title = "Y1 = A'·B' + A·B' + A·B"
+    if theme == "classic":
+        title = "회로 1:  " + title
+    s = Schematic(900, 350, title, theme=theme, sheet="1 of 2", date=SHEET_DATE)
     not_a = s.not_gate(200, 60, "U1A 74LS04", pins=(1, 2))
     not_b = s.not_gate(200, 140, "U1B 74LS04", pins=(3, 4))
     and1 = s.and_gate(380, 100, "U3A 74LS08", pins=(1, 2, 3))
@@ -103,17 +107,17 @@ def schematic_circuit1():
     s.wire(not_b[1], (330, 140), (330, 110), and1[1])
     s.wire((330, 140), (330, 210), and2[1])
     s.dot(330, 140)
-    s.text(250, 52, "A'", size=13, color="#1f5fbf")
-    s.text(250, 132, "B'", size=13, color="#1f5fbf")
+    s.net_label(250, 52, "A'")
+    s.net_label(250, 132, "B'")
 
     # 곱항 → OR
     s.wire(and1[2], (470, 100), (470, 140), or1[0])
     s.wire(and2[2], (490, 200), (490, 160), or1[1])
     s.wire(or1[2], (620, 150), (620, 215), or2[0])
     s.wire(and3[2], (640, 300), (640, 235), or2[1])
-    s.text(446, 92, "A'B'", size=12, color="#1f5fbf")
-    s.text(446, 192, "AB'", size=12, color="#1f5fbf")
-    s.text(446, 292, "AB", size=12, color="#1f5fbf")
+    s.net_label(446, 92, "A'B'")
+    s.net_label(446, 192, "AB'")
+    s.net_label(446, 292, "AB")
 
     s.wire(or2[2], (770, 225))
     s.port(90, 60, "A (IN_1)")
@@ -122,14 +126,17 @@ def schematic_circuit1():
     return s.to_svg()
 
 
-def schematic_circuit2():
-    s = Schematic(540, 180, "회로 2:  Y2 = A + B'")
+def schematic_circuit2(theme="classic"):
+    title = "Y2 = A + B'"
+    if theme == "classic":
+        title = "회로 2:  " + title
+    s = Schematic(540, 180, title, theme=theme, sheet="2 of 2", date=SHEET_DATE)
     not_b = s.not_gate(170, 130, "U2A 74LS04", pins=(1, 2))
     or1 = s.or_gate(300, 95, "U5A 74LS32", pins=(1, 2, 3))
     s.wire((90, 70), (260, 70), (260, 85), or1[0])
     s.wire((90, 130), not_b[0])
     s.wire(not_b[1], (270, 130), (270, 105), or1[1])
-    s.text(225, 122, "B'", size=13, color="#1f5fbf")
+    s.net_label(225, 122, "B'")
     s.wire(or1[2], (410, 95))
     s.port(90, 70, "A (IN_1)")
     s.port(90, 130, "B (IN_2)")
@@ -151,6 +158,8 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "circuit1.svg").write_text(schematic_circuit1(), encoding="utf-8")
     (OUT_DIR / "circuit2.svg").write_text(schematic_circuit2(), encoding="utf-8")
+    (OUT_DIR / "circuit1_eda.svg").write_text(schematic_circuit1("eda"), encoding="utf-8")
+    (OUT_DIR / "circuit2_eda.svg").write_text(schematic_circuit2("eda"), encoding="utf-8")
 
     c = lab_run(ideal=True)
     wave = dict(t0=0, t1=T_END_NS, grid_ns=A_PERIOD_NS // 2, unit="µs", unit_ns=1000)

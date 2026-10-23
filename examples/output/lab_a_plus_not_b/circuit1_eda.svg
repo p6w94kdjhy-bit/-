@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="466" viewBox="0 0 960 466" font-family="Arial, Helvetica, sans-serif">
+<defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="0.7" fill="#c8c8c8"/></pattern></defs>
+<rect width="960" height="466" fill="#ffffff"/>
+<rect x="8" y="8" width="944" height="450" fill="url(#grid)" stroke="#000" stroke-width="1.2"/>
+<text x="126.0" y="17" font-size="8" text-anchor="middle">4</text>
+<line x1="244.0" y1="8" x2="244.0" y2="16" stroke="#000"/>
+<text x="362.0" y="17" font-size="8" text-anchor="middle">3</text>
+<line x1="480.0" y1="8" x2="480.0" y2="16" stroke="#000"/>
+<text x="598.0" y="17" font-size="8" text-anchor="middle">2</text>
+<line x1="716.0" y1="8" x2="716.0" y2="16" stroke="#000"/>
+<text x="834.0" y="17" font-size="8" text-anchor="middle">1</text>
+<rect x="592" y="372" width="360" height="86" fill="#fff" stroke="#000"/>
+<line x1="592" y1="400.7" x2="952" y2="400.7" stroke="#000"/>
+<line x1="592" y1="429.3" x2="952" y2="429.3" stroke="#000"/>
+<line x1="652" y1="400.7" x2="652" y2="429.3" stroke="#000"/>
+<line x1="852" y1="400.7" x2="852" y2="458" stroke="#000"/>
+<text x="596" y="382" font-size="7.5" fill="#444">Title</text>
+<text x="598" y="396" font-size="13" font-weight="bold">Y1 = A'·B' + A·B' + A·B</text>
+<text x="596" y="410.6666666666667" font-size="7.5" fill="#444">Size</text>
+<text x="598" y="424.6666666666667" font-size="12">A4</text>
+<text x="656" y="410.6666666666667" font-size="7.5" fill="#444">Document Number</text>
+<text x="658" y="424.6666666666667" font-size="12">LOGIC-LAB</text>
+<text x="856" y="410.6666666666667" font-size="7.5" fill="#444">Rev</text>
+<text x="858" y="424.6666666666667" font-size="12">1.0</text>
+<text x="596" y="439.3333333333333" font-size="7.5" fill="#444">Date</text>
+<text x="598" y="453.3333333333333" font-size="12">2026-10-23</text>
+<text x="856" y="439.3333333333333" font-size="7.5" fill="#444">Sheet</text>
+<text x="858" y="453.3333333333333" font-size="12">1 of 2</text>
+<g transform="translate(60,0)">
+<path d="M200,46 L228,60 L200,74 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<circle cx="232" cy="60" r="4" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="196" y="56" font-size="10" text-anchor="end" fill="#000000">1</text>
+<text x="240" y="56" font-size="10" text-anchor="start" fill="#000000">2</text>
+<text x="216" y="40" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U1A</text>
+<text x="216" y="89" font-size="11" text-anchor="middle" fill="#000000">74LS04</text>
+<path d="M200,126 L228,140 L200,154 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<circle cx="232" cy="140" r="4" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="196" y="136" font-size="10" text-anchor="end" fill="#000000">3</text>
+<text x="240" y="136" font-size="10" text-anchor="start" fill="#000000">4</text>
+<text x="216" y="120" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U1B</text>
+<text x="216" y="169" font-size="11" text-anchor="middle" fill="#000000">74LS04</text>
+<path d="M380,80 H410 A20,20 0 0 1 410,120 H380 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="376" y="86" font-size="10" text-anchor="end" fill="#000000">1</text>
+<text x="376" y="106" font-size="10" text-anchor="end" fill="#000000">2</text>
+<text x="434" y="96" font-size="10" text-anchor="start" fill="#000000">3</text>
+<text x="405" y="74" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U3A</text>
+<text x="405" y="135" font-size="11" text-anchor="middle" fill="#000000">74LS08</text>
+<path d="M380,180 H410 A20,20 0 0 1 410,220 H380 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="376" y="186" font-size="10" text-anchor="end" fill="#000000">4</text>
+<text x="376" y="206" font-size="10" text-anchor="end" fill="#000000">5</text>
+<text x="434" y="196" font-size="10" text-anchor="start" fill="#000000">6</text>
+<text x="405" y="174" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U3B</text>
+<text x="405" y="235" font-size="11" text-anchor="middle" fill="#000000">74LS08</text>
+<path d="M380,280 H410 A20,20 0 0 1 410,320 H380 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="376" y="286" font-size="10" text-anchor="end" fill="#000000">9</text>
+<text x="376" y="306" font-size="10" text-anchor="end" fill="#000000">10</text>
+<text x="434" y="296" font-size="10" text-anchor="start" fill="#000000">8</text>
+<text x="405" y="274" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U3C</text>
+<text x="405" y="335" font-size="11" text-anchor="middle" fill="#000000">74LS08</text>
+<path d="M520,130 Q555,130 575,150 Q555,170 520,170 Q532,150 520,130 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="513" y="136" font-size="10" text-anchor="end" fill="#000000">1</text>
+<text x="513" y="156" font-size="10" text-anchor="end" fill="#000000">2</text>
+<text x="579" y="146" font-size="10" text-anchor="start" fill="#000000">3</text>
+<text x="547" y="124" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U4A</text>
+<text x="547" y="185" font-size="11" text-anchor="middle" fill="#000000">74LS32</text>
+<path d="M660,205 Q695,205 715,225 Q695,245 660,245 Q672,225 660,205 Z" stroke="#800000" stroke-width="1.6" fill="#ffffe8"/>
+<text x="653" y="211" font-size="10" text-anchor="end" fill="#000000">4</text>
+<text x="653" y="231" font-size="10" text-anchor="end" fill="#000000">5</text>
+<text x="719" y="221" font-size="10" text-anchor="start" fill="#000000">6</text>
+<text x="687" y="199" font-size="11" text-anchor="middle" fill="#000000" font-weight="bold">U4B</text>
+<text x="687" y="260" font-size="11" text-anchor="middle" fill="#000000">74LS32</text>
+<path d="M90,60 L200,60" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M140,60 L140,290 L380,290" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M140,190 L380,190" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M90,140 L200,140" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M170,140 L170,310 L380,310" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<circle cx="140" cy="60" r="4" fill="#000080"/>
+<circle cx="140" cy="190" r="4" fill="#000080"/>
+<circle cx="170" cy="140" r="4" fill="#000080"/>
+<path d="M236,60 L300,60 L300,90 L380,90" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M236,140 L330,140 L330,110 L380,110" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M330,140 L330,210 L380,210" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<circle cx="330" cy="140" r="4" fill="#000080"/>
+<text x="250" y="52" font-size="12" text-anchor="start" fill="#0000c0">A'</text>
+<text x="250" y="132" font-size="12" text-anchor="start" fill="#0000c0">B'</text>
+<path d="M430,100 L470,100 L470,140 L525,140" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M430,200 L490,200 L490,160 L525,160" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M575,150 L620,150 L620,215 L665,215" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M430,300 L640,300 L640,235 L665,235" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<text x="446" y="92" font-size="12" text-anchor="start" fill="#0000c0">A'B'</text>
+<text x="446" y="192" font-size="12" text-anchor="start" fill="#0000c0">AB'</text>
+<text x="446" y="292" font-size="12" text-anchor="start" fill="#0000c0">AB</text>
+<path d="M715,225 L770,225" stroke="#000080" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+<path d="M56,52 H80 L90,60 L80,68 H56 Z" stroke="#800000" stroke-width="1.4" fill="#ffffe8"/>
+<text x="50" y="65" font-size="13" text-anchor="end" fill="#000">A (IN_1)</text>
+<path d="M56,132 H80 L90,140 L80,148 H56 Z" stroke="#800000" stroke-width="1.4" fill="#ffffe8"/>
+<text x="50" y="145" font-size="13" text-anchor="end" fill="#000">B (IN_2)</text>
+<path d="M770,217 H794 L804,225 L794,233 H770 Z" stroke="#800000" stroke-width="1.4" fill="#ffffe8"/>
+<text x="810" y="230" font-size="13" text-anchor="start" fill="#000">Y1 (LED1)</text>
+</g>
+</svg>

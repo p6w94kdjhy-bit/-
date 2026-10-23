@@ -91,6 +91,20 @@ LED로는 보이지 않을 만큼 짧지만, 이 출력을 플립플롭 클럭 �
 
 ![글리치 확대](examples/output/lab_a_plus_not_b/glitch_zoom.png)
 
+### ngspice 전압 파형 + EDA 스타일 회로도
+
+같은 회로를 ngspice(XSPICE 디지털 게이트 모델, 74LS 대표 지연)로 돌려 실제 전압으로 그린 버전입니다.
+입력은 0–5V 클럭, 출력은 TTL 레벨(LOW 0.35V, HIGH 3.4V, 상승 6ns/하강 4ns)입니다.
+
+```bash
+python3 spice/plot_waveforms.py     # ngspice, matplotlib 필요
+```
+
+![회로 1 EDA](examples/output/lab_a_plus_not_b/circuit1_eda.png)
+![회로 2 EDA](examples/output/lab_a_plus_not_b/circuit2_eda.png)
+![ngspice 파형](examples/output/lab_a_plus_not_b/spice/all_waveform.png)
+![ngspice 글리치 확대](examples/output/lab_a_plus_not_b/spice/glitch_zoom.png)
+
 ## 모델링한 것
 
 - 74xx DIP-14 핀 배치 (VCC=14, GND=7)
