@@ -21,7 +21,9 @@ class CircuitError(Exception):
 
 
 class Circuit:
-    def __init__(self):
+    def __init__(self, ideal=False):
+        """ideal=True 이면 게이트 지연을 0으로 두고 논리 결과만 본다."""
+        self.ideal = ideal
         self.nets = {}
         self.chips = []
         self.vcc = self.net("VCC")
@@ -95,7 +97,8 @@ class Circuit:
         if new == old:
             return
         self._projected[key] = new
-        self._schedule(self.time + chip.delay(old, new), out_net, new)
+        delay = 0 if self.ideal else chip.delay(old, new)
+        self._schedule(self.time + delay, out_net, new)
 
     def run(self, until_ns=None):
         """이벤트가 없어질 때까지(또는 until_ns까지) 시뮬레이션한다."""

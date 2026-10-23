@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="154" viewBox="0 0 960 154" font-family="monospace" font-size="13">
+<rect width="960" height="154" fill="#ffffff"/>
+<text x="110" y="18" font-size="14" font-weight="bold" fill="#222">입력 파형  (IN_1: 주기 1µs, IN_2: 주기 2µs, 시작값 LOW)</text>
+<line x1="110.0" y1="30" x2="110.0" y2="118" stroke="#e3e3e3"/>
+<text x="110.0" y="134" text-anchor="middle" fill="#666">0</text>
+<line x1="213.8" y1="30" x2="213.8" y2="118" stroke="#e3e3e3"/>
+<text x="213.8" y="134" text-anchor="middle" fill="#666">0.5</text>
+<line x1="317.5" y1="30" x2="317.5" y2="118" stroke="#e3e3e3"/>
+<text x="317.5" y="134" text-anchor="middle" fill="#666">1</text>
+<line x1="421.2" y1="30" x2="421.2" y2="118" stroke="#e3e3e3"/>
+<text x="421.2" y="134" text-anchor="middle" fill="#666">1.5</text>
+<line x1="525.0" y1="30" x2="525.0" y2="118" stroke="#e3e3e3"/>
+<text x="525.0" y="134" text-anchor="middle" fill="#666">2</text>
+<line x1="628.8" y1="30" x2="628.8" y2="118" stroke="#e3e3e3"/>
+<text x="628.8" y="134" text-anchor="middle" fill="#666">2.5</text>
+<line x1="732.5" y1="30" x2="732.5" y2="118" stroke="#e3e3e3"/>
+<text x="732.5" y="134" text-anchor="middle" fill="#666">3</text>
+<line x1="836.2" y1="30" x2="836.2" y2="118" stroke="#e3e3e3"/>
+<text x="836.2" y="134" text-anchor="middle" fill="#666">3.5</text>
+<line x1="940.0" y1="30" x2="940.0" y2="118" stroke="#e3e3e3"/>
+<text x="940.0" y="134" text-anchor="middle" fill="#666">4</text>
+<text x="940" y="150" text-anchor="end" fill="#666">시간 (µs)</text>
+<text x="8" y="56.0" fill="#222">A (IN_1)</text>
+<path d="M110.0,64.0 H213.8 M213.8,40.0 V64.0 M213.8,40.0 H317.5 M317.5,40.0 V64.0 M317.5,64.0 H421.2 M421.2,40.0 V64.0 M421.2,40.0 H525.0 M525.0,40.0 V64.0 M525.0,64.0 H628.8 M628.8,40.0 V64.0 M628.8,40.0 H732.5 M732.5,40.0 V64.0 M732.5,64.0 H836.2 M836.2,40.0 V64.0 M836.2,40.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="100.0" fill="#222">B (IN_2)</text>
+<path d="M110.0,108.0 H317.5 M317.5,84.0 V108.0 M317.5,84.0 H525.0 M525.0,84.0 V108.0 M525.0,108.0 H732.5 M732.5,84.0 V108.0 M732.5,84.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+</svg>

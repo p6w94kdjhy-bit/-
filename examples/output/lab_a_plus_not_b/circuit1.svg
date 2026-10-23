@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="350" viewBox="0 0 880 350" font-family="sans-serif">
+<rect width="880" height="350" fill="#ffffff"/>
+<text x="16" y="28" font-size="16" text-anchor="start" fill="#222" font-weight="bold">회로 1:  Y1 = A'·B' + A·B' + A·B</text>
+<path d="M200,46 L228,60 L200,74 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<circle cx="232" cy="60" r="4" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="196" y="56" font-size="10" text-anchor="end" fill="#c0392b">1</text>
+<text x="240" y="56" font-size="10" text-anchor="start" fill="#c0392b">2</text>
+<text x="216" y="90" font-size="11" text-anchor="middle" fill="#555">U1A 74LS04</text>
+<path d="M200,126 L228,140 L200,154 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<circle cx="232" cy="140" r="4" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="196" y="136" font-size="10" text-anchor="end" fill="#c0392b">3</text>
+<text x="240" y="136" font-size="10" text-anchor="start" fill="#c0392b">4</text>
+<text x="216" y="170" font-size="11" text-anchor="middle" fill="#555">U1B 74LS04</text>
+<path d="M380,80 H410 A20,20 0 0 1 410,120 H380 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="376" y="86" font-size="10" text-anchor="end" fill="#c0392b">1</text>
+<text x="376" y="106" font-size="10" text-anchor="end" fill="#c0392b">2</text>
+<text x="434" y="96" font-size="10" text-anchor="start" fill="#c0392b">3</text>
+<text x="405" y="136" font-size="11" text-anchor="middle" fill="#555">U3A 74LS08</text>
+<path d="M380,180 H410 A20,20 0 0 1 410,220 H380 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="376" y="186" font-size="10" text-anchor="end" fill="#c0392b">4</text>
+<text x="376" y="206" font-size="10" text-anchor="end" fill="#c0392b">5</text>
+<text x="434" y="196" font-size="10" text-anchor="start" fill="#c0392b">6</text>
+<text x="405" y="236" font-size="11" text-anchor="middle" fill="#555">U3B 74LS08</text>
+<path d="M380,280 H410 A20,20 0 0 1 410,320 H380 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="376" y="286" font-size="10" text-anchor="end" fill="#c0392b">9</text>
+<text x="376" y="306" font-size="10" text-anchor="end" fill="#c0392b">10</text>
+<text x="434" y="296" font-size="10" text-anchor="start" fill="#c0392b">8</text>
+<text x="405" y="336" font-size="11" text-anchor="middle" fill="#555">U3C 74LS08</text>
+<path d="M520,130 Q555,130 575,150 Q555,170 520,170 Q532,150 520,130 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="513" y="136" font-size="10" text-anchor="end" fill="#c0392b">1</text>
+<text x="513" y="156" font-size="10" text-anchor="end" fill="#c0392b">2</text>
+<text x="579" y="146" font-size="10" text-anchor="start" fill="#c0392b">3</text>
+<text x="547" y="186" font-size="11" text-anchor="middle" fill="#555">U4A 74LS32</text>
+<path d="M660,205 Q695,205 715,225 Q695,245 660,245 Q672,225 660,205 Z" stroke="#222" stroke-width="2" fill="#fff"/>
+<text x="653" y="211" font-size="10" text-anchor="end" fill="#c0392b">4</text>
+<text x="653" y="231" font-size="10" text-anchor="end" fill="#c0392b">5</text>
+<text x="719" y="221" font-size="10" text-anchor="start" fill="#c0392b">6</text>
+<text x="687" y="261" font-size="11" text-anchor="middle" fill="#555">U4B 74LS32</text>
+<path d="M90,60 L200,60" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M140,60 L140,290 L380,290" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M140,190 L380,190" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M90,140 L200,140" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M170,140 L170,310 L380,310" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<circle cx="140" cy="60" r="4" fill="#1f5fbf"/>
+<circle cx="140" cy="190" r="4" fill="#1f5fbf"/>
+<circle cx="170" cy="140" r="4" fill="#1f5fbf"/>
+<path d="M236,60 L300,60 L300,90 L380,90" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M236,140 L330,140 L330,110 L380,110" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M330,140 L330,210 L380,210" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<circle cx="330" cy="140" r="4" fill="#1f5fbf"/>
+<text x="250" y="52" font-size="13" text-anchor="start" fill="#1f5fbf">A'</text>
+<text x="250" y="132" font-size="13" text-anchor="start" fill="#1f5fbf">B'</text>
+<path d="M430,100 L470,100 L470,140 L525,140" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M430,200 L490,200 L490,160 L525,160" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M575,150 L620,150 L620,215 L665,215" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<path d="M430,300 L640,300 L640,235 L665,235" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<text x="446" y="92" font-size="12" text-anchor="start" fill="#1f5fbf">A'B'</text>
+<text x="446" y="192" font-size="12" text-anchor="start" fill="#1f5fbf">AB'</text>
+<text x="446" y="292" font-size="12" text-anchor="start" fill="#1f5fbf">AB</text>
+<path d="M715,225 L770,225" stroke="#1f5fbf" stroke-width="2" fill="none" stroke-linejoin="round"/>
+<circle cx="90" cy="60" r="5" fill="#fff" stroke="#222" stroke-width="2"/>
+<text x="80" y="65" font-size="15" text-anchor="end" fill="#222" font-weight="bold">A (IN_1)</text>
+<circle cx="90" cy="140" r="5" fill="#fff" stroke="#222" stroke-width="2"/>
+<text x="80" y="145" font-size="15" text-anchor="end" fill="#222" font-weight="bold">B (IN_2)</text>
+<circle cx="770" cy="225" r="5" fill="#fff" stroke="#222" stroke-width="2"/>
+<text x="780" y="230" font-size="15" text-anchor="start" fill="#222" font-weight="bold">Y1 (LED1)</text>
+</svg>

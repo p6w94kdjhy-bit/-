@@ -61,6 +61,36 @@ ABC를 000 → 111로 100ns마다 바꿨을 때 (분홍색 = 전원 인가 직�
 
 ![최장 경로 파형](examples/output/waveform_critical_path.svg)
 
+## 실습: Y1 = A'B' + AB' + AB 와 Y2 = A + B'
+
+부품: 74LS04 2개, 74LS08 1개, 74LS32 2개. 입력 IN_1 = A, IN_2 = B (시작값 LOW 클럭, 주기 배수 10 / 20 → 1칸을 100ns로 가정해 1µs / 2µs).
+
+```bash
+python3 -m examples.lab_a_plus_not_b
+node tools/svg_to_png.js examples/output/lab_a_plus_not_b/*.svg   # 발표용 PNG (Playwright 필요)
+```
+
+| 회로 1 | 회로 2 |
+|---|---|
+| ![회로 1](examples/output/lab_a_plus_not_b/circuit1.png) | ![회로 2](examples/output/lab_a_plus_not_b/circuit2.png) |
+
+| A | B | Y1 | Y2 |
+|---|---|---|---|
+| 0 | 0 | 1 | 1 |
+| 0 | 1 | **0** | **0** |
+| 1 | 0 | 1 | 1 |
+| 1 | 1 | 1 | 1 |
+
+간소화: `A'B' + AB' + AB = B'(A' + A) + AB = B' + AB = A + B'` 이므로 두 회로는 같은 기능입니다 (게이트 7개 → 2개).
+
+![입력·출력 파형](examples/output/lab_a_plus_not_b/all_waveform.png)
+
+**실제 IC 지연을 넣으면:** A와 B가 동시에 바뀌는 순간(AB 11→00) 두 출력 모두 짧은 글리치(정적 해저드)가 생깁니다.
+Y1은 경로가 길어 21ns, Y2는 9ns 동안 0으로 떨어지고, Y1은 AB 10→01 순간에도 7ns 글리치가 한 번 더 생깁니다.
+LED로는 보이지 않을 만큼 짧지만, 이 출력을 플립플롭 클럭 등에 쓰면 오동작할 수 있습니다.
+
+![글리치 확대](examples/output/lab_a_plus_not_b/glitch_zoom.png)
+
 ## 모델링한 것
 
 - 74xx DIP-14 핀 배치 (VCC=14, GND=7)

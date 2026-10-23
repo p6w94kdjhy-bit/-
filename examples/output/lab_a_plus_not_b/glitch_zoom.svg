@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="418" viewBox="0 0 960 418" font-family="monospace" font-size="13">
+<rect width="960" height="418" fill="#ffffff"/>
+<text x="110" y="18" font-size="14" font-weight="bold" fill="#222">2µs 확대 (실제 IC 지연 적용): AB 11→00 순간의 글리치</text>
+<line x1="110.0" y1="30" x2="110.0" y2="382" stroke="#e3e3e3"/>
+<text x="110.0" y="398" text-anchor="middle" fill="#666">1990</text>
+<line x1="213.8" y1="30" x2="213.8" y2="382" stroke="#e3e3e3"/>
+<text x="213.8" y="398" text-anchor="middle" fill="#666">2000</text>
+<line x1="317.5" y1="30" x2="317.5" y2="382" stroke="#e3e3e3"/>
+<text x="317.5" y="398" text-anchor="middle" fill="#666">2010</text>
+<line x1="421.2" y1="30" x2="421.2" y2="382" stroke="#e3e3e3"/>
+<text x="421.2" y="398" text-anchor="middle" fill="#666">2020</text>
+<line x1="525.0" y1="30" x2="525.0" y2="382" stroke="#e3e3e3"/>
+<text x="525.0" y="398" text-anchor="middle" fill="#666">2030</text>
+<line x1="628.8" y1="30" x2="628.8" y2="382" stroke="#e3e3e3"/>
+<text x="628.8" y="398" text-anchor="middle" fill="#666">2040</text>
+<line x1="732.5" y1="30" x2="732.5" y2="382" stroke="#e3e3e3"/>
+<text x="732.5" y="398" text-anchor="middle" fill="#666">2050</text>
+<line x1="836.2" y1="30" x2="836.2" y2="382" stroke="#e3e3e3"/>
+<text x="836.2" y="398" text-anchor="middle" fill="#666">2060</text>
+<line x1="940.0" y1="30" x2="940.0" y2="382" stroke="#e3e3e3"/>
+<text x="940.0" y="398" text-anchor="middle" fill="#666">2070</text>
+<text x="940" y="414" text-anchor="end" fill="#666">시간 (ns)</text>
+<text x="8" y="56.0" fill="#222">A (IN_1)</text>
+<path d="M110.0,40.0 H213.8 M213.8,40.0 V64.0 M213.8,64.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="100.0" fill="#222">B (IN_2)</text>
+<path d="M110.0,84.0 H213.8 M213.8,84.0 V108.0 M213.8,108.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="144.0" fill="#222">A'</text>
+<path d="M110.0,152.0 H307.1 M307.1,128.0 V152.0 M307.1,128.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="188.0" fill="#222">B'</text>
+<path d="M110.0,196.0 H307.1 M307.1,172.0 V196.0 M307.1,172.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="232.0" fill="#222">A'B'+AB'</text>
+<path d="M110.0,240.0 H535.4 M535.4,216.0 V240.0 M535.4,216.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="276.0" fill="#222">AB</text>
+<path d="M110.0,260.0 H317.5 M317.5,260.0 V284.0 M317.5,284.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="320.0" fill="#222">Y1 (LED1)</text>
+<path d="M110.0,304.0 H462.8 M462.8,304.0 V328.0 M462.8,328.0 H680.6 M680.6,304.0 V328.0 M680.6,304.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="364.0" fill="#222">Y2 (LED2)</text>
+<path d="M110.0,348.0 H359.0 M359.0,348.0 V372.0 M359.0,372.0 H452.4 M452.4,348.0 V372.0 M452.4,348.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+</svg>

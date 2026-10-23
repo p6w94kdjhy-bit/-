@@ -24,6 +24,25 @@ QUAD_2INPUT = (
 )
 
 
+# 7404 핀 배치 (DIP-14)
+#   1A=1 1Y=2 | 2A=3 2Y=4 | 3A=5 3Y=6 | GND=7
+#   4Y=8 4A=9 | 5Y=10 5A=11 | 6Y=12 6A=13 | VCC=14
+HEX_INVERTER = (
+    Gate((1,), 2),
+    Gate((3,), 4),
+    Gate((5,), 6),
+    Gate((9,), 8),
+    Gate((11,), 10),
+    Gate((13,), 12),
+)
+
+
+def logic_not(values):
+    """3값 논리 NOT. None은 알 수 없음(X)."""
+    (v,) = values
+    return None if v is None else 1 - v
+
+
 def logic_and(values):
     """3값 논리 AND. None은 알 수 없음(X)."""
     if 0 in values:
@@ -67,6 +86,11 @@ class Chip:
 
 
 # 지연 시간은 TI 데이터시트의 대표값(typ, VCC=5V, CL=15pF) 기준 근사치
+def ls04(ref):
+    """74LS04: NOT 게이트 6개."""
+    return Chip(ref, "74LS04", logic_not, HEX_INVERTER, tplh_ns=9, tphl_ns=10)
+
+
 def ls08(ref):
     """74LS08: 2입력 AND 게이트 4개."""
     return Chip(ref, "74LS08", logic_and, QUAD_2INPUT, tplh_ns=8, tphl_ns=10)
