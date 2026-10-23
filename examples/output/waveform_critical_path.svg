@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="330" viewBox="0 0 960 330" font-family="monospace" font-size="13">
+<rect width="960" height="330" fill="#ffffff"/>
+<text x="110" y="18" font-size="14" font-weight="bold" fill="#222">최장 경로: A↑ → F↑ = 30 ns (B=0, C=1)</text>
+<line x1="110.0" y1="30" x2="110.0" y2="294" stroke="#e3e3e3"/>
+<text x="110.0" y="310" text-anchor="middle" fill="#666">0</text>
+<line x1="213.8" y1="30" x2="213.8" y2="294" stroke="#e3e3e3"/>
+<text x="213.8" y="310" text-anchor="middle" fill="#666">10</text>
+<line x1="317.5" y1="30" x2="317.5" y2="294" stroke="#e3e3e3"/>
+<text x="317.5" y="310" text-anchor="middle" fill="#666">20</text>
+<line x1="421.2" y1="30" x2="421.2" y2="294" stroke="#e3e3e3"/>
+<text x="421.2" y="310" text-anchor="middle" fill="#666">30</text>
+<line x1="525.0" y1="30" x2="525.0" y2="294" stroke="#e3e3e3"/>
+<text x="525.0" y="310" text-anchor="middle" fill="#666">40</text>
+<line x1="628.8" y1="30" x2="628.8" y2="294" stroke="#e3e3e3"/>
+<text x="628.8" y="310" text-anchor="middle" fill="#666">50</text>
+<line x1="732.5" y1="30" x2="732.5" y2="294" stroke="#e3e3e3"/>
+<text x="732.5" y="310" text-anchor="middle" fill="#666">60</text>
+<line x1="836.2" y1="30" x2="836.2" y2="294" stroke="#e3e3e3"/>
+<text x="836.2" y="310" text-anchor="middle" fill="#666">70</text>
+<line x1="940.0" y1="30" x2="940.0" y2="294" stroke="#e3e3e3"/>
+<text x="940.0" y="310" text-anchor="middle" fill="#666">80</text>
+<text x="940" y="326" text-anchor="end" fill="#666">시간 (ns)</text>
+<text x="8" y="56.0" fill="#222">A</text>
+<path d="M110.0,64.0 H317.5 M317.5,40.0 V64.0 M317.5,40.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="100.0" fill="#222">B</text>
+<path d="M110.0,108.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="144.0" fill="#222">C</text>
+<path d="M110.0,128.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="188.0" fill="#222">N1 = A+B</text>
+<rect x="110.0" y="172.0" width="145.2" height="24" fill="#f0c0c0"/>
+<path d="M255.2,196.0 H462.8 M462.8,172.0 V196.0 M462.8,172.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="232.0" fill="#222">N2 = N1·A</text>
+<rect x="110.0" y="216.0" width="103.8" height="24" fill="#f0c0c0"/>
+<path d="M213.8,240.0 H545.8 M545.8,216.0 V240.0 M545.8,216.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+<text x="8" y="276.0" fill="#222">F</text>
+<rect x="110.0" y="260.0" width="207.5" height="24" fill="#f0c0c0"/>
+<path d="M317.5,284.0 H628.8 M628.8,260.0 V284.0 M628.8,260.0 H940.0" stroke="#1f5fbf" stroke-width="2" fill="none"/>
+</svg>
