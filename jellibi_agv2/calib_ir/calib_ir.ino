@@ -50,8 +50,12 @@ void printConfig()
         int thL = (wL + bL) / 2, thR = (wR + bR) / 2;
         Serial.print(F("// 기준값 L=")); Serial.print(thL);
         Serial.print(F(" R=")); Serial.println(thR);
-        if (bL - wL < 150 || bR - wR < 150)
-            Serial.println(F("// 경고: 흑백 차이가 작음 — 센서 높이/조명 확인"));
+        if (bL - wL < 150) Serial.println(F("// 경고: 왼쪽(L) 흑백 차이가 작음 — b 때 왼쪽 센서가 선 위였는지 확인"));
+        if (bR - wR < 150) Serial.println(F("// 경고: 오른쪽(R) 흑백 차이가 작음 — b 때 오른쪽 센서가 선 위였는지 확인"));
+        if (cL > bL || cR > bR) {
+            Serial.println(F("// 경고: c 값이 b(검정)보다 큼 → b 측정 때 센서가 선 위에 없었음. b 다시 측정"));
+            return;
+        }
         if (cL >= 0) {
             // 선 중앙 주행 상태에서 두 센서의 위치(%)
             int pL = (long)(cL - wL) * 100 / max(1, bL - wL);
