@@ -115,11 +115,19 @@ bool Nav::traceToXing(int target, bool checkObstacle)
 {
     _obs.reset();
     unsigned long lastMs = millis();
+    unsigned long startMs = lastMs;
     for (;;) {
         IrSample s = readIr();
         if (_xing.update(s)) return true;
 
         unsigned long now = millis();
+#if HOP_TIMEOUT_MS > 0
+        if (now - startMs > HOP_TIMEOUT_MS) {
+            Serial.print(F("[nav] no intersection after "));
+            printNode(node); Serial.print(' '); Serial.println(headingChar(hdg));
+            uiFatal(F("교차점을 찾지 못함 (HOP_TIMEOUT_MS)"));
+        }
+#endif
         if (_spd < target) {
             _spd += (int)(now - lastMs) * ACCEL_PER_MS;
             if (_spd > target) _spd = target;

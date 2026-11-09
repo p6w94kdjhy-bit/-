@@ -2,6 +2,8 @@
 //  젤리비 AGV2 보정값 — 보정은 이 파일 한 곳에서만 한다.
 //  값을 바꾸면 jellibi_agv2/CHANGELOG.md 에 "무엇을 왜" 한 줄 기록.
 //  운반 프로그램 제출(13:20) 이후에는 이 파일의 '승인된 보정값'만 수정.
+//
+//  [현장] 표시 = 대회장 맵 위에서 직접 측정·확인해서 넣어야 하는 값 (Ctrl+F 로 '[현장]' 검색)
 // =====================================================================
 #ifndef AGV2_CONFIG_H
 #define AGV2_CONFIG_H
@@ -14,10 +16,10 @@
 //     예제 기본값(410/560/710, LT_AJDUST 등) 사용 금지.
 //     -1 = 아직 측정 안 함 → 주행 스케치는 출발을 거부하고 경고음.
 // ---------------------------------------------------------------------
-#define IR_L_WHITE   -1   // TODO: 현장값 (A6, 흰 바닥)
-#define IR_L_BLACK   -1   // TODO: 현장값 (A6, 선 정중앙에 센서를 올렸을 때)
-#define IR_R_WHITE   -1   // TODO: 현장값 (A7, 흰 바닥)
-#define IR_R_BLACK   -1   // TODO: 현장값 (A7, 선 정중앙에 센서를 올렸을 때)
+#define IR_L_WHITE   -1   // [현장] TODO: 현장값 (A6, 흰 바닥) — calib_ir w
+#define IR_L_BLACK   -1   // [현장] TODO: 현장값 (A6, 선 정중앙에 센서) — calib_ir b
+#define IR_R_WHITE   -1   // [현장] TODO: 현장값 (A7, 흰 바닥) — calib_ir w
+#define IR_R_BLACK   -1   // [현장] TODO: 현장값 (A7, 선 정중앙에 센서) — calib_ir b
 
 // 흑백 판정 기준값 = (흰 + 검) / 2  — 왼쪽·오른쪽 각각 (수정 금지, 위 측정값만 바꾼다)
 #define IR_L_TH  ((IR_L_WHITE + IR_L_BLACK) / 2)
@@ -26,12 +28,12 @@
 // 교차점(양쪽 동시 검정) 판정 레벨 %: 흰=0, 검=100.  50 = 위 기준값과 동일.
 // 선을 따라가기만 해도 교차점이 잘못 세어지면 calib_ir 'c'(선 중앙 주행 상태) 값보다
 // 높아지도록 60~75로 올린다.
-#define XING_LEVEL_PCT   50
+#define XING_LEVEL_PCT   50   // [현장] 선 두께에 따라 다름 — calib_ir c → p 경고를 따름
 
 // ---------------------------------------------------------------------
 // [2] 전방 IR (A0, 가까울수록 값이 큼) — 종목② 장애물 감지
 // ---------------------------------------------------------------------
-#define FRONT_OBSTACLE_TH      -1  // TODO: 현장값 — 멈추고 싶은 거리에 장애물을 두고 calib_ir 'f'로 측정
+#define FRONT_OBSTACLE_TH      -1  // [현장] TODO: 현장값 (종목②만) — 멈추고 싶은 거리에 장애물을 두고 calib_ir 'f'로 측정
 #define FRONT_CONFIRM_SAMPLES   3  // 연속 n회 넘어야 장애물로 판정(노이즈 방지)
 #define FRONT_CHECK_WHILE_CARRY 0  // 팔레트를 든 상태에서도 전방 IR이 장애물을 보면 1
                                    // 0이면: 열린 통로를 빈 차로 먼저 확인한 뒤 팔레트를 든다
@@ -39,15 +41,15 @@
 // ---------------------------------------------------------------------
 // [3] 모터
 // ---------------------------------------------------------------------
-#define LEFT_FWD_LEVEL   HIGH   // 예제 기준 왼쪽 전진=HIGH — 실측 확인 (tune_drive 's')
-#define RIGHT_FWD_LEVEL  LOW    // 예제 기준 오른쪽 전진=LOW — 실측 확인
-#define MOTOR_L_GAIN     100    // % — 직진('s')에서 오른쪽으로 휘면 L↓, 왼쪽으로 휘면 R↓
-#define MOTOR_R_GAIN     100
+#define LEFT_FWD_LEVEL   HIGH   // [현장] 예제 기준 왼쪽 전진=HIGH — 실측 확인 (tune_drive 's')
+#define RIGHT_FWD_LEVEL  LOW    // [현장] 예제 기준 오른쪽 전진=LOW — 실측 확인
+#define MOTOR_L_GAIN     100    // [현장] % — 직진('s')에서 오른쪽으로 휘면 L↓, 왼쪽으로 휘면 R↓
+#define MOTOR_R_GAIN     100    // [현장]
 
 // ---------------------------------------------------------------------
 // [4] 속도 (PWM 0~255)  — 초기값. 회전·정차 안정화 후 CRUISE부터 올린다.
 // ---------------------------------------------------------------------
-#define SPEED_CRUISE     90     // 교차점 통과 구간
+#define SPEED_CRUISE     90     // [현장] 교차점 통과 구간 (안정화 후 올림)
 #define SPEED_APPROACH   60     // 정차/회전할 교차점 직전 1칸 (ALIGN_MS는 이 속도 기준)
 #define SPEED_CARRY      75     // 팔레트 운반 중 최고속 (SPEED_APPROACH 이상으로 둘 것)
 #define SPEED_ZONE       60     // 장애물 감시 칸(미확인 통로) 속도 — 감지 후 제동거리 확보, 밀면 시도 종료
@@ -56,41 +58,47 @@
 // 라인트레이스: 보정량 = err*KP/100 + (err-이전err)*KD/100,  err = -1000 ~ +1000
 #define LT_KP            8
 #define LT_KD           20
-#define LT_CENTER_OFFSET 0      // 선 중앙에 놓았을 때 err (calib_ir 'c'가 출력)
+#define LT_CENTER_OFFSET 0      // [현장] 선 중앙에 놓았을 때 err (calib_ir c → p 가 출력)
 
 // ---------------------------------------------------------------------
 // [5] 교차점 · 정차
 // ---------------------------------------------------------------------
 #define XING_CONFIRM_SAMPLES 2   // 양쪽 검정이 연속 n회일 때 교차점
-#define XING_SKIP_MS       150   // 카운트 직후 이 시간 동안 재카운트 금지 (1회만 카운트)
-#define ALIGN_MS           150   // 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
+#define XING_SKIP_MS       150   // [현장] 카운트 직후 이 시간 동안 재카운트 금지 (1회만 카운트)
+#define ALIGN_MS           150   // [현장] 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
                                  // (센서→바퀴축 거리 / SPEED_APPROACH 속도). tune_drive 'f'로 맞춤
 #define BRAKE_PWM           80   // 정지 시 역방향 펄스 세기 (0 = 브레이크 안 씀)
 #define BRAKE_MS            25
+#define HOP_TIMEOUT_MS    4000   // [현장] 한 칸에서 이 시간 안에 교차점을 못 찾으면 정지(선 이탈·맵 밖 주행 방지)
+                                 //  가장 느린 칸 시간의 2~3배. 0 = 사용 안 함
 #define STOP_HOLD_MS      2300   // '2초 정차' + 여유
 
 // ---------------------------------------------------------------------
 // [6] 회전 (제자리 피벗: 바퀴축 중심 회전 → 정차 위치 유지)
 // ---------------------------------------------------------------------
 #define TURN_PWM          90
-#define TURN90_MS        420     // 90° 회전에 걸리는 대략 시간 (tune_drive 'L' 로 측정)
-#define TURN_BLIND_PCT    65     // 예상시간의 이 % 까지는 센서 무시, 그 뒤 선을 찾으면 정지
+#define TURN90_MS        420     // [현장] 90° 회전에 걸리는 대략 시간 (tune_drive 'L' 로 측정)
+#define TURN_BLIND_PCT    65     // [현장] 예상시간의 이 % 까지는 센서 무시, 그 뒤 선을 찾으면 정지
 #define TURN_SEEK_MAX_MS 500     // 선 찾기 추가 허용시간 (넘으면 그냥 정지)
-#define TURN_CENTER_MS    20     // 선 감지 후 조금 더 돌기
+#define TURN_CENTER_MS    20     // [현장] 선 감지 후 조금 더 돌기
 #define TURN_SETTLE_MS    60
 #define TURN_USE_SENSOR    1     // 0 = 시간만으로 회전 (TURN90_MS * 횟수)
-#define UTURN_LEFT         1     // U턴 회전 방향 1=왼쪽 0=오른쪽
+#define UTURN_LEFT         1     // U턴 회전 방향 1=왼쪽 0=오른쪽 (U턴 후 선을 잘 잡는 쪽)
 
 // ---------------------------------------------------------------------
 // [7] 출발
 // ---------------------------------------------------------------------
 #define START_DELAY_MS   200     // 버튼 뗀 뒤 출발까지 (신호 후 5초 내 출발선 통과)
+// 출발 위치(교차점 바깥 50mm)에 놓았을 때 바닥 센서가 이미 첫 교차점 선을 '지나' 있으면 1.
+// 센서가 선 앞(아직 안 닿음)이거나 선 위면 0.  calib_ir 연속출력으로 확인: 출발 위치에서 앞으로 밀 때
+// 두 센서가 같이 검게 변하면 0, 변하지 않으면(이미 지남) 1
+#define START_XING_PASSED  0     // [현장]
 
 // ---------------------------------------------------------------------
 // [8] 리프트 서보 (D9)
 // ---------------------------------------------------------------------
-#define LIFT_UP_ANGLE    170     // 예제값(180-10) — 실측 확인 (tune_drive 'p')
-#define LIFT_DOWN_ANGLE   80     // 예제값(90-10)  — 실측 확인 (tune_drive 'd')
+#define LIFT_UP_ANGLE    170     // [현장] 예제값(180-10) — 실측 확인 (tune_drive 'p')
+#define LIFT_DOWN_ANGLE   80     // [현장] 예제값(90-10)  — 실측 확인 (tune_drive 'd')
 #define LIFT_STEP_DEG      3
 #define LIFT_STEP_MS      15
 #define LIFT_SETTLE_MS   250

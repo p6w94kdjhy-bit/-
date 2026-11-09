@@ -45,7 +45,9 @@ void setup()
     uiArmAbort();
     unsigned long t0 = millis();
 
-    nav.setApproach(START_NODE, START_HDG);
+    // 출발 위치에서 센서가 첫 교차점을 이미 지났으면 그 교차점 위에 있는 것으로 시작
+    if (START_XING_PASSED) nav.setAt(START_NODE, START_HDG);
+    else                   nav.setApproach(START_NODE, START_HDG);
     uint8_t prev = START_NODE;
     for (uint8_t i = 0; i < ROUTE_LEN; i++) {
         uint8_t cur = ROUTE[i].node;
