@@ -1,4 +1,4 @@
-#include "Sensor.h"
+#include "02_sensor/Sensor.h"
 #include "pins.h"
 
 IrSample readIr()
@@ -21,7 +21,6 @@ bool irCalibrated()
            IR_R_WHITE >= 0 && IR_R_BLACK > IR_R_WHITE;
 }
 
-bool frontCalibrated() { return FRONT_OBSTACLE_TH > 0; }
 
 static int norm(int v, int w, int b)
 {
@@ -37,15 +36,4 @@ int irNormR(int v) { return norm(v, IR_R_WHITE, IR_R_BLACK); }
 int lineError(const IrSample& s)
 {
     return irNormL(s.l) - irNormR(s.r) - LT_CENTER_OFFSET;
-}
-
-bool ObstacleDetector::update()
-{
-    if (FRONT_OBSTACLE_TH <= 0) return false;
-    if (irFront() > FRONT_OBSTACLE_TH) {
-        if (_cnt < 255) _cnt++;
-    } else {
-        _cnt = 0;
-    }
-    return _cnt >= FRONT_CONFIRM_SAMPLES;
 }

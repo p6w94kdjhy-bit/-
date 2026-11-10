@@ -1,6 +1,7 @@
-#include "LineTrace.h"
-#include "Motor.h"
-#include "Ui.h"
+#include "03_linetrace/LineTrace.h"
+#include "05_obstacle/Obstacle.h"
+#include "01_motor/Motor.h"
+#include "12_signal/Signal.h"
 
 // 교차점 판정 레벨: 흰 + (검-흰) * XING_LEVEL_PCT%   (50% = 흑백 기준값과 같음)
 #define XING_TH_L (IR_L_WHITE + (long)(IR_L_BLACK - IR_L_WHITE) * XING_LEVEL_PCT / 100)

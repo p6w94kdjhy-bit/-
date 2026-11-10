@@ -1,5 +1,5 @@
 // ===================================================================
-//  센서 — 바닥 IR 2개(흑/백), 전방 IR 1개 (강의안 3·5차시)
+//  [02 센서] 바닥 IR 2개(흑/백 판정), 전방 IR 1개 원시값 (강의안 3·5차시)
 //  흑백 판정 기준 = (흰 + 검) / 2  (config.h 현장 측정값으로 계산)
 // ===================================================================
 #ifndef AGV2_SENSOR_H
@@ -15,20 +15,10 @@ int  irFront();                       // 전방 IR 읽기
 bool isBlackL(int v);                 // 왼쪽 값이 검정인가 (v > IR_L_TH)
 bool isBlackR(int v);                 // 오른쪽 값이 검정인가 (v > IR_R_TH)
 bool irCalibrated();                  // config.h에 바닥 IR 현장값이 들어있나
-bool frontCalibrated();               // config.h에 전방 IR 현장값이 들어있나
 
 // (라인트레이싱 방식 1, calib_ir 용) 흰=0 ~ 검=1000 으로 바꾼 값
 int  irNormL(int v);
 int  irNormR(int v);
 int  lineError(const IrSample& s);    // 선이 왼쪽에 있으면 + 값
-
-// 전방 장애물: 연속 FRONT_CONFIRM_SAMPLES 회 넘으면 true
-class ObstacleDetector {
-public:
-    void reset() { _cnt = 0; }
-    bool update();
-private:
-    uint8_t _cnt = 0;
-};
 
 #endif

@@ -1,4 +1,5 @@
-// 격자 주행: 현재 교차점·방향을 추적하며 직선 구간(leg) 단위로 이동
+// [09 격자 주행] 현재 교차점·방향을 기억하며 "C5까지 직진" 같은 구간 단위로 이동 (종목②)
+//   내부에서 03 라인트레이싱, 04 회전, 05 장애물 감지를 사용
 //
 //  상태
 //   node    : 마지막으로 도착(카운트)한 교차점
@@ -9,8 +10,10 @@
 #define AGV2_NAV_H
 
 #include <Arduino.h>
-#include "Grid.h"
-#include "Drive.h"
+#include "08_map/Grid.h"
+#include "01_motor/Motor.h"
+#include "03_linetrace/LineTrace.h"
+#include "04_turn/Turn.h"
 
 enum NavResult : uint8_t { NAV_OK = 0, NAV_OBSTACLE = 1 };
 

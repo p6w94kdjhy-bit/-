@@ -1,8 +1,4 @@
 #include "config.h"
-#ifdef SIM_FCWC
-#undef FRONT_CHECK_WHILE_CARRY
-#define FRONT_CHECK_WHILE_CARRY SIM_FCWC
-#endif
 #include "sim_hw.inc"
 #define setup sketch_setup
 #define loop sketch_loop
@@ -10,11 +6,7 @@
 #undef setup
 #undef loop
 
-static bool blueEdge(uint8_t a, uint8_t b)
-{
-    int8_t h = headingTo(a, b);
-    return h >= 0 && straightDist(a, b) == 1 && (adj[a] & (1 << h));
-}
+static bool blueEdge(uint8_t a, uint8_t b) { return plannerHasEdge(a, b); }
 
 int main()
 {
@@ -26,7 +18,6 @@ int main()
         worldStart(START_NODE, START_HDG);
         W.edgeAllowed = blueEdge;
         for (int j = 0; j < 3; j++) if (j != k) W.blocked[open[j]] = true;
-        carrying = false;
         try { sketch_setup(); } catch (std::exception&) {}
         std::string got = joinLog();
         // 검증: 픽업·하역 순서와 위치, 마지막 H4 남향 정차

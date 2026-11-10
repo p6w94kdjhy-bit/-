@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 4개 스케치 컴파일 확인.
+# 모든 스케치 컴파일 확인.
 #  1) arduino-cli 가 있으면 그것으로 (권장)
 #       ./tools/build_check.sh            # cpu=atmega328
 #       CPU=atmega328old ./tools/build_check.sh
@@ -33,7 +33,7 @@ for f in "$CORE"/cores/arduino/*.cpp; do $CXX $INC "$f" -o "$OUT/core/$(basename
 avr-gcc -c -g -x assembler-with-cpp -flto -mmcu=atmega328p -DF_CPU=16000000L $INC \
     "$CORE/cores/arduino/wiring_pulse.S" -o "$OUT/core/wiring_pulse.S.o"
 $CXX $INC "$SERVO/src/avr/Servo.cpp" -o "$OUT/lib/Servo.o"
-for f in "$ROOT"/libraries/AGV2/src/*.cpp; do $CXX -Wall -Wextra $INC "$f" -o "$OUT/lib/$(basename "$f").o"; done
+find "$ROOT/libraries/AGV2/src" -name "*.cpp" | while read -r f; do $CXX -Wall -Wextra $INC "$f" -o "$OUT/lib/$(basename "$f").o"; done
 
 for s in $SKETCHES; do
     echo "== $s"

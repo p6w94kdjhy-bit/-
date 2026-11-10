@@ -3,22 +3,19 @@
 ## 구성
 ```
 jellibi_agv2/                  ← Arduino IDE '스케치북 위치'로 지정 (libraries/ 자동 인식)
-├─ libraries/AGV2/src/
-│   ├─ config.h               ★ 보정값은 전부 여기 (IR·전방·모터비율·속도·회전·리프트·팔레트)
-│   ├─ pins.h                 핀맵 (A6/A7 바닥IR, A0 전방, D5/D6 PWM, D7/D8 방향, D9 서보, A3 버튼, D3 부저)
-│   ├─ Motor.*                바퀴 모터: drive / Forward / Backward / Stop / Brake
-│   ├─ Sensor.*               센서: readIr / isBlackL·R (흑백 판정) / irFront
-│   ├─ LineTrace.*            ★ 라인트레이싱: LineTraceToCross(다음 교차점까지) / AlignOnCross(교차점 위 정지)
-│   │                         강의안 방식(좌우 IR 4가지 경우), 교차점 1회 카운트
-│   ├─ Turn.*                 ★ 회전: TurnLeft90 / TurnRight90 / UTurn (강의안 방식: 검정→흰색까지)
-│   ├─ Nav.*                  (종목②) 격자 위치·방향 추적, 직선 구간 주행
-│   ├─ Grid.*  Lift.*  Ui.*
+├─ libraries/AGV2/src/        공용 코드 — 기능별 폴더 (자세한 설명: CODE_MAP.md)
+│   ├─ config.h               ★ 보정값 전부 ([현장] = 대회장에서 측정)
+│   ├─ pins.h                 핀맵
+│   ├─ 01_motor  02_sensor  03_linetrace★  04_turn★  05_obstacle  06_lift
+│   ├─ 07_logistics★(팔레트)  08_map  09_nav  10_planner(경로계획)  11_start  12_signal
 ├─ calib_ir/                  ① 현장 IR 측정 → config.h 줄 출력
 ├─ tune_drive/                ② 직진·회전·정렬·리프트 보정 테스트
+├─ rfid_test/  hello_test/    RFID 모듈 확인 / 업로드 연결 확인
 ├─ course1_drive/             종목① 지정경로 순회정차
 ├─ course2_pallet/            종목② 팔레트 운반 + 장애물 (제출본)
 ├─ tools/build_check.sh       4개 스케치 컴파일 확인
 ├─ tools/sim/run.sh           PC에서 경로 로직 시뮬레이션 (종목① 순서, 종목② 차단 3가지)
+├─ CODE_MAP.md                ★ 기능별 코드 지도
 └─ CHANGELOG.md               보정값 변경 기록
 ```
 

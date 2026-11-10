@@ -1,9 +1,9 @@
-#include "Turn.h"
+#include "04_turn/Turn.h"
 #include "config.h"
-#include "Motor.h"
-#include "Sensor.h"
-#include "LineTrace.h"
-#include "Ui.h"
+#include "01_motor/Motor.h"
+#include "02_sensor/Sensor.h"
+#include "03_linetrace/LineTrace.h"
+#include "12_signal/Signal.h"
 
 // 진행쪽 IR이 검정인가 (왼회전이면 왼쪽 IR, 우회전이면 오른쪽 IR)
 static bool leadIsBlack(bool left)

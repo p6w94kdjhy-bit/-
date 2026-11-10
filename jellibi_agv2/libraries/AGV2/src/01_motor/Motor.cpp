@@ -1,4 +1,4 @@
-#include "Motor.h"
+#include "01_motor/Motor.h"
 #include "pins.h"
 
 static int s_lastL = 0, s_lastR = 0;   // Brake()가 반대 방향을 알기 위한 마지막 명령

@@ -4,7 +4,6 @@
 #define START_XING_PASSED SIM_SXP
 #endif
 #include "sim_hw.inc"
-#include "Lift.h"
 #define setup sketch_setup
 #define loop sketch_loop
 #include "../../course1_drive/course1_drive.ino"

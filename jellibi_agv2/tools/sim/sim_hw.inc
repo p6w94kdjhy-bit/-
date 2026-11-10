@@ -3,10 +3,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
-#include "Drive.h"
-#include "Lift.h"
-#include "Ui.h"
-#include "Grid.h"
+#include "AGV2.h"
 
 bool g_serialEcho = false;
 SerialStub Serial;
