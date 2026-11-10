@@ -12,5 +12,6 @@
 #define PIN_SERVO     9    // 리프트
 #define PIN_BUTTON    A3   // 눌림 = LOW (JellibiButton과 동일)
 #define PIN_BUZZER    3
+#define PIN_LED       13   // 보드 LED (무음일 때 상태 표시)
 
 #endif
