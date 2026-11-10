@@ -12,6 +12,8 @@
 #define PIN_SERVO     9    // 리프트
 #define PIN_BUTTON    A3   // 눌림 = LOW (JellibiButton과 동일)
 #define PIN_BUZZER    3
-#define PIN_LED       13   // 보드 LED (무음일 때 상태 표시)
+#define PIN_LED       13   // 보드 LED (무음일 때 상태 표시) — RFID SPI SCK와 같은 핀, 출발 후에만 LED로 사용
+#define PIN_RFID_SS   2    // MFRC522 SPI SS
+#define PIN_RFID_RST  4    // MFRC522 리셋
 
 #endif

@@ -7,7 +7,7 @@
 #       CORE=~/ArduinoCore-avr SERVO=~/Servo ./tools/build_check.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SKETCHES="course1_drive course2_pallet calib_ir tune_drive"
+SKETCHES="course1_drive course2_pallet calib_ir tune_drive rfid_test"
 CPU="${CPU:-atmega328}"
 
 if command -v arduino-cli >/dev/null 2>&1; then
