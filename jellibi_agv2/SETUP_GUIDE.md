@@ -133,7 +133,8 @@ Arduino IDE에서 스케치를 열면 `config.h` 는 탭에 없다. 탐색기에
 |---|---|---|---|
 | 1 | `s` | 앞으로 가나 / 똑바로 가나 | 뒤로 가면 `LEFT/RIGHT_FWD_LEVEL`, 휘면 `MOTOR_L/R_GAIN` |
 | 2 | `L` | 제자리 정확히 한 바퀴 | `TURN90_MS` |
-| 3 | `l` `r` `u` | 좌90·우90·U턴 후 선 위에 정확히 | `TURN_BLIND_PCT`, `TURN_CENTER_MS` |
+| 3 | `l` `r` `u` | 좌90·우90·U턴 후 선 위에 정확히 | `TURN_BLIND_PCT`, `TURN_EXIT_MAX_MS` |
+| 3-1 | `F` | 선을 따라 똑바로 가나 (지그재그·이탈) | `LT_INNER_PCT` |
 | 4 | `f` | 교차점 1칸 후 정지 — 바퀴축 중점이 교차점 ±30mm | `ALIGN_MS` (앞에 서면 줄이고 못 미치면 늘림) |
 | 5 | `F` | 3칸 갈 때 부저 틱이 정확히 3번 | 더 울리면 `XING_SKIP_MS`↑ 또는 `XING_LEVEL_PCT`↑ |
 | 6 | `q` | 사각형 돌고 제자리 | 종합 |

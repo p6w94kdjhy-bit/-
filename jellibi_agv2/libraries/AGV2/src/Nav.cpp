@@ -7,7 +7,7 @@ void Nav::setApproach(uint8_t n, uint8_t h)
     hdg = h;
     approach = true;
     moving = false;
-    _xing.reset();
+    lineTraceReset();
 }
 
 void Nav::setAt(uint8_t n, uint8_t h)
@@ -16,7 +16,7 @@ void Nav::setAt(uint8_t n, uint8_t h)
     hdg = h;
     approach = false;
     moving = false;
-    _xing.reset();
+    lineTraceReset();
 }
 
 bool Nav::mustStopAt(uint8_t a, uint8_t b, uint8_t c)
@@ -32,8 +32,6 @@ void Nav::turnTo(uint8_t h)
     else if (d == 3) TurnLeft90();
     else if (d == 2) UTurn();
     hdg = h;
-    _spd = 0;
-    _xing.reset();
 }
 
 void Nav::uturnOnEdge()
@@ -41,7 +39,6 @@ void Nav::uturnOnEdge()
     Brake();
     UTurn();
     setApproach(obsFrom, reverseH(hdg));
-    _spd = 0;
 }
 
 void Nav::hold(unsigned long ms)
@@ -90,12 +87,10 @@ NavResult Nav::hops(uint8_t count, bool stopAtEnd)
         bool chk = hopCheck && from != NODE_NONE && to != NODE_NONE && hopCheck(from, to);
         if (chk && spd > SPEED_ZONE) spd = SPEED_ZONE;
 
-        if (!traceToXing(spd, chk)) {
-            Brake();
+        if (!LineTraceToCross(spd, chk)) {          // 라인트레이싱 (LineTrace.cpp)
             obsFrom = from;
             obsTo = to;
             moving = false;
-            _spd = 0;
             Serial.print(F("[nav] OBSTACLE "));
             printNode(from); Serial.print(F("->")); printNode(to); Serial.println();
             return NAV_OBSTACLE;
@@ -111,48 +106,9 @@ NavResult Nav::hops(uint8_t count, bool stopAtEnd)
     return NAV_OK;
 }
 
-bool Nav::traceToXing(int target, bool checkObstacle)
-{
-    _obs.reset();
-    unsigned long lastMs = millis();
-    unsigned long startMs = lastMs;
-    for (;;) {
-        IrSample s = readIr();
-        if (_xing.update(s)) return true;
-
-        unsigned long now = millis();
-#if HOP_TIMEOUT_MS > 0
-        if (now - startMs > HOP_TIMEOUT_MS) {
-            Serial.print(F("[nav] no intersection after "));
-            printNode(node); Serial.print(' '); Serial.println(headingChar(hdg));
-            uiFatal(F("교차점을 찾지 못함 (HOP_TIMEOUT_MS)"));
-        }
-#endif
-        if (_spd < target) {
-            _spd += (int)(now - lastMs) * ACCEL_PER_MS;
-            if (_spd > target) _spd = target;
-        } else {
-            _spd = target;
-        }
-        lastMs = now;
-        lineTraceStep(s, _spd);
-
-        if (checkObstacle && _obs.update()) return false;
-        uiCheckAbort();
-    }
-}
-
-// 센서가 교차점을 본 뒤 바퀴축 중점이 교차점 위에 오도록 ALIGN_MS 더 간다
+// 교차점 위에 바퀴축을 맞추고 정지 (LineTrace.cpp)
 void Nav::alignAndStop()
 {
-    unsigned long t0 = millis();
-    while (millis() - t0 < ALIGN_MS) {
-        IrSample s = readIr();
-        lineTraceStep(s, SPEED_APPROACH);
-        uiCheckAbort();
-    }
-    Brake();
+    AlignOnCross();
     moving = false;
-    _spd = 0;
-    _xing.reset();
 }

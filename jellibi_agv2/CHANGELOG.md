@@ -8,3 +8,4 @@
 | 11-09 | `HOP_TIMEOUT_MS`, `START_XING_PASSED` 추가 | 4000 / 0 | 교차점 놓침 시 정지, 출발 위치에서 센서가 첫 교차점을 지난 경우 대응. 현장 측정 항목에 `[현장]` 표시 |
 | 11-10 | `SOUND_ON` 추가 | 0 (무음) | 부저 끔. 상태는 보드 LED(D13)로 표시 |
 | 11-10 | `START_MODE` 추가 | 0 (버튼) | RFID 태그 출발 옵션(1=태그, 2=버튼 또는 태그). rfid_test 스케치 추가 |
+| 11-10 | `LT_MODE`, `LT_INNER_PCT`, `TURN_EXIT_MAX_MS` 추가 / `TURN_CENTER_MS` 삭제 | 0 / 30 / 300 | 강의안 방식 라인트레이싱(4가지 경우)·회전(검정→흰색)으로 변경, 코드를 Motor/Sensor/LineTrace/Turn 파일로 분리 |

@@ -6,9 +6,12 @@ jellibi_agv2/                  ← Arduino IDE '스케치북 위치'로 지정 (
 ├─ libraries/AGV2/src/
 │   ├─ config.h               ★ 보정값은 전부 여기 (IR·전방·모터비율·속도·회전·리프트·팔레트)
 │   ├─ pins.h                 핀맵 (A6/A7 바닥IR, A0 전방, D5/D6 PWM, D7/D8 방향, D9 서보, A3 버튼, D3 부저)
-│   ├─ Drive.*                drive / Forward / Backward / Stop / Brake / TurnLeft90 / TurnRight90 / UTurn
-│   │                         라인트레이스, 교차점 1회 카운트(XingDetector), 전방 장애물(ObstacleDetector)
-│   ├─ Nav.*                  격자 위치·방향 추적, 직선 구간(leg) 주행, 정렬 정지
+│   ├─ Motor.*                바퀴 모터: drive / Forward / Backward / Stop / Brake
+│   ├─ Sensor.*               센서: readIr / isBlackL·R (흑백 판정) / irFront
+│   ├─ LineTrace.*            ★ 라인트레이싱: LineTraceToCross(다음 교차점까지) / AlignOnCross(교차점 위 정지)
+│   │                         강의안 방식(좌우 IR 4가지 경우), 교차점 1회 카운트
+│   ├─ Turn.*                 ★ 회전: TurnLeft90 / TurnRight90 / UTurn (강의안 방식: 검정→흰색까지)
+│   ├─ Nav.*                  (종목②) 격자 위치·방향 추적, 직선 구간 주행
 │   ├─ Grid.*  Lift.*  Ui.*
 ├─ calib_ir/                  ① 현장 IR 측정 → config.h 줄 출력
 ├─ tune_drive/                ② 직진·회전·정렬·리프트 보정 테스트
@@ -38,7 +41,7 @@ arduino-cli: `arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --librar
    |---|---|---|
    | `s` | 앞으로 가는가 / 똑바로 가는가 | `*_FWD_LEVEL`, `MOTOR_L/R_GAIN` |
    | `L` | 정확히 한 바퀴 | `TURN90_MS` |
-   | `l` `r` `u` | 선 위에서 멈추는가 | `TURN_BLIND_PCT`, `TURN_CENTER_MS` |
+   | `l` `r` `u` | 선 위에서 멈추는가 | `TURN_BLIND_PCT`, `TURN_EXIT_MAX_MS` |
    | `f` | 바퀴축 중점이 교차점 ±30mm | `ALIGN_MS`, `BRAKE_*` |
    | `F` | 교차점을 한 번씩만 세는가(부저 틱) | `XING_SKIP_MS`, `XING_LEVEL_PCT` |
    | `q` | 사각 주행 후 제자리 | 종합 |
@@ -51,7 +54,8 @@ arduino-cli: `arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --librar
 - **교차점 카운트**: 두 바닥 센서가 동시에 검정(연속 `XING_CONFIRM_SAMPLES`회) → 1회 카운트 후, 선을 벗어나고 `XING_SKIP_MS`가 지나야 다음 카운트
 - **정차 위치**: 센서가 교차점을 본 뒤 `ALIGN_MS` 만큼 라인트레이스로 더 가서 정지 → 바퀴축 중점이 교차점 위. 정차·회전할 교차점 직전 1칸은 항상 `SPEED_APPROACH`라서 정렬 시간이 일정
 - **회전**: 제자리 피벗(바퀴축 중심) → 회전해도 정차 위치 유지. 예상시간 `TURN_BLIND_PCT`%까지는 센서 무시, 그 뒤 진행쪽 센서가 선을 만나면 정지 (막다른 끝·칸 중간 U턴도 동일)
-- **종목①**: 웨이포인트 목록 `ROUTE[]`만 정의 → 교차점별 동작(직진/좌/우/U턴/정차)은 방향 변화로 자동 결정
+- **라인트레이싱(LT_MODE 0, 강의안 방식)**: 둘 다 흰색 → 직진 / 왼쪽만 검정 → 왼쪽으로(안쪽 바퀴 `LT_INNER_PCT`%) / 오른쪽만 검정 → 오른쪽으로 / 둘 다 검정 → 교차점. `LT_MODE 1`은 비례 제어
+- **종목①**: 경로표 `ROUTE[]`에 교차점마다 동작(GO/LEFT/RIGHT/UTURN/END)과 2초 정차를 한 줄씩 적음 → 교차점마다 ①라인트레이싱 ②통과 또는 ③정지 ④정차 ⑤회전
   `H2 G2 F2(R) F3 F4 F5(L) E5 D5 C5(정차→R) C6 C7(L) B7(U) C7 D7 E7 F7(R) F6(L) G6 H6(정차, 남향)`
 - **종목②**: 파란 통로 목록 `BLUE[]` + 배송 `JOBS[]` → 매번 최단경로(Dijkstra, 칸·회전 비용)를 계산
   - 미확인 후보 통로(D2/D4/D6 열, B~F행) 칸에서만 전방 IR 감시 → 감지 시 정지·U턴·그 통로 막힘 처리·재계획 (밀지 않음)

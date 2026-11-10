@@ -23,7 +23,6 @@ struct World {
     int hops = 0, turns = 0, uturns = 0;
     std::vector<std::string> log;
     std::string fail;
-    uint8_t phase = 0;
 } W;
 
 static std::string nodeStr(uint8_t n)
@@ -41,7 +40,7 @@ void worldStart(uint8_t start, uint8_t h)
     W.cur = stepNode(start, reverseH(h)); W.tgt = start; W.hdg = h;
     W.midEdge = false; W.carrying = false; W.hops = W.turns = W.uturns = 0;
     memset(W.blocked, 0, sizeof(W.blocked));
-    W.log.clear(); W.fail.clear(); W.phase = 0;
+    W.log.clear(); W.fail.clear();
 }
 
 // ---- Drive ----
@@ -51,7 +50,7 @@ void Forward(int) {}
 void Backward(int) {}
 void Stop() {}
 void Brake() {}
-void pivotTurn(bool left, uint8_t q)
+void spinTurn(bool left, uint8_t q)
 {
     if (q == 2) {
         W.uturns++; W.log.push_back("U");
@@ -67,9 +66,9 @@ void pivotTurn(bool left, uint8_t q)
     }
     W.tgt = stepNode(W.cur, W.hdg);
 }
-void TurnLeft90()  { pivotTurn(true, 1); }
-void TurnRight90() { pivotTurn(false, 1); }
-void UTurn()       { pivotTurn(UTURN_LEFT, 2); }
+void TurnLeft90()  { spinTurn(true, 1); }
+void TurnRight90() { spinTurn(false, 1); }
+void UTurn()       { spinTurn(UTURN_LEFT, 2); }
 IrSample readIr() { return IrSample{0, 0}; }
 int irFront() { return 0; }
 bool irCalibrated() { return true; }
@@ -82,11 +81,17 @@ int lineError(const IrSample&) { return 0; }
 void lineTraceReset() {}
 void lineTraceStep(const IrSample&, int) {}
 
-void XingDetector::reset() {}
-bool XingDetector::update(const IrSample&)
+void AlignOnCross() { lineTraceReset(); }
+
+// 라인트레이싱: 다음 교차점으로 한 칸 이동. 장애물 감시 중이면 앞 칸에 장애물이 있을 때 멈춤
+bool LineTraceToCross(int, bool checkObstacle)
 {
-    if (W.phase == 0) { W.phase = 1; return false; }   // 한 번은 라인트레이스·장애물 체크 기회
-    W.phase = 0;
+    bool canSee = !(W.carrying && !FRONT_CHECK_WHILE_CARRY);   // 팔레트에 가려 못 봄
+    if (checkObstacle && canSee && W.tgt != NODE_NONE && W.blocked[W.tgt]) {
+        W.midEdge = true;
+        W.log.push_back("!obs");
+        return false;
+    }
     if (W.tgt == NODE_NONE) failNow("맵 밖으로 이탈 (from " + nodeStr(W.cur) + ")");
     if (W.blocked[W.tgt]) failNow("장애물 충돌/밀기 at " + nodeStr(W.tgt));
     if (W.cur != NODE_NONE && W.edgeAllowed && !W.edgeAllowed(W.cur, W.tgt))
@@ -94,16 +99,6 @@ bool XingDetector::update(const IrSample&)
     W.cur = W.tgt; W.tgt = stepNode(W.cur, W.hdg); W.midEdge = false;
     W.hops++; W.log.push_back(nodeStr(W.cur));
     return true;
-}
-bool ObstacleDetector::update()
-{
-    if (W.carrying && !FRONT_CHECK_WHILE_CARRY) return false;   // 팔레트에 가려 못 봄
-    if (W.tgt != NODE_NONE && W.blocked[W.tgt]) {
-        W.midEdge = true;
-        W.log.push_back("!obs");
-        return true;
-    }
-    return false;
 }
 
 // ---- Lift ----

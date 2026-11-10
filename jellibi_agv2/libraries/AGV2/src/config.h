@@ -55,10 +55,16 @@
 #define SPEED_ZONE       60     // 장애물 감시 칸(미확인 통로) 속도 — 감지 후 제동거리 확보, 밀면 시도 종료
 #define ACCEL_PER_MS      1     // 출발 가속: 1ms당 PWM 증가량 (급출발 슬립 방지)
 
-// 라인트레이스: 보정량 = err*KP/100 + (err-이전err)*KD/100,  err = -1000 ~ +1000
-#define LT_KP            8
+// 라인트레이싱 방식 (LineTrace.cpp)
+//   0 = 강의안 방식: 좌우 IR 흑/백 4가지 경우로 판단  (기본)
+//         둘 다 흰색 → 직진 / 왼쪽만 검정 → 왼쪽으로 / 오른쪽만 검정 → 오른쪽으로 / 둘 다 검정 → 교차점
+//   1 = 비례 제어: 좌우 IR 값 차이에 비례해 부드럽게 조향 (LT_KP, LT_KD, LT_CENTER_OFFSET 사용)
+#define LT_MODE          0
+#define LT_INNER_PCT    30      // [현장] (방식 0) 선 쪽으로 꺾을 때 안쪽 바퀴 속도 % (0=정지, 음수=역회전)
+                                //  선을 놓치고 밖으로 나가면 ↓, 지그재그가 심하면 ↑
+#define LT_KP            8      // (방식 1) 보정량 = err*KP/100 + (err-이전err)*KD/100, err = -1000~1000
 #define LT_KD           20
-#define LT_CENTER_OFFSET 0      // [현장] 선 중앙에 놓았을 때 err (calib_ir c → p 가 출력)
+#define LT_CENTER_OFFSET 0      // (방식 1) 선 중앙에 놓았을 때 err (calib_ir c → p 가 출력)
 
 // ---------------------------------------------------------------------
 // [5] 교차점 · 정차
@@ -78,9 +84,11 @@
 // ---------------------------------------------------------------------
 #define TURN_PWM          90
 #define TURN90_MS        420     // [현장] 90° 회전에 걸리는 대략 시간 (tune_drive 'L' 로 측정)
-#define TURN_BLIND_PCT    65     // [현장] 예상시간의 이 % 까지는 센서 무시, 그 뒤 선을 찾으면 정지
-#define TURN_SEEK_MAX_MS 500     // 선 찾기 추가 허용시간 (넘으면 그냥 정지)
-#define TURN_CENTER_MS    20     // [현장] 선 감지 후 조금 더 돌기
+// 회전 순서 (Turn.cpp, 강의안 방식):  ① 제자리 회전 시작  ② 무시 구간(TURN_BLIND_PCT)
+//   ③ 진행쪽 IR(왼회전=왼쪽)이 검정을 볼 때까지  ④ 그 IR이 다시 흰색이 될 때까지(선이 두 센서 사이로)  ⑤ 정지
+#define TURN_BLIND_PCT    65     // [현장] ② 예상시간의 이 % 까지는 센서 무시 (지나가는 다른 선을 무시)
+#define TURN_SEEK_MAX_MS 500     // ③ 선 찾기 추가 허용시간 (넘으면 그냥 정지)
+#define TURN_EXIT_MAX_MS 300     // [현장] ④ 검정→흰색 기다리는 최대 시간 (0 = ④ 생략, 검정 보자마자 정지)
 #define TURN_SETTLE_MS    60
 #define TURN_USE_SENSOR    1     // 0 = 시간만으로 회전 (TURN90_MS * 횟수)
 #define UTURN_LEFT         1     // U턴 회전 방향 1=왼쪽 0=오른쪽 (U턴 후 선을 잘 잡는 쪽)

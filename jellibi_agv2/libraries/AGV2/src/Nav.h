@@ -45,12 +45,7 @@ public:
     static bool mustStopAt(uint8_t a, uint8_t b, uint8_t c);
 
 private:
-    XingDetector _xing;
-    ObstacleDetector _obs;
-    int _spd = 0;
-
     NavResult hops(uint8_t count, bool stopAtEnd);
-    bool traceToXing(int target, bool checkObstacle);   // false = 장애물
     void alignAndStop();
 };
 
