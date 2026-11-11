@@ -9,7 +9,7 @@
 | `pins.h` | 핀 번호 | 어떤 부품이 몇 번 핀에 연결됐는지 | — | — |
 | `01_motor` | **모터** | 바퀴 2개의 속도·방향. 좌우 모터 성능 차이 보정 | `drive(왼,오)` `Forward` `Backward` `Stop` `Brake` | `LEFT/RIGHT_FWD_LEVEL` `MOTOR_L/R_GAIN` `BRAKE_*` |
 | `02_sensor` | **센서** | 바닥 IR 2개 읽기, 흑/백 판정 (기준 = (흰+검)/2), 전방 IR 값 읽기 | `readIr` `isBlackL` `isBlackR` `irFront` | `IR_L/R_WHITE/BLACK` |
-| `03_linetrace` | **라인트레이싱** | 선을 따라 달리다 교차점(양쪽 검정)에서 반환. 교차점은 1번만 셈. 교차점 위에 바퀴축을 맞춰 정지 | `LineTraceToCross(속도)` `AlignOnCross()` | `LT_MODE` `LT_INNER_PCT` `XING_*` `ALIGN_MS` `SPEED_*` |
+| `03_linetrace` | **라인트레이싱** | 선을 따라 달리다 교차점(양쪽 검정)에서 반환. 교차점은 1번만 셈. 교차점 위에 바퀴축을 맞춰 정지. 기본은 비례 제어(달리면서 계속 조금씩 조향) | `LineTraceToCross(속도)` `AlignOnCross()` | `LT_MODE` `LT_KP` `LT_KD` `LT_INNER_PCT` `XING_*` `ALIGN_MS` `SPEED_*` |
 | `04_turn` | **회전** | 교차점 위 제자리 회전: 무시 구간 → 진행쪽 IR 검정 → 흰색 → 정지 | `TurnLeft90` `TurnRight90` `UTurn` | `TURN_*` `UTURN_LEFT` |
 | `05_obstacle` | **장애물 감지** | 전방 IR이 기준값을 넘는 상태가 연속 n회면 장애물 | `ObstacleDetector` | `FRONT_OBSTACLE_TH` `FRONT_NEAR_IS_HIGH` |
 | `06_lift` | **리프트** | 서보로 천천히 올리기/내리기, 내린 뒤 서보 끄기 | `LiftUp` `LiftDown` | `LIFT_*` |

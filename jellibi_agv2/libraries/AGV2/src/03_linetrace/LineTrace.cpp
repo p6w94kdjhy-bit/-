@@ -66,11 +66,19 @@ void lineTraceStep(const IrSample& s, int speed)
     else if (!L && R) drive(speed, inner);     // 오른쪽만 검정 → 오른쪽으로 꺾기
     else              drive(speed, speed);     // 둘 다 흰색(가운데) / 둘 다 검정(교차점) → 직진
 #else
-    // 비례 제어: 선이 왼쪽(err>0)이면 왼바퀴 감속, 오른바퀴 가속
+    // 비례 제어: 달리면서 계속 조금씩 조향 (매끄러운 직진)
+    //   err = 왼쪽 IR 어두운 정도 - 오른쪽 IR 어두운 정도  (-1000 ~ +1000, + = 선이 왼쪽으로 치우침)
+    //   선이 가운데면 err ≈ 0 → 직진, 선이 한쪽 센서에 걸리기 시작하면 그 정도만큼 살짝 꺾음
+    //   보정량 = 속도 × LT_KP% × (err/1000)   → 속도가 바뀌어도 꺾는 비율이 같음
+    //   안쪽 바퀴만 줄인다 (바깥 바퀴는 speed 그대로 → 최고 속도 넘지 않음)
     int err = lineError(s);
-    long corr = (long)err * LT_KP / 100 + (long)(err - s_prevErr) * LT_KD / 100;
+    long corr = (long)err * speed / 1000 * LT_KP / 100
+              + (long)(err - s_prevErr) * speed / 1000 * LT_KD / 100;
     s_prevErr = err;
-    drive(speed - corr, speed + corr);
+    if (corr > speed)  corr = speed;            // 안쪽 바퀴 최소 0 (역회전 안 함)
+    if (corr < -speed) corr = -speed;
+    if (corr >= 0) drive(speed - corr, speed);  // 선이 왼쪽 → 왼바퀴 감속 → 왼쪽으로
+    else           drive(speed, speed + corr);  // 선이 오른쪽 → 오른바퀴 감속 → 오른쪽으로
 #endif
 }
 
