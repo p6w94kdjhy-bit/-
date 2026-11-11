@@ -11,3 +11,4 @@
 | 11-10 | `LT_MODE`, `LT_INNER_PCT`, `TURN_EXIT_MAX_MS` 추가 / `TURN_CENTER_MS` 삭제 | 0 / 30 / 300 | 강의안 방식 라인트레이싱(4가지 경우)·회전(검정→흰색)으로 변경, 코드를 Motor/Sensor/LineTrace/Turn 파일로 분리 |
 | 11-10 | `FRONT_NEAR_IS_HIGH`, `PLAN_COST_*` 추가 | 1 / 10,6,10,15 | 라이브러리를 기능별 폴더(01~12)로 분류, 팔레트·경로계획을 라이브러리로 이동, CODE_MAP.md 추가 |
 | 11-11 | `IR_R_WHITE` `IR_R_BLACK` `FRONT_OBSTACLE_TH` `FRONT_NEAR_IS_HIGH` `LT_CENTER_OFFSET` | -1→428, -1→959, -1→29, 1→0, 0→18 | 연습 측정값(10mm 선). 왼쪽(L) 값은 전달받지 못해 아직 -1 |
+| 11-11 | `FRONT_OBSTACLE_TH` `LT_CENTER_OFFSET` | 29→660, 18→-8 | 2차 연습 측정. IR 흰/검 4줄은 아직 미전달(L -1, R 1차값 유지) |
