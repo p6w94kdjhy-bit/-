@@ -6,7 +6,10 @@
 #include "sim_hw.inc"
 #define setup sketch_setup
 #define loop sketch_loop
-#include "../../course1_drive/course1_drive.ino"
+#ifndef COURSE1_INO
+#define COURSE1_INO "../../course1_drive/course1_drive.ino"
+#endif
+#include COURSE1_INO
 #undef setup
 #undef loop
 

@@ -32,3 +32,4 @@
 | 11-11 | `UTURN_AFTER_DEG` 30→45 | | r·l 5/5 정확, U턴 15° 덜 돎 |
 | 11-11 | RFID 기능 추가 (13_rfid, config [11]): `PICK_RFID_CHECK` 0, `RFID_DEST_MODE` 0 (+ WAIT/SEARCH 값), course2 `RFID_DEST[]` 표, rfid_test 개선 | | 기본은 모두 꺼짐. 대회 규정 확인 후 켬 |
 | 11-11 | `START_MODE` 0→2 / RFID 안테나 감도 최대, 2초마다 재초기화, 시작 시 리더 상태 출력 | | 카드를 대도 인식 안 됨 → 태그 출발 켬 + 인식 보강 |
+| 11-11 | course1_drive_v2 추가: `V2_LT_KP` 35, `V2_LT_KD` 15, `V2_LT_MAX_PCT` 45, `V2_LT_DEADBAND` 80 | | 원본(course1_drive)은 그대로. v2는 직진 조향을 부드럽게 |

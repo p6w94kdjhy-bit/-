@@ -26,6 +26,14 @@ bool LineTraceToCross(int speed, bool checkObstacle = false);
 // 교차점 감지 직후 호출: ALIGN_MS 동안 더 가서 바퀴축 중점을 교차점 위에 두고 정지
 void AlignOnCross();
 
+// 비례 제어(LT_MODE 1) 강도를 스케치마다 따로 정할 때 (setup 에서 1번)
+//   kp: 한쪽 IR이 선 위에 완전히 올라갔을 때 안쪽 바퀴를 줄이는 %
+//   kd: 흔들림 억제 (0 = 안 씀)
+//   maxPct: 안쪽 바퀴를 최대 몇 % 까지 줄일지 (100 = 정지까지)
+//   deadband: 이보다 작은 치우침(0~1000)은 무시
+//   호출 안 하면 config.h 의 LT_KP, LT_KD, 100, 0
+void lineTraceSetGains(int kp, int kd, int maxPct, int deadband);
+
 // --- 내부용 (회전·출발 직후 상태 초기화, 한 번의 조향) ---
 void lineTraceReset();
 void lineTraceStep(const IrSample& s, int speed);

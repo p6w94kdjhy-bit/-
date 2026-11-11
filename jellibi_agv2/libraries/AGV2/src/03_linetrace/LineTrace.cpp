@@ -8,6 +8,17 @@
 #define XING_TH_R (IR_R_WHITE + (long)(IR_R_BLACK - IR_R_WHITE) * XING_LEVEL_PCT / 100)
 
 static int s_speed = 0;          // 현재 속도 (출발 시 서서히 올림)
+
+// 비례 제어 강도 (기본 = config.h LT_KP / LT_KD, 스케치가 lineTraceSetGains 로 바꿀 수 있음)
+static int s_kp = LT_KP;
+static int s_kd = LT_KD;
+static int s_maxPct = 100;       // 안쪽 바퀴를 최대 몇 % 까지 줄이나
+static int s_dead = 0;           // 이 값보다 작은 치우침(err)은 무시 (0~1000)
+
+void lineTraceSetGains(int kp, int kd, int maxPct, int deadband)
+{
+    s_kp = kp; s_kd = kd; s_maxPct = maxPct; s_dead = deadband;
+}
 static int s_prevErr = 0;        // 방식 1 미분항
 
 // ---- 교차점 1회만 세기 ----
@@ -69,14 +80,17 @@ void lineTraceStep(const IrSample& s, int speed)
     // 비례 제어: 달리면서 계속 조금씩 조향 (매끄러운 직진)
     //   err = 왼쪽 IR 어두운 정도 - 오른쪽 IR 어두운 정도  (-1000 ~ +1000, + = 선이 왼쪽으로 치우침)
     //   선이 가운데면 err ≈ 0 → 직진, 선이 한쪽 센서에 걸리기 시작하면 그 정도만큼 살짝 꺾음
-    //   보정량 = 속도 × LT_KP% × (err/1000)   → 속도가 바뀌어도 꺾는 비율이 같음
+    //   보정량 = 속도 × KP% × (err/1000)   → 속도가 바뀌어도 꺾는 비율이 같음
+//   KP·KD·최대조향·무시구간은 기본 config.h LT_KP/LT_KD, 스케치에서 lineTraceSetGains()로 변경 가능
     //   안쪽 바퀴만 줄인다 (바깥 바퀴는 speed 그대로 → 최고 속도 넘지 않음)
     int err = lineError(s);
-    long corr = (long)err * speed / 1000 * LT_KP / 100
-              + (long)(err - s_prevErr) * speed / 1000 * LT_KD / 100;
+    if (err > -s_dead && err < s_dead) err = 0;  // 아주 작은 치우침은 무시 (불필요한 조향 방지)
+    long corr = (long)err * speed / 1000 * s_kp / 100
+              + (long)(err - s_prevErr) * speed / 1000 * s_kd / 100;
     s_prevErr = err;
-    if (corr > speed)  corr = speed;            // 안쪽 바퀴 최소 0 (역회전 안 함)
-    if (corr < -speed) corr = -speed;
+    long cmax = (long)speed * s_maxPct / 100;   // 최대 조향량 (안쪽 바퀴 최소 = speed - cmax)
+    if (corr > cmax)  corr = cmax;
+    if (corr < -cmax) corr = -cmax;
     if (corr >= 0) drive(speed - corr, speed);  // 선이 왼쪽 → 왼바퀴 감속 → 왼쪽으로
     else           drive(speed, speed + corr);  // 선이 오른쪽 → 오른바퀴 감속 → 오른쪽으로
 #endif
