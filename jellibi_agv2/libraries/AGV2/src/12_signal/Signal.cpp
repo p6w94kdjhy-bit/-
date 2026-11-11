@@ -92,8 +92,10 @@ void showConfig()
     Serial.print(F("   MOTOR_GAIN L/R = ")); Serial.print(MOTOR_L_GAIN); Serial.print('/'); Serial.println(MOTOR_R_GAIN);
     Serial.print(F("라인 LT_MODE = ")); Serial.print(LT_MODE); Serial.print(F("  LT_KP = ")); Serial.println(LT_KP);
     Serial.print(F("회전 TURN90_MS = ")); Serial.print(TURN90_MS);
-    Serial.print(F("  AFTER 좌/우/U = ")); Serial.print(TURN_AFTER_LEFT_DEG); Serial.print('/');
-    Serial.print(TURN_AFTER_RIGHT_DEG); Serial.print('/'); Serial.print(UTURN_AFTER_DEG);
-    Serial.print(F("  MIN 90/U = ")); Serial.print(TURN_MIN_DEG); Serial.print('/'); Serial.println(UTURN_MIN_DEG);
+    Serial.print(F("  AFTER 좌/우 = ")); Serial.print(TURN_AFTER_LEFT_DEG); Serial.print('/');
+    Serial.print(TURN_AFTER_RIGHT_DEG); Serial.print(F("  MIN = ")); Serial.println(TURN_MIN_DEG);
+    Serial.print(F("U턴 BACK_MS = ")); Serial.print(UTURN_BACK_MS); Serial.print(F("  BLIND = "));
+    Serial.print(UTURN_BLIND_DEG); Serial.print(F("  AFTER = ")); Serial.print(UTURN_AFTER_DEG);
+    Serial.print(F("  EXIT_MS = ")); Serial.println(UTURN_EXIT_MAX_MS);
     Serial.println(F("-----------------------------------"));
 }

@@ -25,16 +25,14 @@ static bool sensorBlack(bool leftSensor)
 
 void spinTurn(bool left, uint8_t quarters)
 {
-    bool uturn = (quarters >= 2);
     bool watchL = watchLeftSensor(left);                           // 볼 센서
 
     // config.h 의 각도(°) 값을 시간(ms)으로 환산 (TURN90_MS = 90° 도는 시간)
     unsigned long expectMs = TURN_DEG_TO_MS(90UL * quarters);                      // 목표 각도
-    unsigned long blindMs  = TURN_DEG_TO_MS(uturn ? UTURN_BLIND_DEG : TURN_BLIND_DEG);
-    unsigned long minMs    = TURN_DEG_TO_MS(uturn ? UTURN_MIN_DEG : TURN_MIN_DEG);
+    unsigned long blindMs  = TURN_DEG_TO_MS(TURN_BLIND_DEG);
+    unsigned long minMs    = TURN_DEG_TO_MS(TURN_MIN_DEG * quarters);
     // AFTER 각도: + 면 선에 닿은 뒤 더 돎, - 면 멈춘 뒤 그만큼 반대로 되돌림 (덜 돌게)
-    long afterDeg = uturn ? (long)UTURN_AFTER_DEG
-                          : (left ? (long)TURN_AFTER_LEFT_DEG : (long)TURN_AFTER_RIGHT_DEG);
+    long afterDeg = left ? (long)TURN_AFTER_LEFT_DEG : (long)TURN_AFTER_RIGHT_DEG;
     unsigned long afterMs = afterDeg > 0 ? TURN_DEG_TO_MS(afterDeg) : 0;
     unsigned long backMs  = afterDeg < 0 ? TURN_DEG_TO_MS(-afterDeg) : 0;
 
@@ -69,7 +67,7 @@ void spinTurn(bool left, uint8_t quarters)
         Serial.println(F("[turn] 선을 찾지 못하고 시간으로 정지"));
     }
 
-    // ④-2 최소 회전 보장 (TURN_MIN_DEG / UTURN_MIN_DEG): 센서가 일찍 선을 봤어도 이 각도까지는 돈다
+    // ④-2 최소 회전 보장 (TURN_MIN_DEG): 센서가 일찍 선을 봤어도 이 각도까지는 돈다
     while (millis() - tStart < minMs) uiCheckAbort();
 #else
     (void)watchL; (void)tStart; (void)blindMs; (void)minMs;
@@ -93,4 +91,3 @@ void spinTurn(bool left, uint8_t quarters)
 
 void TurnLeft90()  { spinTurn(true, 1); }
 void TurnRight90() { spinTurn(false, 1); }
-void UTurn()       { spinTurn(UTURN_LEFT, 2); }

@@ -1,5 +1,6 @@
 // ===================================================================
 //  [04 회전] 교차점 위(정지 상태)에서 제자리 회전 (강의안 6차시)
+//   90° 회전: Turn.cpp (config.h [6])   /   U턴: UTurn.cpp (config.h [6-U])
 //
 //  멈추는 기준: 로봇에 엔코더·자이로가 없어 '모터가 돈 각도'는 잴 수 없다.
 //              → 바닥 IR이 새 선에 닿는 순간을 기준으로 멈춘다 (가장 정확).
@@ -7,12 +8,12 @@
 //
 //  회전 순서:
 //    ① 제자리 회전 시작 (왼회전 = 왼바퀴 뒤로, 오른바퀴 앞으로)
-//    ② 무시 구간: TURN_BLIND_DEG (U턴은 UTURN_BLIND_DEG) 까지는 센서를 보지 않음
+//    ② 무시 구간: TURN_BLIND_DEG 까지는 센서를 보지 않음
 //    ③ 볼 센서가 흰 바닥으로 나온 뒤 → 새 검은 선에 닿음
 //       볼 센서 = TURN_STOP_SENSOR 1(반대쪽): 우회전 → 왼쪽 IR, 좌회전 → 오른쪽 IR
 //                                  0(진행쪽): 우회전 → 오른쪽 IR, 좌회전 → 왼쪽 IR
-//    ④ 닿은 뒤 TURN_AFTER_LEFT_DEG / TURN_AFTER_RIGHT_DEG / UTURN_AFTER_DEG 만큼 더 돎
-//    ④-2 최소 TURN_MIN_DEG (U턴 UTURN_MIN_DEG) 까지는 반드시 돎
+//    ④ 닿은 뒤 TURN_AFTER_LEFT_DEG / TURN_AFTER_RIGHT_DEG 만큼 더 돎 (음수면 정지 후 되돌림)
+//    ④-2 최소 TURN_MIN_DEG 까지는 반드시 돎
 //    ⑤ 정지
 //    ⑥ AFTER 각도가 음수면 그 각도만큼 반대로 되돌림
 //  TURN_USE_SENSOR 0 이면 센서 없이 TURN90_MS × 횟수 동안만 회전
@@ -26,7 +27,10 @@
 
 void TurnLeft90();       // 왼쪽 90°
 void TurnRight90();      // 오른쪽 90°
-void UTurn();            // 180° (UTURN_LEFT 방향)
+
+// U턴(180°)은 UTurn.cpp — 강의안 '180도 뒤돌아 가기' 방식 (config.h [6-U])
+void UTurn();            // 교차점 위에서: 조금 후진 → 회전 → 돌아갈 선을 찾으면 정지
+void UTurnOnEdge();      // 칸 중간에서(장애물 앞, 팔레트 하역 후): 후진 없이 회전 → 선 찾으면 정지
 
 // 공통 함수: left=true 왼쪽, quarters = 1(90°) / 2(180°)
 void spinTurn(bool left, uint8_t quarters);

@@ -66,6 +66,7 @@ void spinTurn(bool left, uint8_t q)
 void TurnLeft90()  { spinTurn(true, 1); }
 void TurnRight90() { spinTurn(false, 1); }
 void UTurn()       { spinTurn(UTURN_LEFT, 2); }
+void UTurnOnEdge() { spinTurn(UTURN_LEFT, 2); }
 IrSample readIr() { return IrSample{0, 0}; }
 int irFront() { return 0; }
 bool irCalibrated() { return true; }
@@ -114,6 +115,7 @@ void beepNode() {}
 void beepDone() {}
 void uiFatal(const __FlashStringHelper* m) { failNow(std::string("uiFatal: ") + reinterpret_cast<const char*>(m)); }
 void uiArmAbort() {}
+void showConfig() {}
 void uiCheckAbort() {}
 void waitMs(unsigned long ms)
 {

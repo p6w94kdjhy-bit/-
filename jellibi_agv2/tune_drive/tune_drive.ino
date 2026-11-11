@@ -48,7 +48,7 @@ void run(char c)
             break;
         case 'p': LiftUp(); break;
         case 'd': LiftDown(); break;
-        case 'x': Backward(EXIT_BACK_PWM); delay(EXIT_BACK_MS); Brake(); UTurn(); break;
+        case 'x': Backward(EXIT_BACK_PWM); delay(EXIT_BACK_MS); Brake(); UTurnOnEdge(); break;
         default: return;
     }
     Stop();

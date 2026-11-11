@@ -37,7 +37,7 @@ void Nav::turnTo(uint8_t h)
 void Nav::uturnOnEdge()
 {
     Brake();
-    UTurn();
+    UTurnOnEdge();
     setApproach(obsFrom, reverseH(hdg));
 }
 

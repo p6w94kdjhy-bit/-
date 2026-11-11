@@ -41,7 +41,7 @@ void DropPallet(Nav& nav)
     // U턴 → 왔던 교차점(뒤쪽)을 향해 출발 준비
     uint8_t back = reverseH(nav.hdg);
     uint8_t behind = stepNode(nav.node, back);
-    UTurn();
+    UTurnOnEdge();                                 // 후진해서 칸 중간이므로 후진 없는 U턴
     nav.setApproach(behind, back);
     Serial.println(F("[pallet] DROP"));
 }
