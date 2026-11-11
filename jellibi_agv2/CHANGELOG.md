@@ -32,4 +32,7 @@
 | 11-11 | `UTURN_AFTER_DEG` 30→45 | | r·l 5/5 정확, U턴 15° 덜 돎 |
 | 11-11 | RFID 기능 추가 (13_rfid, config [11]): `PICK_RFID_CHECK` 0, `RFID_DEST_MODE` 0 (+ WAIT/SEARCH 값), course2 `RFID_DEST[]` 표, rfid_test 개선 | | 기본은 모두 꺼짐. 대회 규정 확인 후 켬 |
 | 11-11 | `START_MODE` 0→2 / RFID 안테나 감도 최대, 2초마다 재초기화, 시작 시 리더 상태 출력 | | 카드를 대도 인식 안 됨 → 태그 출발 켬 + 인식 보강 |
+| 11-11 | 종목② 라인트레이싱: `C2_LT_SMOOTH` 1, `C2_LT_KP` 40, `C2_LT_TD_MS` 75, `C2_LT_MAX_PCT` 80, `C2_LT_SLOW_PCT` 50 (신규) | | 부드러운 PD 조향(5ms 주기, 미분 포함). course2_pallet 만 사용, 종목①은 그대로. 실물 미검증(시작값은 물리 시뮬레이션으로 정함). 되돌리기: `C2_LT_SMOOTH` 0 |
+| 11-11 | `LATE_BRAKE_PCT` 0 (신규) | | 늦은 감속: 정차 칸 앞부분을 통과 속도로. 기본 꺼짐. 완주 확인 후 40→55→70 |
+| 11-11 | 주행 기록 `RUNLOG_ON` 1 (신규, 14_runlog), `uiFatal` 오류 번호, tune_drive `c` `g` 명령 | | 주행 중 일어난 일을 EEPROM 에 저장 → USB 로 꺼내 전달. 주행 타이밍에는 영향 없음(한가할 때 1바이트씩) |
 | 11-11 | course1_drive_v2 추가: `V2_LT_KP` 35, `V2_LT_KD` 15, `V2_LT_MAX_PCT` 45, `V2_LT_DEADBAND` 80 | | 원본(course1_drive)은 그대로. v2는 직진 조향을 부드럽게 |

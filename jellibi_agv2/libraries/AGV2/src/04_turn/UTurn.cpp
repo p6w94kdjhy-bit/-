@@ -15,6 +15,7 @@
 #include "02_sensor/Sensor.h"
 #include "03_linetrace/LineTrace.h"
 #include "12_signal/Signal.h"
+#include "14_runlog/RunLog.h"
 
 static bool leadBlack(bool left)            // 진행쪽 IR이 검정인가
 {
@@ -64,6 +65,7 @@ static void uturnCore(bool backFirst)
         if (UTURN_AFTER_DEG > 0) waitMs(TURN_DEG_TO_MS(UTURN_AFTER_DEG));
     } else {
         Serial.println(F("[uturn] 선을 찾지 못하고 정지"));
+        runlogAdd(RL_TMISS);
     }
 
     // ⑥ 정지

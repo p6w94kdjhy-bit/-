@@ -33,6 +33,10 @@ public:
 
     uint8_t obsFrom = NODE_NONE, obsTo = NODE_NONE;   // 장애물을 만난 칸
 
+    // 늦은 감속용: 이번 주행에서 잰 '통과 속도로 한 칸 가는 시간'의 최솟값 (0 = 아직 못 잼)
+    uint16_t hopMs = 0;
+    int hopMsSpeed = 0;                 // 그 시간을 잰 속도 (속도가 바뀌면 다시 잼)
+
     void setApproach(uint8_t n, uint8_t h);   // n 앞에서 h 방향으로 대기/진입 중
     void setAt(uint8_t n, uint8_t h);         // n 위에 정렬·정지
 

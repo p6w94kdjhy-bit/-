@@ -9,7 +9,7 @@
 | `pins.h` | 핀 번호 | 어떤 부품이 몇 번 핀에 연결됐는지 | — | — |
 | `01_motor` | **모터** | 바퀴 2개의 속도·방향. 좌우 모터 성능 차이 보정 | `drive(왼,오)` `Forward` `Backward` `Stop` `Brake` | `LEFT/RIGHT_FWD_LEVEL` `MOTOR_L/R_GAIN` `BRAKE_*` |
 | `02_sensor` | **센서** | 바닥 IR 2개 읽기, 흑/백 판정 (기준 = (흰+검)/2), 전방 IR 값 읽기 | `readIr` `isBlackL` `isBlackR` `irFront` | `IR_L/R_WHITE/BLACK` |
-| `03_linetrace` | **라인트레이싱** | 선을 따라 달리다 교차점(양쪽 검정)에서 반환. 교차점은 1번만 셈. 교차점 위에 바퀴축을 맞춰 정지. 기본은 비례 제어(달리면서 계속 조금씩 조향) | `LineTraceToCross(속도)` `AlignOnCross()` | `LT_MODE` `LT_KP` `LT_KD` `LT_INNER_PCT` `XING_*` `ALIGN_MS` `SPEED_*` |
+| `03_linetrace` | **라인트레이싱** | 선을 따라 달리다 교차점(양쪽 검정)에서 반환. 교차점은 1번만 셈. 교차점 위에 바퀴축을 맞춰 정지. 기본은 비례 제어(달리면서 계속 조금씩 조향). 종목②는 부드러운 PD 조향(`lineTraceSmooth`) + 늦은 감속(`lineTraceBoost`) | `LineTraceToCross(속도)` `AlignOnCross()` | `LT_MODE` `LT_KP` `LT_KD` `LT_INNER_PCT` `XING_*` `ALIGN_MS` `SPEED_*` `C2_LT_*` `LATE_BRAKE_PCT` |
 | `04_turn` | **회전** | 교차점 위 제자리 회전: 무시 구간 → 반대쪽 IR이 새 선에 닿음 → 조금 더 → 정지 (값은 각도 °) | `TurnLeft90` `TurnRight90` `UTurn` | `TURN_*` `UTURN_LEFT` |
 | `05_obstacle` | **장애물 감지** | 전방 IR이 기준값을 넘는 상태가 연속 n회면 장애물 | `ObstacleDetector` | `FRONT_OBSTACLE_TH` `FRONT_NEAR_IS_HIGH` |
 | `06_lift` | **리프트** | 서보로 천천히 올리기/내리기, 내린 뒤 서보 끄기 | `LiftUp` `LiftDown` | `LIFT_*` |
@@ -19,6 +19,7 @@
 | `10_planner` | **경로 계획** | 파란 통로 위 최단 경로 계산, 막힌 통로 기억, 장애물 만나면 다른 길로 | `gotoNode` `ensureOpenLane` `plan` | `PLAN_COST_*` `FRONT_CHECK_WHILE_CARRY` |
 | `11_start` | **출발** | 버튼 또는 RFID 태그 신호를 기다렸다가 출발 | `uiWaitStart` `buttonDown` | `START_MODE` `START_DELAY_MS` `START_XING_PASSED` |
 | `12_signal` | **알림·안전** | LED·부저 상태 표시, 오류 정지, 주행 중 버튼 비상정지 | `beep` `uiFatal` `uiCheckAbort` `waitMs` | `SOUND_ON` `SOUND_CROSS` |
+| `14_runlog` | **주행 기록** | 교차점·회전·장애물·오류와 시각을 로봇 안(EEPROM)에 저장. USB 를 꽂고 시리얼 모니터를 열면 지난 주행이 출력됨 | `runlogBegin` `runlogAdd` `runlogDump` | `RUNLOG_ON` |
 | `13_rfid` | **RFID** | MFRC522 카드 읽기. 출발 태그, 팔레트 밑 카드 확인(+위치 찾기), 카드 번호로 배송지 정하기. 다 끄면 코드에서 빠짐 | `rfidRead` `rfidWait` `rfidPrint` | `START_MODE` `PICK_RFID_CHECK` `RFID_DEST_MODE` |
 
 ## 스케치 (실제로 업로드하는 프로그램)

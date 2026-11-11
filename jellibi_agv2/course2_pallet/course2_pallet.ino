@@ -96,13 +96,13 @@ uint8_t destFromCard(uint8_t fallback)
 void deliver(const Job& j)
 {
     if (!FRONT_CHECK_WHILE_CARRY) ensureOpenLane(nav);       // 빈 차로 열린 통로 먼저 확인
-    if (!gotoNode(nav, j.from)) uiFatal(F("no path to pallet"));
+    if (!gotoNode(nav, j.from)) uiFatal(F("no path to pallet"), 20);
     PickPallet(nav);                                          // 들기 (+ RFID 카드 확인)
     uint8_t to = j.to;
 #if RFID_DEST_MODE
     to = destFromCard(j.to);                                  // 카드로 배송지 결정
 #endif
-    if (!gotoNode(nav, to)) uiFatal(F("no path to drop"));
+    if (!gotoNode(nav, to)) uiFatal(F("no path to drop"), 21);
     DropPallet(nav);                                          // 내리기 + 빠져나오기
 }
 
@@ -113,6 +113,7 @@ void setup()
     driveInit();
     uiInit();
     showConfig();
+    runlogDump();                    // 지난 주행 기록 출력 (USB 를 꽂고 시리얼 모니터를 열면 여기서 나옴)
     liftInit();
     palletInit();
 
@@ -121,11 +122,17 @@ void setup()
 
     plannerBegin(BLUE, sizeof(BLUE) / sizeof(BLUE[0]), CAND, sizeof(CAND), OPEN_LANES, nav);
 
+#if C2_LT_SMOOTH
+    // 종목② 라인트레이싱: 부드러운 PD 조향 (config.h C2_LT_*).  C2_LT_SMOOTH 0 이면 종목①과 같은 방식
+    lineTraceSmooth(C2_LT_KP, C2_LT_TD_MS, C2_LT_MAX_PCT, C2_LT_SLOW_PCT);
+#endif
+
     Serial.println(F("COURSE2 ready - waiting start"));
     beepReady();
-    uiWaitStart();
+    uiWaitStart();                   // 출발 신호: 버튼 또는 RFID 카드 태그 (config.h START_MODE)
     uiArmAbort();
     unsigned long t0 = millis();
+    runlogBegin();                   // 주행 기록 시작 (이전 기록은 여기서부터 덮어씀)
 
     // 출발 위치에서 센서가 첫 교차점을 이미 지났으면 그 교차점 위에 있는 것으로 시작
     if (START_XING_PASSED) nav.setAt(START_NODE, START_HDG);
@@ -140,10 +147,12 @@ void setup()
     deliver(JOBS[first]);
     deliver(JOBS[1 - first]);
 
-    if (!gotoNode(nav, PARK_NODE)) uiFatal(F("no path to park"));
+    if (!gotoNode(nav, PARK_NODE)) uiFatal(F("no path to park"), 22);
     nav.hold(STOP_HOLD_MS);
 
     Stop();
+    runlogAdd(RL_DONE);
+    runlogFlush();
     Serial.print(F("DONE ms="));
     Serial.println(millis() - t0);
     beepDone();

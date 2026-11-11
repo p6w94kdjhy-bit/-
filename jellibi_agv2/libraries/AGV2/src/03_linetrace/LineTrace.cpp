@@ -21,6 +21,98 @@ void lineTraceSetGains(int kp, int kd, int maxPct, int deadband)
 }
 static int s_prevErr = 0;        // 방식 1 미분항
 
+// ---- 부드러운 PD 조향 (lineTraceSmooth 로 켬, 종목②) ----
+//  기존 비례 제어와 다른 점
+//   1) 5ms 마다 한 번 조향 (그 사이 읽은 값은 평균 → 센서 잡음 제거)
+//   2) 미분(D): 선이 센서 쪽으로 '다가오는 속도'만큼 미리 꺾고, 선이 가운데로 '돌아가는 중'이면 조향을 풀어
+//      반대쪽으로 넘어가는 것(좌우 흔들림)을 막는다
+//   3) 많이 치우쳤을 때만 잠깐 감속 (선 이탈 방지), 가운데면 최고 속도
+//   4) 가로선(교차점)을 지나는 순간에는 조향하지 않음
+#define SMOOTH_PERIOD_US  5000UL
+#define SMOOTH_XLINE_NORM  300   // 두 센서가 모두 이만큼(0~1000) 어두우면 가로선 위
+static bool s_smooth = false;
+static int  s_smKp = 0, s_smTdMs = 0, s_smMaxPct = 100, s_smSlowPct = 0;
+static long s_smAcc = 0;         // 주기 동안 err 합
+static uint16_t s_smN = 0;       // 합한 횟수
+static int  s_smErrF = 0;        // 걸러낸 err
+static unsigned long s_smLastUs = 0;
+static bool s_smFirst = true;
+
+static uint16_t s_maxAbsErr = 0; // 이번 칸에서 가장 크게 치우친 정도 (주행 기록용)
+
+void lineTraceSmooth(int kp, int tdMs, int maxPct, int slowPct)
+{
+    s_smooth = (kp > 0);
+    s_smKp = kp; s_smTdMs = tdMs; s_smMaxPct = maxPct; s_smSlowPct = slowPct;
+    s_smFirst = true;
+}
+
+uint16_t lineTraceTakeMaxErr()
+{
+    uint16_t m = s_maxAbsErr;
+    s_maxAbsErr = 0;
+    return m;
+}
+
+static void noteErr(int err)
+{
+    uint16_t a = (uint16_t)(err < 0 ? -err : err);
+    if (a > s_maxAbsErr) s_maxAbsErr = a;
+}
+
+static void smoothStep(const IrSample& s, int speed)
+{
+    int nl = irNormL(s.l), nr = irNormR(s.r);
+    int e = nl - nr - LT_CENTER_OFFSET;
+    if (nl > SMOOTH_XLINE_NORM && nr > SMOOTH_XLINE_NORM) e = 0;   // 가로선 위: 조향하지 않음
+    s_smAcc += e;
+    s_smN++;
+
+    unsigned long nowUs = micros();
+    unsigned long dt = nowUs - s_smLastUs;
+    if (!s_smFirst && dt < SMOOTH_PERIOD_US) return;        // 다음 조향 시각까지 값만 모음
+
+    int avg = (int)(s_smAcc / s_smN);
+    s_smAcc = 0;
+    s_smN = 0;
+    s_smLastUs = nowUs;
+
+    long d = 0;                                             // 미분항 (err 단위로 환산)
+    if (s_smFirst || dt > 25000UL) {
+        s_smErrF = avg;                                     // 처음·오래 쉰 뒤: 미분 없이 시작
+        s_smFirst = false;
+    } else {
+        int prev = s_smErrF;
+        s_smErrF = prev + (avg - prev) / 2;                 // 저역 필터
+        d = (long)(s_smErrF - prev) * s_smTdMs * 1000L / (long)dt;
+    }
+    noteErr(s_smErrF);
+
+    long u = (long)s_smErrF + d;                            // P + D  (-1000 ~ +1000 이 한쪽 센서 완전 검정)
+    long pct = u * s_smKp / 1000;                           // 안쪽 바퀴를 줄일 %
+    if (pct > s_smMaxPct)  pct = s_smMaxPct;
+    if (pct < -s_smMaxPct) pct = -s_smMaxPct;
+
+    int spd = speed;                                        // 많이 치우치면 감속 (SPEED_APPROACH 아래로는 안 내림)
+    if (s_smSlowPct > 0 && speed > SPEED_APPROACH) {
+        long a = s_smErrF < 0 ? -(long)s_smErrF : (long)s_smErrF;
+        if (a > 1000) a = 1000;
+        spd = speed - (int)((long)(speed - SPEED_APPROACH) * a / 1000 * s_smSlowPct / 100);
+    }
+    int corr = (int)((long)spd * pct / 100);
+    if (corr >= 0) drive(spd - corr, spd);                  // 선이 왼쪽 → 왼바퀴 감속 → 왼쪽으로
+    else           drive(spd, spd + corr);                  // 선이 오른쪽 → 오른바퀴 감속 → 오른쪽으로
+}
+
+// ---- 늦은 감속 (lineTraceBoost): 다음 LineTraceToCross 한 번만, 처음 ms 동안 fastSpeed 로 달린다 ----
+static int s_boostSpeed = 0;
+static unsigned long s_boostMs = 0;
+void lineTraceBoost(int fastSpeed, unsigned long ms)
+{
+    s_boostSpeed = fastSpeed;
+    s_boostMs = ms;
+}
+
 // ---- 교차점 1회만 세기 ----
 //  양쪽 검정이 연속 XING_CONFIRM_SAMPLES 회 → 1번 셈
 //  그 뒤 '양쪽 흰색'이 연속 XING_CLEAR_SAMPLES 회 나오고(선을 완전히 벗어남)
@@ -63,11 +155,16 @@ void lineTraceReset()
     s_clearCnt = 0;
     s_crossArmed = true;
     s_crossLast = millis() - XING_SKIP_MS;
+    s_smAcc = 0;
+    s_smN = 0;
+    s_smErrF = 0;
+    s_smFirst = true;
 }
 
 // ---- 한 번의 조향 ----
 void lineTraceStep(const IrSample& s, int speed)
 {
+    if (s_smooth) { smoothStep(s, speed); return; }      // 부드러운 PD 조향 (lineTraceSmooth 로 켠 경우만)
 #if LT_MODE == 0
     // 강의안 방식: 4가지 경우
     bool L = isBlackL(s.l);
@@ -84,6 +181,7 @@ void lineTraceStep(const IrSample& s, int speed)
 //   KP·KD·최대조향·무시구간은 기본 config.h LT_KP/LT_KD, 스케치에서 lineTraceSetGains()로 변경 가능
     //   안쪽 바퀴만 줄인다 (바깥 바퀴는 speed 그대로 → 최고 속도 넘지 않음)
     int err = lineError(s);
+    noteErr(err);
     if (err > -s_dead && err < s_dead) err = 0;  // 아주 작은 치우침은 무시 (불필요한 조향 방지)
     long corr = (long)err * speed / 1000 * s_kp / 100
               + (long)(err - s_prevErr) * speed / 1000 * s_kd / 100;
@@ -102,14 +200,20 @@ bool LineTraceToCross(int speed, bool checkObstacle)
     ObstacleDetector obs;
     unsigned long startMs = millis();
     unsigned long lastMs = startMs;
+    const int slowSpeed = speed;                          // 늦은 감속: 처음 boostMs 동안만 boostSpeed
+    const int boostSpeed = s_boostSpeed;
+    const unsigned long boostMs = s_boostMs;
+    s_boostSpeed = 0;
+    s_boostMs = 0;                                        // 한 번만 적용
     for (;;) {
         IrSample s = readIr();
         if (crossDetected(s)) return true;               // 교차점 도착
 
         unsigned long now = millis();
 #if HOP_TIMEOUT_MS > 0
-        if (now - startMs > HOP_TIMEOUT_MS) uiFatal(F("교차점을 찾지 못함 (HOP_TIMEOUT_MS)"));
+        if (now - startMs > HOP_TIMEOUT_MS) uiFatal(F("교차점을 찾지 못함 (HOP_TIMEOUT_MS)"), 1);
 #endif
+        speed = (boostMs && now - startMs < boostMs && boostSpeed > slowSpeed) ? boostSpeed : slowSpeed;
         if (s_speed < speed) {                            // 출발 가속 (바퀴 미끄러짐 방지)
             s_speed += (int)(now - lastMs) * ACCEL_PER_MS;
             if (s_speed > speed) s_speed = speed;

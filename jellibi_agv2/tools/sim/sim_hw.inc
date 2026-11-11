@@ -80,6 +80,14 @@ int irNormR(int) { return 0; }
 int lineError(const IrSample&) { return 0; }
 void lineTraceReset() {}
 void lineTraceSetGains(int, int, int, int) {}
+void lineTraceSmooth(int, int, int, int) {}
+void lineTraceBoost(int, unsigned long) {}
+uint16_t lineTraceTakeMaxErr() { return 0; }
+void runlogBegin() {}
+void runlogAdd(uint8_t, uint8_t, uint8_t) {}
+void runlogPump() {}
+void runlogFlush() {}
+void runlogDump() {}
 void lineTraceStep(const IrSample&, int) {}
 
 void AlignOnCross() { lineTraceReset(); }
@@ -116,7 +124,7 @@ void beep(unsigned int, unsigned int) {}
 void beepReady() {}
 void beepNode() {}
 void beepDone() {}
-void uiFatal(const __FlashStringHelper* m) { failNow(std::string("uiFatal: ") + reinterpret_cast<const char*>(m)); }
+void uiFatal(const __FlashStringHelper* m, uint8_t) { failNow(std::string("uiFatal: ") + reinterpret_cast<const char*>(m)); }
 void uiArmAbort() {}
 void showConfig() {}
 void uiCheckAbort() {}
