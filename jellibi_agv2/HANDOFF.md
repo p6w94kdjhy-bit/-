@@ -30,7 +30,7 @@ Claude가 수정 → 컴파일(`./tools/build_check.sh`) + 시뮬레이션(`./to
   01_motor · 02_sensor · 03_linetrace · 04_turn · 05_obstacle · 06_lift · 07_logistics(팔레트) · 08_map ·
   09_nav · 10_planner(Dijkstra 경로계획) · 11_start(버튼/RFID) · 12_signal(LED·부저·비상정지)
 - 라인트레이싱: LT_MODE 0 = 강의안 4가지 경우(둘 다 흰→직진, 한쪽 검정→그쪽으로, 둘 다 검정→교차점). 1 = 비례제어
-- 회전: 제자리 피벗 → 무시구간(TURN_BLIND_PCT) → 진행쪽 IR 검정 → 흰색 → 정지
+- 회전: 제자리 피벗 → 무시구간(TURN_BLIND_DEG) → 반대쪽 IR이 새 선에 닿음 → TURN_AFTER_*_DEG 더 돎 → 정지 (값은 각도 °)
 - 스케치: `course1_drive`(경로표 GO/LEFT/RIGHT/UTURN/END), `course2_pallet`(맵·임무·순서만), `calib_ir`, `tune_drive`, `rfid_test`, `hello_test`
 - 소리: SOUND_ON 0(무음, 상태는 D13 LED). 출발: START_MODE 0(버튼), 1(RFID), 2(둘 다)
 - 시뮬레이션: 종목① 경로 일치(START_XING_PASSED 0/1), 종목② 차단 3가지 × FRONT_CHECK_WHILE_CARRY 0/1 모두 성공(추정 68~80초)

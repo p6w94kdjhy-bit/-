@@ -32,11 +32,11 @@ void beep(unsigned int freq, unsigned int ms)
 
 void beepReady() { beep(523, 120); beep(659, 120); beep(784, 160); }
 
-// 교차점 카운트 표시 (비차단): 소리 '틱' + LED 토글
+// 교차점 인식 표시 (비차단): '삑'(SOUND_CROSS) + LED 토글
 void beepNode()
 {
-#if SOUND_ON
-    tone(PIN_BUZZER, 1568, 15);
+#if SOUND_ON || SOUND_CROSS
+    tone(PIN_BUZZER, CROSS_BEEP_HZ, CROSS_BEEP_MS);    // 비차단: 소리 나는 동안에도 계속 주행
 #endif
     digitalWrite(PIN_LED, !digitalRead(PIN_LED));
 }

@@ -38,7 +38,7 @@ arduino-cli: `arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --librar
    |---|---|---|
    | `s` | 앞으로 가는가 / 똑바로 가는가 | `*_FWD_LEVEL`, `MOTOR_L/R_GAIN` |
    | `L` | 정확히 한 바퀴 | `TURN90_MS` |
-   | `l` `r` `u` | 선 위에서 멈추는가 | `TURN_BLIND_PCT`, `TURN_EXIT_MAX_MS` |
+   | `l` `r` `u` | 선 위에서 멈추는가 | `TURN_AFTER_LEFT_DEG` / `TURN_AFTER_RIGHT_DEG` / `UTURN_AFTER_DEG` |
    | `f` | 바퀴축 중점이 교차점 ±30mm | `ALIGN_MS`, `BRAKE_*` |
    | `F` | 교차점을 한 번씩만 세는가(부저 틱) | `XING_SKIP_MS`, `XING_LEVEL_PCT` |
    | `q` | 사각 주행 후 제자리 | 종합 |
@@ -50,7 +50,7 @@ arduino-cli: `arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --librar
 ## 동작 원리
 - **교차점 카운트**: 두 바닥 센서가 동시에 검정(연속 `XING_CONFIRM_SAMPLES`회) → 1회 카운트 후, 선을 벗어나고 `XING_SKIP_MS`가 지나야 다음 카운트
 - **정차 위치**: 센서가 교차점을 본 뒤 `ALIGN_MS` 만큼 라인트레이스로 더 가서 정지 → 바퀴축 중점이 교차점 위. 정차·회전할 교차점 직전 1칸은 항상 `SPEED_APPROACH`라서 정렬 시간이 일정
-- **회전**: 제자리 피벗(바퀴축 중심) → 회전해도 정차 위치 유지. 예상시간 `TURN_BLIND_PCT`%까지는 센서 무시, 그 뒤 진행쪽 센서가 선을 만나면 정지 (막다른 끝·칸 중간 U턴도 동일)
+- **회전**: 제자리 피벗(바퀴축 중심) → 회전해도 정차 위치 유지. 엔코더가 없어 각도를 직접 잴 수 없으므로 바닥 IR이 새 선에 닿는 순간 정지. `TURN_BLIND_DEG`까지 센서 무시 → 반대쪽 IR이 새 선에 닿음 → `TURN_AFTER_*_DEG` 더 돎 → 최소 `TURN_MIN_DEG` 보장. config.h 회전 값은 모두 각도(°), `TURN90_MS`로 시간 환산
 - **라인트레이싱**: `LT_MODE 1`(기본, 비례 제어) = 달리면서 좌우 IR 차이만큼 계속 조금씩 조향 → 매끄러운 직진 (`LT_KP`). `LT_MODE 0` = 강의안 방식(둘 다 흰색 → 직진 / 한쪽 검정 → 그쪽으로 꺾기, `LT_INNER_PCT`). 둘 다 검정 = 교차점
 - **종목①**: 경로표 `ROUTE[]`에 교차점마다 동작(GO/LEFT/RIGHT/UTURN/END)과 2초 정차를 한 줄씩 적음 → 교차점마다 ①라인트레이싱 ②통과 또는 ③정지 ④정차 ⑤회전
   `H2 G2 F2(R) F3 F4 F5(L) E5 D5 C5(정차→R) C6 C7(L) B7(U) C7 D7 E7 F7(R) F6(L) G6 H6(정차, 남향)`
