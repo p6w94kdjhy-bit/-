@@ -37,7 +37,7 @@ void run(char c)
         case 'l': TurnLeft90(); break;
         case 'r': TurnRight90(); break;
         case 'u': UTurn(); break;
-        case 'L': drive(-TURN_PWM, TURN_PWM); delay(4UL * TURN90_MS); Brake(); break;
+        case 'L': spinDrive(-TURN_PWM, TURN_PWM); delay(4UL * TURN90_MS); Brake(); break;
         case 'q':
             if (!needIr()) break;
             nav.setAt(P('D', 4), HN);

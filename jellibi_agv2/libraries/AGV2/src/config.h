@@ -55,7 +55,7 @@
 // [4] 속도 (PWM 0~255)  — 초기값. 회전·정차 안정화 후 CRUISE부터 올린다.
 // ---------------------------------------------------------------------
 #define SPEED_CRUISE    168     // [현장] 11-11: 90→120(완주 확인)→168(×1.4). 교차점 통과 구간 (안정화 후 올림)
-#define SPEED_APPROACH   98     // [현장] 정차/회전할 교차점 직전 1칸 (ALIGN_MS는 이 속도 기준). 11-11: 60→70(완주 확인)→98(×1.4)
+#define SPEED_APPROACH   70     // [현장] 정차/회전할 교차점 직전 1칸 (ALIGN_MS는 이 속도 기준). 11-11: 60→70→98→70 (정차 위치 안정)
 #define SPEED_CARRY      98     // 팔레트 운반 중 최고속 (SPEED_APPROACH 이상으로 둘 것)
 #define SPEED_ZONE       60     // 장애물 감시 칸(미확인 통로) 속도 — 감지 후 제동거리 확보, 밀면 시도 종료
 #define ACCEL_PER_MS      1     // 출발 가속: 1ms당 PWM 증가량 (급출발 슬립 방지)
@@ -77,7 +77,7 @@
 #define XING_CONFIRM_SAMPLES 2   // 양쪽 검정이 연속 n회일 때 교차점
 #define XING_SKIP_MS       150   // [현장] 카운트 직후 이 시간 동안 재카운트 금지 (1회만 카운트)
 #define XING_CLEAR_SAMPLES  8    // [현장] 선을 완전히 벗어났다고 볼 '양쪽 흰색' 연속 횟수 (교차점 두 번 세기 방지)
-#define ALIGN_MS            93   // [현장] 11-11: 150→130(완주 확인, 속도 70)→93(속도 98: 130×70/98). 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
+#define ALIGN_MS           130   // [현장] 11-11: SPEED_APPROACH 70 으로 되돌려 130 (속도 70에서 완주 확인한 값). 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
                                  // (센서→바퀴축 거리 / SPEED_APPROACH 속도). tune_drive 'f'로 맞춤
 #define BRAKE_PWM           80   // 정지 시 역방향 펄스 세기 (0 = 브레이크 안 씀)
 #define BRAKE_MS            25
@@ -124,6 +124,8 @@
                                  //  tune_drive 'L'(90°×4)이 정확히 한 바퀴가 되게 맞춤. 11-11: 420×4가 약 330° → 460
 #define TURN_DEG_TO_MS(deg) ((unsigned long)(deg) * TURN90_MS / 90)   // 각도 → 시간 (수정하지 않음)
 #define TURN_PWM          90     // 회전 속도. 바꾸면 TURN90_MS 다시 측정해야 함
+#define TURN_USE_MOTOR_GAIN 0    // 0 = 제자리 회전 때 MOTOR_x_GAIN(직진용 좌우 보정)을 쓰지 않음 → 좌우 대칭 회전
+                                 //  11-11: 좌회전만 과하게 도는 문제로 0. 1 = 예전처럼 보정 적용
 #define TURN_BLIND_DEG    36     // [현장] ② 90° 회전: 이 각도까지는 센서 무시
 #define TURN_SEEK_MAX_MS 500     // ③ 목표 각도를 지나서도 선을 못 찾을 때 더 찾아보는 시간 (넘으면 그냥 정지)
 #define TURN_EXIT_MAX_MS   0     // ④ 검정→흰색 기다리는 최대 시간 (0 = 사용 안 함. 11-11: 300이면 왼회전 120°까지 넘어감)

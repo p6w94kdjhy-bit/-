@@ -34,6 +34,22 @@ void drive(int left, int right)
     analogWrite(PIN_R_PWM, abs(r));
 }
 
+// 제자리 회전: 직진용 좌우 보정(MOTOR_x_GAIN)을 빼고 양쪽 같은 힘으로 → 회전 중심이 바퀴축 가운데
+void spinDrive(int left, int right)
+{
+#if TURN_USE_MOTOR_GAIN
+    drive(left, right);
+#else
+    s_lastL = left;
+    s_lastR = right;
+    int l = clampPwm(left), r = clampPwm(right);
+    digitalWrite(PIN_L_DIR, l >= 0 ? LEFT_FWD_LEVEL : !LEFT_FWD_LEVEL);
+    digitalWrite(PIN_R_DIR, r >= 0 ? RIGHT_FWD_LEVEL : !RIGHT_FWD_LEVEL);
+    analogWrite(PIN_L_PWM, abs(l));
+    analogWrite(PIN_R_PWM, abs(r));
+#endif
+}
+
 void Forward(int speed)  { drive(speed, speed); }
 void Backward(int speed) { drive(-speed, -speed); }
 

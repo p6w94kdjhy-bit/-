@@ -46,6 +46,7 @@ void drive(int, int) {}
 void Forward(int) {}
 void Backward(int) {}
 void Stop() {}
+void spinDrive(int, int) {}
 void Brake() {}
 void spinTurn(bool left, uint8_t q)
 {

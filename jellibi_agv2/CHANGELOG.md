@@ -27,3 +27,4 @@
 | 11-11 | U턴 새로 작성 (04_turn/UTurn.cpp, config [6-U]): `UTURN_BACK_MS` 150, `UTURN_BACK_PWM` 70, `UTURN_BLIND_DEG` 90, `UTURN_AFTER_DEG` 0, `UTURN_EXIT_MAX_MS` 300, `UTURN_SEEK_EXTRA_DEG` 40 / `UTURN_MIN_DEG` 삭제 | 이전 현장값 AFTER -30, MIN 105, BLIND 100 은 방식이 달라 초기화 | 강의안 180도 방식: 후진 → 회전 → 진행쪽 IR 검정 → 흰색 → 정지 |
 | 11-11 | 직전 U턴 후진 변경(a4c8d71) 되돌림 / `TURN_AFTER_LEFT_DEG` 30→45, `TURN_AFTER_RIGHT_DEG` 30→45, `UTURN_AFTER_DEG` 0→30 | | 사용자 요청: 좌·우 15° 더, U턴 30° 더 (9613b62 기준) |
 | 11-11 | course1 경로표에 교차점별 `adjDeg` 칸 추가, F6 = -30 | | F6 좌회전만 약 30° 더 돎. 다른 회전 값은 그대로 |
+| 11-11 | `SPEED_APPROACH` 98→70, `ALIGN_MS` 93→130, `TURN_USE_MOTOR_GAIN` 0(신규) | | 좌회전만 과함 → 회전 때 좌우 보정 빼서 대칭, 정차 직전 속도 낮춰 정차 위치 안정 |

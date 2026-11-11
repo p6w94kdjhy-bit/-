@@ -9,6 +9,7 @@
 
 void driveInit();                     // 핀 설정 (setup에서 1번)
 void drive(int left, int right);      // 왼쪽/오른쪽 바퀴 속도 -255 ~ +255 (+ = 전진). MOTOR_x_GAIN 적용
+void spinDrive(int left, int right);  // 제자리 회전용: TURN_USE_MOTOR_GAIN 0 이면 좌우 보정 없이 같은 힘
 void Forward(int speed);              // 전진
 void Backward(int speed);             // 후진
 void Stop();                          // 정지 (바퀴 힘 끔)

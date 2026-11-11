@@ -37,8 +37,8 @@ void spinTurn(bool left, uint8_t quarters)
     unsigned long backMs  = afterDeg < 0 ? TURN_DEG_TO_MS(-afterDeg) : 0;
 
     // ① 제자리 회전 시작
-    if (left) drive(-TURN_PWM, TURN_PWM);
-    else      drive(TURN_PWM, -TURN_PWM);
+    if (left) spinDrive(-TURN_PWM, TURN_PWM);
+    else      spinDrive(TURN_PWM, -TURN_PWM);
     unsigned long tStart = millis();
 
 #if TURN_USE_SENSOR
@@ -80,8 +80,8 @@ void spinTurn(bool left, uint8_t quarters)
     // ⑥ AFTER 각도가 음수면: 그 각도만큼 반대 방향으로 되돌림
     if (backMs > 0) {
         delay(TURN_SETTLE_MS);
-        if (left) drive(TURN_PWM, -TURN_PWM);
-        else      drive(-TURN_PWM, TURN_PWM);
+        if (left) spinDrive(TURN_PWM, -TURN_PWM);
+        else      spinDrive(-TURN_PWM, TURN_PWM);
         waitMs(backMs);
         Brake();
     }
@@ -93,8 +93,8 @@ void TurnAdjust(bool turnLeft, int deg)
 {
     if (deg == 0) return;
     bool spinLeft = (deg > 0) ? turnLeft : !turnLeft;
-    if (spinLeft) drive(-TURN_PWM, TURN_PWM);
-    else          drive(TURN_PWM, -TURN_PWM);
+    if (spinLeft) spinDrive(-TURN_PWM, TURN_PWM);
+    else          spinDrive(TURN_PWM, -TURN_PWM);
     waitMs(TURN_DEG_TO_MS(deg > 0 ? deg : -deg));
     Brake();
     delay(TURN_SETTLE_MS);

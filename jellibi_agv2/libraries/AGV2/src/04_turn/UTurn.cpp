@@ -24,8 +24,8 @@ static bool leadBlack(bool left)            // 진행쪽 IR이 검정인가
 
 static void spin(bool left, int pwm)
 {
-    if (left) drive(-pwm, pwm);
-    else      drive(pwm, -pwm);
+    if (left) spinDrive(-pwm, pwm);
+    else      spinDrive(pwm, -pwm);
 }
 
 static void uturnCore(bool backFirst)
