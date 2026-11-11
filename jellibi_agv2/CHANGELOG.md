@@ -22,3 +22,4 @@
 | 11-11 | `TURN_AFTER_MS` → `TURN_AFTER_LEFT_MS` 40 / `TURN_AFTER_RIGHT_MS` 40 / `UTURN_AFTER_MS` 40 | | 좌·우·U턴 각도를 따로 조정할 수 있게 분리. config.h [6]에 조정 안내표 추가 |
 | 11-11 | 회전 값을 각도(°) 단위로 변경: `TURN_AFTER_LEFT_DEG` 8, `TURN_AFTER_RIGHT_DEG` 8, `UTURN_AFTER_DEG` 8, `TURN_MIN_DEG` 77, `UTURN_MIN_DEG` 153, `TURN_BLIND_DEG` 36, `UTURN_BLIND_DEG` 126 / `SOUND_CROSS` 1(신규) | | 동작은 이전과 같음(40ms=8°, 85%=77°, 40%=36°). 교차점 인식 시 삑 소리 추가 |
 | 11-11 | `UTURN_AFTER_DEG` 8→0, `UTURN_MIN_DEG` 153→143 | | U턴 약 10° 더 돎 |
+| 11-11 | (코드) AFTER 각도 음수 지원 | | 음수 = 멈춘 뒤 그 각도만큼 반대로 되돌림. 이전에는 음수를 넣으면 회전이 멈추지 않았음 |

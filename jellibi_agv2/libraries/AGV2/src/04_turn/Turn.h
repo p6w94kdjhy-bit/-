@@ -14,6 +14,7 @@
 //    ④ 닿은 뒤 TURN_AFTER_LEFT_DEG / TURN_AFTER_RIGHT_DEG / UTURN_AFTER_DEG 만큼 더 돎
 //    ④-2 최소 TURN_MIN_DEG (U턴 UTURN_MIN_DEG) 까지는 반드시 돎
 //    ⑤ 정지
+//    ⑥ AFTER 각도가 음수면 그 각도만큼 반대로 되돌림
 //  TURN_USE_SENSOR 0 이면 센서 없이 TURN90_MS × 횟수 동안만 회전
 //
 //  제자리 회전이라 바퀴축 중점(정차 기준점)이 교차점 위에 그대로 남는다.

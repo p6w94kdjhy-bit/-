@@ -32,8 +32,11 @@ void spinTurn(bool left, uint8_t quarters)
     unsigned long expectMs = TURN_DEG_TO_MS(90UL * quarters);                      // 목표 각도
     unsigned long blindMs  = TURN_DEG_TO_MS(uturn ? UTURN_BLIND_DEG : TURN_BLIND_DEG);
     unsigned long minMs    = TURN_DEG_TO_MS(uturn ? UTURN_MIN_DEG : TURN_MIN_DEG);
-    unsigned long afterMs  = TURN_DEG_TO_MS(uturn ? UTURN_AFTER_DEG
-                                            : (left ? TURN_AFTER_LEFT_DEG : TURN_AFTER_RIGHT_DEG));
+    // AFTER 각도: + 면 선에 닿은 뒤 더 돎, - 면 멈춘 뒤 그만큼 반대로 되돌림 (덜 돌게)
+    long afterDeg = uturn ? (long)UTURN_AFTER_DEG
+                          : (left ? (long)TURN_AFTER_LEFT_DEG : (long)TURN_AFTER_RIGHT_DEG);
+    unsigned long afterMs = afterDeg > 0 ? TURN_DEG_TO_MS(afterDeg) : 0;
+    unsigned long backMs  = afterDeg < 0 ? TURN_DEG_TO_MS(-afterDeg) : 0;
 
     // ① 제자리 회전 시작
     if (left) drive(-TURN_PWM, TURN_PWM);
@@ -59,7 +62,7 @@ void spinTurn(bool left, uint8_t quarters)
 
     // ④ 선에 닿은 뒤 조금 더 돌기 (TURN_AFTER_LEFT_DEG / TURN_AFTER_RIGHT_DEG / UTURN_AFTER_DEG)
     if (found) {
-        waitMs(afterMs);
+        waitMs(afterMs);                // 음수면 0 (⑥에서 되돌림)
         unsigned long t1 = millis();
         while (millis() - t1 < TURN_EXIT_MAX_MS && sensorBlack(watchL)) uiCheckAbort();
     } else {
@@ -69,12 +72,21 @@ void spinTurn(bool left, uint8_t quarters)
     // ④-2 최소 회전 보장 (TURN_MIN_DEG / UTURN_MIN_DEG): 센서가 일찍 선을 봤어도 이 각도까지는 돈다
     while (millis() - tStart < minMs) uiCheckAbort();
 #else
-    (void)watchL; (void)tStart; (void)blindMs; (void)minMs; (void)afterMs;
-    waitMs(expectMs);                   // 센서 없이 시간으로만 회전
+    (void)watchL; (void)tStart; (void)blindMs; (void)minMs;
+    waitMs(expectMs + afterMs);         // 센서 없이 시간으로만 회전
 #endif
 
     // ⑤ 정지
     Brake();
+
+    // ⑥ AFTER 각도가 음수면: 그 각도만큼 반대 방향으로 되돌림
+    if (backMs > 0) {
+        delay(TURN_SETTLE_MS);
+        if (left) drive(TURN_PWM, -TURN_PWM);
+        else      drive(-TURN_PWM, TURN_PWM);
+        waitMs(backMs);
+        Brake();
+    }
     delay(TURN_SETTLE_MS);
     lineTraceReset();
 }
