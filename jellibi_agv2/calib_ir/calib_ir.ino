@@ -81,7 +81,7 @@ void setup()
     uiInit();
     Stop();
     Serial.println(F("calib_ir: w b c f p m"));
-}
+}   
 
 void loop()
 {
