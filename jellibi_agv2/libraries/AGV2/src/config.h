@@ -162,7 +162,7 @@
 #define UTURN_BACK_MS      150   // [현장] ★ ① 회전 전 후진 시간 (ms). 0 = 후진 안 함
 #define UTURN_BACK_PWM      70   // ① 후진 속도
 #define UTURN_BLIND_DEG     90   // [현장] ③ 이 각도까지 센서 무시
-#define UTURN_AFTER_DEG     30   // [현장] ★ ⑥ 선을 찾은 뒤 더 도는 각도 (°). 음수 = 정지 후 그만큼 되돌림. 11-11: 0→30
+#define UTURN_AFTER_DEG     45   // [현장] ★ ⑥ 선을 찾은 뒤 더 도는 각도 (°). 음수 = 정지 후 그만큼 되돌림. 11-11: 0→30→45 (대칭 회전 후 15° 덜 돎)
 #define UTURN_EXIT_MAX_MS  300   // ⑤ 검정 → 흰색을 기다리는 최대 시간 (0 = ⑤ 생략, 검정 보자마자 정지)
 #define UTURN_SEEK_EXTRA_DEG 40  // 선을 못 찾을 때 180° 보다 더 돌아볼 각도 (안전장치)
 
