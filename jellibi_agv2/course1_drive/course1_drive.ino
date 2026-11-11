@@ -52,7 +52,7 @@ const Step ROUTE[] = {
     { "D7",  GO,     false,     0 },
     { "E7",  GO,     false,     0 },
     { "F7",  RIGHT,  false,     0 },   // 남 → 서
-    { "F6",  LEFT,   false,   -30 },   // 서 → 남   ★ 11-11: F6 좌회전만 약 30° 더 돎 → -30
+    { "F6",  LEFT,   false,     0 },   // 서 → 남   (11-11: -30 → 0, 회전 대칭 후 좌회전 정확)
     { "G6",  GO,     false,     0 },
     { "H6",  END,    true ,     0 },   // 남쪽으로 도착 → 2초 정차 (최종)
 };
