@@ -80,3 +80,20 @@ void waitMs(unsigned long ms)
     unsigned long t0 = millis();
     while (millis() - t0 < ms) uiCheckAbort();
 }
+
+// 업로드된 프로그램 안의 config.h 값 (노트북에서 고친 값이 들어갔는지 확인)
+void showConfig()
+{
+    Serial.println(F("----- config.h (로봇 안의 값) -----"));
+    Serial.print(F("IR  L 흰/검 = ")); Serial.print(IR_L_WHITE); Serial.print('/'); Serial.print(IR_L_BLACK);
+    Serial.print(F("   R 흰/검 = ")); Serial.print(IR_R_WHITE); Serial.print('/'); Serial.println(IR_R_BLACK);
+    Serial.print(F("속도 CRUISE/APPROACH = ")); Serial.print(SPEED_CRUISE); Serial.print('/'); Serial.print(SPEED_APPROACH);
+    Serial.print(F("   ALIGN_MS = ")); Serial.print(ALIGN_MS);
+    Serial.print(F("   MOTOR_GAIN L/R = ")); Serial.print(MOTOR_L_GAIN); Serial.print('/'); Serial.println(MOTOR_R_GAIN);
+    Serial.print(F("라인 LT_MODE = ")); Serial.print(LT_MODE); Serial.print(F("  LT_KP = ")); Serial.println(LT_KP);
+    Serial.print(F("회전 TURN90_MS = ")); Serial.print(TURN90_MS);
+    Serial.print(F("  AFTER 좌/우/U = ")); Serial.print(TURN_AFTER_LEFT_DEG); Serial.print('/');
+    Serial.print(TURN_AFTER_RIGHT_DEG); Serial.print('/'); Serial.print(UTURN_AFTER_DEG);
+    Serial.print(F("  MIN 90/U = ")); Serial.print(TURN_MIN_DEG); Serial.print('/'); Serial.println(UTURN_MIN_DEG);
+    Serial.println(F("-----------------------------------"));
+}

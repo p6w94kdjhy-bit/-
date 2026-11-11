@@ -61,6 +61,7 @@ void setup()
     Serial.begin(115200);
     driveInit();
     uiInit();
+    showConfig();
     liftInit();
     Serial.println(F("tune_drive: s f F l r u L q p d x  (버튼=반복)"));
 }

@@ -67,6 +67,7 @@ void setup()
     Serial.begin(115200);
     driveInit();
     uiInit();
+    showConfig();
     liftInit();
 
     if (!irCalibrated()) uiFatal(F("config.h IR 현장값 미입력"));
