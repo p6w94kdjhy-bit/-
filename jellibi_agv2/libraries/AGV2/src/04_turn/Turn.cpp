@@ -32,6 +32,7 @@ void spinTurn(bool left, uint8_t quarters)
     // ① 제자리 회전 시작
     if (left) drive(-TURN_PWM, TURN_PWM);
     else      drive(TURN_PWM, -TURN_PWM);
+    unsigned long tStart = millis();
 
 #if TURN_USE_SENSOR
     // ② 무시 구간
@@ -50,15 +51,20 @@ void spinTurn(bool left, uint8_t quarters)
         uiCheckAbort();
     }
 
-    // ④ (TURN_EXIT_MAX_MS > 0 일 때만) 그 센서가 다시 흰색이 될 때까지 조금 더
+    // ④ 선에 닿은 뒤 조금 더 돌기 (TURN_AFTER_MS), (TURN_EXIT_MAX_MS > 0 이면) 흰색이 될 때까지
     if (found) {
+        waitMs(TURN_AFTER_MS);
         unsigned long t1 = millis();
         while (millis() - t1 < TURN_EXIT_MAX_MS && sensorBlack(watchL)) uiCheckAbort();
     } else {
         Serial.println(F("[turn] 선을 찾지 못하고 시간으로 정지"));
     }
+
+    // ④-2 최소 회전 보장: 센서가 일찍 선을 봤어도 예상시간의 TURN_MIN_PCT% 까지는 돈다 (덜 도는 것 방지)
+    unsigned long minMs = expect * TURN_MIN_PCT / 100;
+    while (millis() - tStart < minMs) uiCheckAbort();
 #else
-    (void)watchL;
+    (void)watchL; (void)tStart;
     waitMs(expect);                     // 센서 없이 시간으로만 회전
 #endif
 

@@ -54,8 +54,8 @@
 // ---------------------------------------------------------------------
 // [4] 속도 (PWM 0~255)  — 초기값. 회전·정차 안정화 후 CRUISE부터 올린다.
 // ---------------------------------------------------------------------
-#define SPEED_CRUISE     90     // [현장] 교차점 통과 구간 (안정화 후 올림)
-#define SPEED_APPROACH   60     // 정차/회전할 교차점 직전 1칸 (ALIGN_MS는 이 속도 기준)
+#define SPEED_CRUISE    120     // [현장] 11-11: 90→120. 교차점 통과 구간 (안정화 후 올림)
+#define SPEED_APPROACH   70     // [현장] 정차/회전할 교차점 직전 1칸 (ALIGN_MS는 이 속도 기준). 11-11: 60→70
 #define SPEED_CARRY      75     // 팔레트 운반 중 최고속 (SPEED_APPROACH 이상으로 둘 것)
 #define SPEED_ZONE       60     // 장애물 감시 칸(미확인 통로) 속도 — 감지 후 제동거리 확보, 밀면 시도 종료
 #define ACCEL_PER_MS      1     // 출발 가속: 1ms당 PWM 증가량 (급출발 슬립 방지)
@@ -77,7 +77,7 @@
 #define XING_CONFIRM_SAMPLES 2   // 양쪽 검정이 연속 n회일 때 교차점
 #define XING_SKIP_MS       150   // [현장] 카운트 직후 이 시간 동안 재카운트 금지 (1회만 카운트)
 #define XING_CLEAR_SAMPLES  8    // [현장] 선을 완전히 벗어났다고 볼 '양쪽 흰색' 연속 횟수 (교차점 두 번 세기 방지)
-#define ALIGN_MS           150   // [현장] 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
+#define ALIGN_MS           130   // [현장] 11-11: SPEED_APPROACH 60→70에 맞춰 150→130 (미검증). 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
                                  // (센서→바퀴축 거리 / SPEED_APPROACH 속도). tune_drive 'f'로 맞춤
 #define BRAKE_PWM           80   // 정지 시 역방향 펄스 세기 (0 = 브레이크 안 씀)
 #define BRAKE_MS            25
@@ -95,6 +95,9 @@
 #define TURN_BLIND_PCT    40     // [현장] ② 90° 회전: 예상시간의 이 % 까지는 센서 무시
 #define UTURN_BLIND_PCT   70     // [현장] ② U턴: 이 % 까지 무시 (중간에 지나는 90° 선을 무시해야 함)
 #define TURN_SEEK_MAX_MS 500     // ③ 선 찾기 추가 허용시간 (넘으면 그냥 정지)
+#define TURN_AFTER_MS     40     // [현장] ④ 선에 닿은 뒤 더 도는 시간 (덜 돌면 ↑, 더 돌면 ↓)
+#define TURN_MIN_PCT      85     // [현장] ④-2 최소 회전 = TURN90_MS × 횟수의 이 % (센서가 일찍 걸려도 이만큼은 돎)
+                                 //  11-11: 교차점에서 좌우 회전이 덜 됨 → 추가
 #define TURN_EXIT_MAX_MS   0     // [현장] ④ 검정→흰색 기다리는 최대 시간 (0 = ④ 생략, 검정 보자마자 정지)
                                  //  11-11: 300이면 왼회전이 약 120°까지 넘어감 → 0
 #define TURN_SETTLE_MS    60
