@@ -115,15 +115,14 @@ NavResult Nav::hops(uint8_t count, bool stopAtEnd)
             unsigned long dt = millis() - tHop;
             if (dt < 60000UL && (hopMs == 0 || dt < hopMs)) hopMs = (uint16_t)dt;
         }
-        {
-            uint16_t e = lineTraceTakeMaxErr() / 10;                       // 0~100 %
-            runlogAdd(RL_NODE, (uint8_t)(to | (hdg << 6)), (uint8_t)(e > 255 ? 255 : e));
-        }
+        uint16_t e = lineTraceTakeMaxErr() / 10;                           // 이 칸에서 가장 크게 치우친 정도 0~100 %
+        runlogAdd(RL_NODE, (uint8_t)(to | (hdg << 6)), (uint8_t)(e > 255 ? 255 : e));
         node = to;
         approach = false;
         moving = true;
         beepNode();
-        printNode(node); Serial.print(' '); Serial.println(headingChar(hdg));
+        printNode(node); Serial.print(' '); Serial.print(headingChar(hdg));
+        Serial.print(F(" err=")); Serial.println(e);
         if (onNode) onNode(node);
     }
     if (stopAtEnd) alignAndStop();
