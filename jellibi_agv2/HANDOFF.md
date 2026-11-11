@@ -46,10 +46,10 @@ Claude 수정 → build_check + sim → push → 사용자가 GitHub Desktop Fet
 - 경로 선택: 중앙 → 막히면 좌측 확인 → 막히면 우측 (3 경유로 중 장애물 없는 길)
 - 팔레트: 목표 교차점에서 정지 → LifterUp → 2초 → 정지선에서 살짝 후진 후 TurnLeft180
 
-## 11-11 밤 추가 (다른 세션, 브랜치 `claude/jellibi-agv2-course2-yha1tn` — rnqx70 의 0bd5696 위에 이어서 작업)
-- 사용자 요청: 기존 브랜치 rnqx70 은 종목① 상태 그대로 유지, 종목② 작업은 위 브랜치에만 둔다
-- 주의: rnqx70 에는 이 작업을 올렸다가 되돌린 커밋(revert)이 있다. 나중에 종목② 브랜치를 rnqx70 에 합치려면
-  일반 merge 로는 변경이 들어오지 않는다 → rnqx70 의 되돌림 커밋을 다시 revert 한 뒤 합칠 것
+## 11-11 밤 추가 (다른 세션) — 브랜치 이름 정리
+- `claude/jellibi-agv2-course1-rnqx70` = 종목① 코드 (0bd5696, 예전 `claude/jellibi-agv2-contest-rnqx70` 과 같은 파일)
+- `claude/jellibi-agv2-course2-yha1tn` = 종목① 코드 + 종목② 작업 (course1 위에 커밋을 더한 것 → 나중에 일반 merge 로 합칠 수 있음)
+- 예전 이름 `contest-rnqx70` 에는 종목② 를 올렸다 되돌린 커밋이 남아 있음. 앞으로는 course1 / course2 이름만 사용
 - 사용자 목표: 종목② 완주 + 시간 단축. 내일(11-12) 실물 테스트 가능. `COURSE2_TEST.md` 가 테스트 순서·보고 형식
 - 종목② 라인트레이싱 = 부드러운 PD (`lineTraceSmooth`, config `C2_LT_*`, 기본 KP 40 / TD 75). **실물 미검증**, `C2_LT_SMOOTH 0` 이면 종목① 방식
 - 늦은 감속 `LATE_BRAKE_PCT` (기본 0): Nav 가 통과 칸 시간을 재서 정차 칸 앞부분을 통과 속도로
