@@ -15,6 +15,8 @@ void setup()
     Serial.begin(115200);
     SPI.begin();
     rfid.PCD_Init();
+    delay(5);
+    rfid.PCD_SetAntennaGain(MFRC522::RxGain_max);   // 인식 거리 최대
     byte v = rfid.PCD_ReadRegister(MFRC522::VersionReg);
     Serial.print(F("rfid_test: reader version 0x"));
     Serial.print(v, HEX);
@@ -22,8 +24,15 @@ void setup()
     Serial.println(F("카드를 대세요"));
 }
 
+unsigned long lastInit = 0;
+
 void loop()
 {
+    if (millis() - lastInit > 2000) {               // 리더가 멈추는 경우 대비: 2초마다 재초기화
+        lastInit = millis();
+        rfid.PCD_Init();
+        rfid.PCD_SetAntennaGain(MFRC522::RxGain_max);
+    }
     byte atqa[2];
     byte size = sizeof(atqa);
     bool present = (rfid.PICC_WakeupA(atqa, &size) == MFRC522::STATUS_OK) || rfid.PICC_IsNewCardPresent();
@@ -47,5 +56,6 @@ void loop()
     Serial.println(F(" }, P('H', 6) },"));
     tone(3, 1047, 80);
     rfid.PICC_HaltA();
+    lastInit = millis();
     delay(500);
 }
