@@ -116,18 +116,18 @@
 //            ④-2 그래도 TURN_MIN_DEG 가 안 됐으면 될 때까지 돎 (덜 도는 것 방지)
 //            ⑤ 정지
 //
-#define TURN_AFTER_LEFT_DEG   8  // [현장] ★ 좌회전: 선에 닿은 뒤 더 도는 각도 (°)
-#define TURN_AFTER_RIGHT_DEG  8  // [현장] ★ 우회전: 선에 닿은 뒤 더 도는 각도 (°)
-#define UTURN_AFTER_DEG       0  // [현장] ★ U턴:   선에 닿은 뒤 더 도는 각도 (°). 11-11: U턴 약 10° 더 돎 → 8→0
+#define TURN_AFTER_LEFT_DEG  30  // [현장] ★ 좌회전: 선에 닿은 뒤 더 도는 각도 (°). 11-11 현장 조정 8→30
+#define TURN_AFTER_RIGHT_DEG 30  // [현장] ★ 우회전: 선에 닿은 뒤 더 도는 각도 (°). 11-11 현장 조정 8→30
+#define UTURN_AFTER_DEG     -30  // [현장] ★ U턴:   선에 닿은 뒤 더 도는 각도 (°). 음수 = 멈춘 뒤 되돌림. 11-11 현장 조정 →-30
 #define TURN_MIN_DEG         77  // [현장] ★ 90° 회전의 최소 각도 (센서가 일찍 걸려도 이만큼은 돎)
-#define UTURN_MIN_DEG       143  // [현장] ★ U턴의 최소 각도. 11-11: 153→143 (최소 회전 때문에 더 도는 일 없게)
+#define UTURN_MIN_DEG       105  // [현장] ★ U턴의 최소 각도. 11-11 현장 조정 143→105
 
 #define TURN90_MS        460     // [현장] 90° 도는 데 걸리는 시간(ms) = 각도↔시간 환산 기준
                                  //  tune_drive 'L'(90°×4)이 정확히 한 바퀴가 되게 맞춤. 11-11: 420×4가 약 330° → 460
 #define TURN_DEG_TO_MS(deg) ((unsigned long)(deg) * TURN90_MS / 90)   // 각도 → 시간 (수정하지 않음)
 #define TURN_PWM          90     // 회전 속도. 바꾸면 TURN90_MS 다시 측정해야 함
 #define TURN_BLIND_DEG    36     // [현장] ② 90° 회전: 이 각도까지는 센서 무시
-#define UTURN_BLIND_DEG  126     // [현장] ② U턴: 이 각도까지 무시 (중간에 지나는 90° 위치의 선을 무시해야 함)
+#define UTURN_BLIND_DEG  100     // [현장] ② U턴: 이 각도까지 무시 (중간에 지나는 90° 위치의 선을 무시해야 함). 11-11 현장 조정 126→100
 #define TURN_SEEK_MAX_MS 500     // ③ 목표 각도를 지나서도 선을 못 찾을 때 더 찾아보는 시간 (넘으면 그냥 정지)
 #define TURN_EXIT_MAX_MS   0     // ④ 검정→흰색 기다리는 최대 시간 (0 = 사용 안 함. 11-11: 300이면 왼회전 120°까지 넘어감)
 #define TURN_SETTLE_MS    60     // 정지 후 흔들림 가라앉는 시간
