@@ -7,7 +7,7 @@
 //    ③ 볼 센서가 흰 바닥으로 나온 뒤 → 새 검은 선에 닿으면 정지
 //       볼 센서 = TURN_STOP_SENSOR 1(반대쪽): 우회전 → 왼쪽 IR, 좌회전 → 오른쪽 IR
 //                                  0(진행쪽): 우회전 → 오른쪽 IR, 좌회전 → 왼쪽 IR
-//    ④ 선에 닿은 뒤 TURN_AFTER_MS 더 돌고, 최소 TURN_MIN_PCT%(예상시간 대비)는 반드시 돈다
+//    ④ 선에 닿은 뒤 TURN_AFTER_LEFT/RIGHT_MS (U턴 UTURN_AFTER_MS) 더 돌고, 최소 TURN_MIN_PCT%는 반드시 돈다
 //    ⑤ 정지
 //  TURN_USE_SENSOR 0 이면 센서 없이 TURN90_MS × 횟수 동안만 회전
 //

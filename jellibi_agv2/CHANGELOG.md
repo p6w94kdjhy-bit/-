@@ -19,3 +19,4 @@
 | 11-11 | `SPEED_CRUISE` 90→120, `SPEED_APPROACH` 60→70, `ALIGN_MS` 150→130, `TURN_AFTER_MS` 40(신규), `TURN_MIN_PCT` 85(신규) | | 교차점 좌우 회전이 덜 됨 → 최소 회전 보장 + 감지 후 추가 회전. 속도 상향 |
 | 11-11 | `SPEED_CRUISE` 120→168, `SPEED_APPROACH` 70→98, `SPEED_CARRY` 75→98, `ALIGN_MS` 130→93 | | 종목① 완주 확인(커밋 89f16ba) 후 주행 속도 ×1.4. 회전 설정은 그대로. 되돌리기: 120/70/75/130 |
 | 11-11 | `LT_MODE` 0→1, `LT_KP` 8→70(의미 변경: %), `LT_KD` 20→0 | | 직진하면서 계속 조향(비례 제어). 한쪽 IR이 선 위에 완전히 올라가면 안쪽 바퀴 30%로 = 방식 0과 같은 최대 조향. 되돌리기: LT_MODE 0 |
+| 11-11 | `TURN_AFTER_MS` → `TURN_AFTER_LEFT_MS` 40 / `TURN_AFTER_RIGHT_MS` 40 / `UTURN_AFTER_MS` 40 | | 좌·우·U턴 각도를 따로 조정할 수 있게 분리. config.h [6]에 조정 안내표 추가 |

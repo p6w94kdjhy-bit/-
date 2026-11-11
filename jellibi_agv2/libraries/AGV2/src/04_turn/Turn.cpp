@@ -51,9 +51,11 @@ void spinTurn(bool left, uint8_t quarters)
         uiCheckAbort();
     }
 
-    // ④ 선에 닿은 뒤 조금 더 돌기 (TURN_AFTER_MS), (TURN_EXIT_MAX_MS > 0 이면) 흰색이 될 때까지
+    // ④ 선에 닿은 뒤 조금 더 돌기 (config.h: 좌 TURN_AFTER_LEFT_MS / 우 TURN_AFTER_RIGHT_MS / U턴 UTURN_AFTER_MS)
     if (found) {
-        waitMs(TURN_AFTER_MS);
+        unsigned long afterMs = (quarters >= 2) ? UTURN_AFTER_MS
+                              : (left ? TURN_AFTER_LEFT_MS : TURN_AFTER_RIGHT_MS);
+        waitMs(afterMs);
         unsigned long t1 = millis();
         while (millis() - t1 < TURN_EXIT_MAX_MS && sensorBlack(watchL)) uiCheckAbort();
     } else {
