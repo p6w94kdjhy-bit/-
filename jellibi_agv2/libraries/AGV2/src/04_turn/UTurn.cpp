@@ -1,7 +1,7 @@
 // ===================================================================
 //  [04 회전] U턴 (180°) — 강의안 6차시 '180도 뒤돌아 가기' 방식      설정: config.h [6-U]
 //
-//   ① 교차점 위에서 후진: 두 센서가 가로선을 넘어 뒤쪽 흰 바닥에 올 때까지 + UTURN_BACK_MS
+//   ① 교차점 위에서 조금 후진 (UTURN_BACK_MS) → 바닥 IR이 교차점 가로선 뒤로 빠짐
 //   ② 제자리 회전 시작 (UTURN_LEFT 방향)
 //   ③ 무시 구간 (UTURN_BLIND_DEG)
 //   ④ 진행쪽 IR(왼쪽 U턴 → 왼쪽 IR)이 돌아갈 선(검정)을 볼 때까지 회전
@@ -32,30 +32,10 @@ static void uturnCore(bool backFirst)
 {
     const bool left = UTURN_LEFT;
 
-    // ① 후진: 교차점 가로선 뒤로 센서를 빼낸다 (정차 위치가 매번 달라도 같은 자리에서 회전하도록 센서로 판단)
-    //   ①-a 두 센서가 가로선(검정)에 닿을 때까지 후진
-    //   ①-b 두 센서가 가로선을 지나 흰 바닥이 될 때까지 후진
-    //   ①-c UTURN_BACK_MS 만큼 더 후진 (여유)
-    //   어느 단계든 UTURN_BACK_MAX_MS 를 넘으면 그만둔다 (이미 가로선 뒤에 있던 경우 등)
-    if (backFirst) {
+    // ① 후진: 교차점 가로선에서 센서를 빼낸다
+    if (backFirst && UTURN_BACK_MS > 0) {
         Backward(UTURN_BACK_PWM);
-        unsigned long tb = millis();
-        bool onLine = false;
-        while (millis() - tb < UTURN_BACK_MAX_MS) {                 // ①-a
-            IrSample s = readIr();
-            if (isBlackL(s.l) && isBlackR(s.r)) { onLine = true; break; }
-            uiCheckAbort();
-        }
-        if (onLine) {
-            while (millis() - tb < UTURN_BACK_MAX_MS) {             // ①-b
-                IrSample s = readIr();
-                if (!isBlackL(s.l) && !isBlackR(s.r)) break;
-                uiCheckAbort();
-            }
-            waitMs(UTURN_BACK_MS);                                  // ①-c
-        } else {
-            Serial.println(F("[uturn] 후진 중 가로선을 못 봄 (시간으로 후진)"));
-        }
+        waitMs(UTURN_BACK_MS);
         Brake();
         delay(TURN_SETTLE_MS);
     }

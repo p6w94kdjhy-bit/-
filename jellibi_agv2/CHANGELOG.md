@@ -25,4 +25,4 @@
 | 11-11 | (코드) AFTER 각도 음수 지원 | | 음수 = 멈춘 뒤 그 각도만큼 반대로 되돌림. 이전에는 음수를 넣으면 회전이 멈추지 않았음 |
 | 11-11 | `TURN_AFTER_LEFT_DEG` 8→30, `TURN_AFTER_RIGHT_DEG` 8→30, `UTURN_AFTER_DEG` 0→-30, `UTURN_MIN_DEG` 143→105, `UTURN_BLIND_DEG` 126→100 | | 사용자 노트북에서 현장 조정한 값 반영 |
 | 11-11 | U턴 새로 작성 (04_turn/UTurn.cpp, config [6-U]): `UTURN_BACK_MS` 150, `UTURN_BACK_PWM` 70, `UTURN_BLIND_DEG` 90, `UTURN_AFTER_DEG` 0, `UTURN_EXIT_MAX_MS` 300, `UTURN_SEEK_EXTRA_DEG` 40 / `UTURN_MIN_DEG` 삭제 | 이전 현장값 AFTER -30, MIN 105, BLIND 100 은 방식이 달라 초기화 | 강의안 180도 방식: 후진 → 회전 → 진행쪽 IR 검정 → 흰색 → 정지 |
-| 11-11 | `UTURN_BACK_MS` 150→60(의미 변경: 가로선 지난 뒤 여유), `UTURN_BACK_MAX_MS` 500(신규), `UTURN_BLIND_DEG` 90→100 | | U턴 두 번째에 덜 돎 → 후진을 시간이 아니라 센서(가로선 넘을 때까지)로 |
+| 11-11 | 직전 U턴 후진 변경(a4c8d71) 되돌림 / `TURN_AFTER_LEFT_DEG` 30→45, `TURN_AFTER_RIGHT_DEG` 30→45, `UTURN_AFTER_DEG` 0→30 | | 사용자 요청: 좌·우 15° 더, U턴 30° 더 (9613b62 기준) |
