@@ -117,9 +117,9 @@
 //
 #define TURN_AFTER_LEFT_DEG   8  // [현장] ★ 좌회전: 선에 닿은 뒤 더 도는 각도 (°)
 #define TURN_AFTER_RIGHT_DEG  8  // [현장] ★ 우회전: 선에 닿은 뒤 더 도는 각도 (°)
-#define UTURN_AFTER_DEG       8  // [현장] ★ U턴:   선에 닿은 뒤 더 도는 각도 (°)
+#define UTURN_AFTER_DEG       0  // [현장] ★ U턴:   선에 닿은 뒤 더 도는 각도 (°). 11-11: U턴 약 10° 더 돎 → 8→0
 #define TURN_MIN_DEG         77  // [현장] ★ 90° 회전의 최소 각도 (센서가 일찍 걸려도 이만큼은 돎)
-#define UTURN_MIN_DEG       153  // [현장] ★ U턴의 최소 각도
+#define UTURN_MIN_DEG       143  // [현장] ★ U턴의 최소 각도. 11-11: 153→143 (최소 회전 때문에 더 도는 일 없게)
 
 #define TURN90_MS        460     // [현장] 90° 도는 데 걸리는 시간(ms) = 각도↔시간 환산 기준
                                  //  tune_drive 'L'(90°×4)이 정확히 한 바퀴가 되게 맞춤. 11-11: 420×4가 약 330° → 460
