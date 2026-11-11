@@ -7,7 +7,7 @@ jellibi_agv2/                  ← Arduino IDE '스케치북 위치'로 지정 (
 │   ├─ config.h               ★ 보정값 전부 ([현장] = 대회장에서 측정)
 │   ├─ pins.h                 핀맵
 │   ├─ 01_motor  02_sensor  03_linetrace★  04_turn★  05_obstacle  06_lift
-│   ├─ 07_logistics★(팔레트)  08_map  09_nav  10_planner(경로계획)  11_start  12_signal
+│   ├─ 07_logistics★(팔레트)  08_map  09_nav  10_planner(경로계획)  11_start  12_signal  13_rfid
 ├─ calib_ir/                  ① 현장 IR 측정 → config.h 줄 출력
 ├─ tune_drive/                ② 직진·회전·정렬·리프트 보정 테스트
 ├─ rfid_test/  hello_test/    RFID 모듈 확인 / 업로드 연결 확인
@@ -61,6 +61,14 @@ arduino-cli: `arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 --librar
   - `AUTO_ORDER=1`: 열린 통로를 안 뒤 ①/② 중 빠른 순서를 자동 선택
   - 하역: 정렬 → 내림 → `EXIT_BACK_MS` 후진으로 팔레트 밑 탈출 → U턴 → 다음 목적지
 - 시뮬레이션(`tools/sim/run.sh`) 결과: 차단 조합 3가지 모두 성공, 47~61칸 이동(추정 68~80초 < 180초)
+
+## RFID (config.h [11], 기본은 모두 꺼짐)
+| 기능 | 설정 | 동작 |
+|---|---|---|
+| 출발 태그 | `START_MODE` 1/2 | 카드를 대면 출발 (2 = 버튼도 가능) |
+| 팔레트 확인 | `PICK_RFID_CHECK` 1/2 | 팔레트 밑 정차 후 카드 읽기. 2 = 못 읽으면 앞뒤로 천천히 찾기 |
+| 카드로 배송지 | `RFID_DEST_MODE` 1 | course2 `RFID_DEST[]` 표의 카드면 그 교차점으로 배송 |
+- 하나라도 켜면 라이브러리 매니저에서 **MFRC522** 설치 필요. 카드 번호는 `rfid_test`로 읽음
 
 ## 제출(13:20) 규칙
 - 제출 직전 `git tag submit-course2` 로 고정. 이후 `course2_pallet.ino`·라이브러리 코드는 수정 금지, `config.h`의 승인된 보정값만 수정 → `CHANGELOG.md`에 기록

@@ -16,6 +16,7 @@
 //   10_planner      경로 계획: 최단 경로, 막힌 통로 기억·재탐색 (gotoNode)
 //   11_start        출발: 버튼 / RFID 태그 신호 대기 (uiWaitStart)
 //   12_signal       알림·안전: LED·부저, 오류 정지, 비상정지 (beep, uiFatal, uiCheckAbort)
+//   13_rfid         RFID: 카드 읽기 — 출발 태그, 팔레트 확인, 카드로 배송지 (rfidRead, rfidWait)
 // =====================================================================
 #ifndef AGV2_H
 #define AGV2_H
@@ -35,5 +36,6 @@
 #include "10_planner/Planner.h"
 #include "11_start/Start.h"
 #include "12_signal/Signal.h"
+#include "13_rfid/Rfid.h"
 
 #endif

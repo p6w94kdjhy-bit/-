@@ -32,6 +32,15 @@ const Job JOBS[2] = {
     { P('A', 6), P('H', 2) },   // ②
 };
 const uint8_t PARK_NODE = P('H', 4);   // 두 배송 후 복귀, 2초 정지
+
+// (RFID_DEST_MODE 1 일 때만 사용) 팔레트 카드 번호 → 배송 교차점
+//   카드 번호는 rfid_test 스케치로 읽어서 출력된 줄을 그대로 붙여넣는다.
+//   표에 없는 카드이거나 카드를 못 읽으면 위 JOBS 의 고정 배송지로 간다.
+struct CardDest { uint8_t len; uint8_t b[RFID_UID_MAX]; uint8_t node; };
+const CardDest RFID_DEST[] = {
+    // { 4, { 0xDE, 0xAD, 0xBE, 0xEF }, P('H', 6) },   // ← 예시: 카드 → H6
+    { 0, { 0 }, NODE_NONE },                          // (빈 줄 — 지우지 말 것)
+};
 #define AUTO_ORDER 1                   // 1 = 열린 통로를 안 뒤 더 빠른 배송 순서 자동 선택
 
 // 출발: START_NODE 바깥 50mm에서 START_HDG 방향을 보고 대기   ※ 현장 확인 필요
@@ -65,12 +74,35 @@ uint16_t orderCost(uint8_t first)
 }
 
 // ----------------------------------------------------------------- 배송 1건
+#if RFID_DEST_MODE
+// 팔레트 카드로 배송지 찾기 (표에 없으면 고정 배송지)
+uint8_t destFromCard(uint8_t fallback)
+{
+    const RfidUid& u = palletUid();
+    for (uint8_t i = 0; i < sizeof(RFID_DEST) / sizeof(RFID_DEST[0]); i++) {
+        if (RFID_DEST[i].len == 0 || RFID_DEST[i].len != u.len) continue;
+        bool same = true;
+        for (uint8_t k = 0; k < u.len; k++) if (RFID_DEST[i].b[k] != u.b[k]) same = false;
+        if (same) {
+            Serial.print(F("[rfid] 카드 배송지 ")); printNode(RFID_DEST[i].node); Serial.println();
+            return RFID_DEST[i].node;
+        }
+    }
+    Serial.println(F("[rfid] 표에 없는 카드 → 고정 배송지"));
+    return fallback;
+}
+#endif
+
 void deliver(const Job& j)
 {
     if (!FRONT_CHECK_WHILE_CARRY) ensureOpenLane(nav);       // 빈 차로 열린 통로 먼저 확인
     if (!gotoNode(nav, j.from)) uiFatal(F("no path to pallet"));
-    PickPallet(nav);                                          // 들기
-    if (!gotoNode(nav, j.to)) uiFatal(F("no path to drop"));
+    PickPallet(nav);                                          // 들기 (+ RFID 카드 확인)
+    uint8_t to = j.to;
+#if RFID_DEST_MODE
+    to = destFromCard(j.to);                                  // 카드로 배송지 결정
+#endif
+    if (!gotoNode(nav, to)) uiFatal(F("no path to drop"));
     DropPallet(nav);                                          // 내리기 + 빠져나오기
 }
 

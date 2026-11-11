@@ -19,6 +19,7 @@
 | `10_planner` | **경로 계획** | 파란 통로 위 최단 경로 계산, 막힌 통로 기억, 장애물 만나면 다른 길로 | `gotoNode` `ensureOpenLane` `plan` | `PLAN_COST_*` `FRONT_CHECK_WHILE_CARRY` |
 | `11_start` | **출발** | 버튼 또는 RFID 태그 신호를 기다렸다가 출발 | `uiWaitStart` `buttonDown` | `START_MODE` `START_DELAY_MS` `START_XING_PASSED` |
 | `12_signal` | **알림·안전** | LED·부저 상태 표시, 오류 정지, 주행 중 버튼 비상정지 | `beep` `uiFatal` `uiCheckAbort` `waitMs` | `SOUND_ON` `SOUND_CROSS` |
+| `13_rfid` | **RFID** | MFRC522 카드 읽기. 출발 태그, 팔레트 밑 카드 확인(+위치 찾기), 카드 번호로 배송지 정하기. 다 끄면 코드에서 빠짐 | `rfidRead` `rfidWait` `rfidPrint` | `START_MODE` `PICK_RFID_CHECK` `RFID_DEST_MODE` |
 
 ## 스케치 (실제로 업로드하는 프로그램)
 
@@ -28,7 +29,7 @@
 | `tune_drive` | 직진·회전·정차·리프트 보정 테스트 | 01~04, 06, 09 |
 | `course1_drive` | **종목①** 경로표(교차점마다 GO/LEFT/RIGHT/UTURN/END) | 03 라인트레이싱, 04 회전, 11, 12 |
 | `course2_pallet` | **종목②** 맵·임무·순서만 정의 | 07 물류, 10 경로 계획 (→ 09, 03, 04, 05) |
-| `rfid_test` | RFID 모듈 동작 확인 | (독립) |
+| `rfid_test` | RFID 모듈 확인, 카드 번호 읽기 → `RFID_DEST[]` 붙여넣기용 줄 출력 | (독립) |
 | `hello_test` | 업로드 연결 확인 | (독립) |
 
 ## 한 교차점에서 일어나는 일 (종목① 기준)

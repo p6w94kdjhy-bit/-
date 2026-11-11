@@ -30,3 +30,4 @@
 | 11-11 | `SPEED_APPROACH` 98→70, `ALIGN_MS` 93→130, `TURN_USE_MOTOR_GAIN` 0(신규) | | 좌회전만 과함 → 회전 때 좌우 보정 빼서 대칭, 정차 직전 속도 낮춰 정차 위치 안정 |
 | 11-11 | `TURN90_MS` 460→442, `TURN_AFTER_RIGHT_DEG` 45→0, `TURN_AFTER_LEFT_DEG` 45→47, `TURN_MIN_DEG` 77→80, `TURN_BLIND_DEG` 36→37, course1 F6 보정 -30→0 | | 대칭 회전 테스트: l 5/5 정확, r 4/5 45° 과함, L 15° 과함. 좌회전은 시간 그대로 유지되게 각도만 환산 |
 | 11-11 | `UTURN_AFTER_DEG` 30→45 | | r·l 5/5 정확, U턴 15° 덜 돎 |
+| 11-11 | RFID 기능 추가 (13_rfid, config [11]): `PICK_RFID_CHECK` 0, `RFID_DEST_MODE` 0 (+ WAIT/SEARCH 값), course2 `RFID_DEST[]` 표, rfid_test 개선 | | 기본은 모두 꺼짐. 대회 규정 확인 후 켬 |

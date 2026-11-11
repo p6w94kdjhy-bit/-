@@ -97,5 +97,8 @@ void showConfig()
     Serial.print(F("U턴 BACK_MS = ")); Serial.print(UTURN_BACK_MS); Serial.print(F("  BLIND = "));
     Serial.print(UTURN_BLIND_DEG); Serial.print(F("  AFTER = ")); Serial.print(UTURN_AFTER_DEG);
     Serial.print(F("  EXIT_MS = ")); Serial.println(UTURN_EXIT_MAX_MS);
+    Serial.print(F("RFID 출발 START_MODE = ")); Serial.print(START_MODE);
+    Serial.print(F("  팔레트확인 = ")); Serial.print(PICK_RFID_CHECK);
+    Serial.print(F("  카드배송지 = ")); Serial.println(RFID_DEST_MODE);
     Serial.println(F("-----------------------------------"));
 }

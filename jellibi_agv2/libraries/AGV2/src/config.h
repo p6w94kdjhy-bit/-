@@ -170,7 +170,7 @@
 // [7] 출발 · 소리
 // ---------------------------------------------------------------------
 // 출발 신호: 0 = 버튼만, 1 = RFID(IC 태그)만, 2 = 버튼 또는 태그 중 먼저 들어온 것
-// 1·2 를 쓰려면 Arduino IDE 라이브러리 매니저에서 'MFRC522' (by GithubCommunity) 설치 필요
+// 1·2 를 쓰려면 Arduino IDE 라이브러리 매니저에서 'MFRC522' (by GithubCommunity) 설치 필요 (RFID 설정은 [11])
 #define START_MODE         0     // [현장] 대회 출발 규정에 맞춤
 #define SOUND_ON           0     // 1 = 부저 소리 사용, 0 = 무음 (상태는 보드 LED D13 깜빡임으로 표시)
 #define SOUND_CROSS        1     // 1 = 교차점을 인식할 때마다 '삑' (SOUND_ON 0 이어도 남 — 카운트 확인용), 0 = 끔
@@ -207,5 +207,27 @@
 #define PLAN_COST_TURN      6    // 90° 회전
 #define PLAN_COST_UTURN    10    // U턴
 #define PLAN_COST_UNKNOWN  15    // 막혔는지 모르는 통로를 지나갈 때 벌점
+
+// ---------------------------------------------------------------------
+// [11] RFID (MFRC522, SS=D2, RST=D4, SPI D11~D13)    코드: 13_rfid/Rfid.cpp
+//   쓰는 기능이 하나라도 켜지면(아래 RFID_USED=1) Arduino IDE 에 'MFRC522' 라이브러리 필요.
+//   모두 0 이면 RFID 코드는 아예 들어가지 않는다.
+//   카드 번호(UID)는 rfid_test 스케치로 읽는다.
+// ---------------------------------------------------------------------
+// ① 출발: START_MODE ([7] 출발) — 1 = 태그로 출발, 2 = 버튼 또는 태그
+// ② 팔레트 확인: 팔레트 밑에 정차한 뒤 팔레트 카드를 읽어 '제대로 밑에 들어왔는지' 확인
+//      0 = 안 씀
+//      1 = 확인만 (카드 번호를 로그에 남기고, 못 읽어도 그냥 들기)
+//      2 = 확인 + 위치 찾기 (못 읽으면 앞뒤로 천천히 움직이며 카드를 찾은 뒤 들기)
+#define PICK_RFID_CHECK      0   // [현장]
+#define PICK_RFID_WAIT_MS  300   // 정차 후 카드를 기다리는 시간
+#define PICK_RFID_SEARCH_MS 250  // (모드 2) 한 방향으로 찾아보는 시간
+#define PICK_RFID_SEARCH_PWM 50  // (모드 2) 찾을 때 속도 (아주 느리게)
+// ③ 카드로 배송지 정하기: 팔레트 카드 번호 → 배송 교차점 (course2_pallet.ino 의 RFID_DEST[] 표)
+//      0 = 안 씀 (배송지 고정: A2→H6, A6→H2)
+//      1 = 표에 있는 카드면 그 배송지로, 없으면 고정 배송지
+#define RFID_DEST_MODE       0   // [현장] 대회 규정에 '카드로 배송지 지정'이 있으면 1
+
+#define RFID_USED ((START_MODE != 0) || (PICK_RFID_CHECK != 0) || (RFID_DEST_MODE != 0))
 
 #endif
