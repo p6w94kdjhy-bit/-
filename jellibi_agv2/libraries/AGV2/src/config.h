@@ -16,10 +16,10 @@
 //     예제 기본값(410/560/710, LT_AJDUST 등) 사용 금지.
 //     -1 = 아직 측정 안 함 → 주행 스케치는 출발을 거부하고 경고음.
 // ---------------------------------------------------------------------
-#define IR_L_WHITE   -1   // [현장] TODO: 현장값 (A6, 흰 바닥) — calib_ir w
-#define IR_L_BLACK   -1   // [현장] TODO: 현장값 (A6, 선 정중앙에 센서) — calib_ir b
-#define IR_R_WHITE  428   // [현장] 연습 현장값 11-11 (A7, 흰 바닥) — calib_ir w
-#define IR_R_BLACK  959   // [현장] 연습 현장값 11-11 (A7, 선 정중앙에 센서) — calib_ir b
+#define IR_L_WHITE  486   // [현장] 연습 현장값 11-11 (A6, 흰 바닥) — calib_ir w
+#define IR_L_BLACK  963   // [현장] 연습 현장값 11-11 (A6, 선 정중앙에 센서) — calib_ir b
+#define IR_R_WHITE  426   // [현장] 연습 현장값 11-11 (A7, 흰 바닥) — calib_ir w
+#define IR_R_BLACK  957   // [현장] 연습 현장값 11-11 (A7, 선 정중앙에 센서) — calib_ir b
 
 // 흑백 판정 기준값 = (흰 + 검) / 2  — 왼쪽·오른쪽 각각 (수정 금지, 위 측정값만 바꾼다)
 #define IR_L_TH  ((IR_L_WHITE + IR_L_BLACK) / 2)
