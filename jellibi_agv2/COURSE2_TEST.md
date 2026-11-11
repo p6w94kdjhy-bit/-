@@ -1,6 +1,7 @@
 # 종목② 실물 테스트 — 순서 · 오류 알리는 법 · 시간 줄이는 순서
 
-코드 브랜치: 기존과 같은 `claude/jellibi-agv2-contest-rnqx70` (GitHub Desktop 에서 브랜치를 바꾸지 않고 Fetch → Pull)
+코드 브랜치: `claude/jellibi-agv2-course2-yha1tn` (GitHub Desktop → Fetch → Current Branch 에서 이 브랜치 선택 → Pull)
+종목① 코드만 있는 기존 브랜치 `claude/jellibi-agv2-contest-rnqx70` 은 그대로 두었다.
 
 ## 1. 오류가 났을 때 알리는 법
 
