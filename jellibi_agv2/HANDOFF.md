@@ -48,7 +48,8 @@ Claude 수정 → build_check + sim → push → 사용자가 GitHub Desktop Fet
 
 ## 11-11 밤 추가 (다른 세션) — 브랜치 이름 정리
 - `claude/jellibi-agv2-course1-rnqx70` = 종목① 코드 (0bd5696, 예전 `claude/jellibi-agv2-contest-rnqx70` 과 같은 파일)
-- `claude/jellibi-agv2-course2-yha1tn` = 종목① 코드 + 종목② 작업 (course1 위에 커밋을 더한 것 → 나중에 일반 merge 로 합칠 수 있음)
+- `claude/jellibi-agv2-course2-yha1tn` = 종목② 작업 브랜치 (course1 에서 갈라져 나옴)
+- 두 브랜치는 합치지 않는다 (사용자 요청). 종목①은 course1 브랜치, 종목②는 course2 브랜치로 각각 업로드
 - 예전 이름 `contest-rnqx70` 에는 종목② 를 올렸다 되돌린 커밋이 남아 있음. 앞으로는 course1 / course2 이름만 사용
 - 사용자 목표: 종목② 완주 + 시간 단축. 내일(11-12) 실물 테스트 가능. `COURSE2_TEST.md` 가 테스트 순서·보고 형식
 - 종목② 라인트레이싱 = 부드러운 PD (`lineTraceSmooth`, config `C2_LT_*`, 기본 KP 40 / TD 75). **실물 미검증**, `C2_LT_SMOOTH 0` 이면 종목① 방식
