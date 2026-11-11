@@ -8,14 +8,11 @@
 //   q : 사각 주행 (1칸 + 우회전) ×4 → 제자리 복귀 확인
 //   p / d : 리프트 올림 / 내림 (LIFT_UP/DOWN_ANGLE)
 //   x : 하역 후 후진 탈출 (EXIT_BACK_MS) + U턴
-//   c : 라인트레이싱 방식 바꾸기 — 종목①(비례) ↔ 종목②(부드러운 PD, config.h C2_LT_*). 바꾼 뒤 f / F / q 로 시험
-//   g : 지난 주행 기록 출력 (종목② 가 저장한 것)
 // =====================================================================
 #include <AGV2.h>
 
 Nav nav;
 char lastCmd = 0;
-bool smoothOn = false;
 
 bool needIr()
 {
@@ -52,12 +49,6 @@ void run(char c)
         case 'p': LiftUp(); break;
         case 'd': LiftDown(); break;
         case 'x': Backward(EXIT_BACK_PWM); delay(EXIT_BACK_MS); Brake(); UTurnOnEdge(); break;
-        case 'c':
-            smoothOn = !smoothOn;
-            lineTraceSmooth(smoothOn ? C2_LT_KP : 0, C2_LT_TD_MS, C2_LT_MAX_PCT, C2_LT_SLOW_PCT);
-            Serial.println(smoothOn ? F("라인트레이싱: 종목② 부드러운 PD") : F("라인트레이싱: 종목① 비례"));
-            return;
-        case 'g': runlogDump(); return;
         default: return;
     }
     Stop();
@@ -72,7 +63,7 @@ void setup()
     uiInit();
     showConfig();
     liftInit();
-    Serial.println(F("tune_drive: s f F l r u L q p d x c g  (버튼=반복)"));
+    Serial.println(F("tune_drive: s f F l r u L q p d x  (버튼=반복)"));
 }
 
 void loop()

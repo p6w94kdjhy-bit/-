@@ -2,7 +2,6 @@
 #include "config.h"
 #include "pins.h"
 #include "01_motor/Motor.h"
-#include "14_runlog/RunLog.h"
 
 static bool s_abortArmed = false;
 static unsigned long s_armTime = 0;
@@ -43,11 +42,9 @@ void beepNode()
 }
 void beepDone()  { beep(784, 150); beep(1047, 300); }
 
-void uiFatal(const __FlashStringHelper* msg, uint8_t code)
+void uiFatal(const __FlashStringHelper* msg)
 {
     Stop();
-    runlogAdd(RL_FATAL, code);
-    runlogFlush();                   // 정지했으니 기록을 끝까지 저장
     Serial.print(F("[FATAL] "));
     Serial.println(msg);
     for (;;) {                       // LED: 0.3초 켜짐 / 0.7초 꺼짐 반복
@@ -66,13 +63,10 @@ void uiArmAbort()
 
 void uiCheckAbort()
 {
-    runlogPump();                    // 주행 기록: 밀린 것이 있으면 1바이트 저장 (기다리지 않음)
     // 출발 직후 500ms는 무시 (출발 버튼 채터링)
     if (!s_abortArmed || millis() - s_armTime < 500) return;
     if (digitalRead(PIN_BUTTON) == LOW) {
         Stop();
-        runlogAdd(RL_ABORT);
-        runlogFlush();
         Serial.println(F("[ABORT] button"));
         for (;;) {                   // LED: 0.1초 켜짐 / 0.9초 꺼짐 반복
             beep(440, 100);
@@ -106,10 +100,5 @@ void showConfig()
     Serial.print(F("RFID 출발 START_MODE = ")); Serial.print(START_MODE);
     Serial.print(F("  팔레트확인 = ")); Serial.print(PICK_RFID_CHECK);
     Serial.print(F("  카드배송지 = ")); Serial.println(RFID_DEST_MODE);
-    Serial.print(F("종목② C2_LT_SMOOTH = ")); Serial.print(C2_LT_SMOOTH);
-    Serial.print(F("  KP/TD/MAX/SLOW = ")); Serial.print(C2_LT_KP); Serial.print('/'); Serial.print(C2_LT_TD_MS);
-    Serial.print('/'); Serial.print(C2_LT_MAX_PCT); Serial.print('/'); Serial.print(C2_LT_SLOW_PCT);
-    Serial.print(F("  LATE_BRAKE_PCT = ")); Serial.print(LATE_BRAKE_PCT);
-    Serial.print(F("  CARRY/ZONE = ")); Serial.print(SPEED_CARRY); Serial.print('/'); Serial.println(SPEED_ZONE);
     Serial.println(F("-----------------------------------"));
 }

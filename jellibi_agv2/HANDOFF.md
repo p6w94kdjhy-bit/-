@@ -46,17 +46,6 @@ Claude 수정 → build_check + sim → push → 사용자가 GitHub Desktop Fet
 - 경로 선택: 중앙 → 막히면 좌측 확인 → 막히면 우측 (3 경유로 중 장애물 없는 길)
 - 팔레트: 목표 교차점에서 정지 → LifterUp → 2초 → 정지선에서 살짝 후진 후 TurnLeft180
 
-## 11-11 밤 추가 (다른 세션에서 작업 → 사용자 요청으로 `claude/jellibi-agv2-contest-rnqx70` 에도 같은 내용 반영)
-- 브랜치 `claude/agent-reach-course2-optimization-yha1tn` 과 rnqx70 은 같은 커밋. 사용자는 rnqx70 만 Pull. 두 세션이 모두 rnqx70 에 올리므로 작업 전 반드시 fetch
-- 사용자 목표: 종목② 완주 + 시간 단축. 내일(11-12) 실물 테스트 가능. `COURSE2_TEST.md` 가 테스트 순서·보고 형식
-- 종목② 라인트레이싱 = 부드러운 PD (`lineTraceSmooth`, config `C2_LT_*`, 기본 KP 40 / TD 75). **실물 미검증**, `C2_LT_SMOOTH 0` 이면 종목① 방식
-- 늦은 감속 `LATE_BRAKE_PCT` (기본 0): Nav 가 통과 칸 시간을 재서 정차 칸 앞부분을 통과 속도로
-- 주행 기록 14_runlog (EEPROM, 비차단). course2 시작 시 `runlogDump()` 로 지난 주행 출력. uiFatal 오류 번호 표는 COURSE2_TEST.md
-- 출발: START_MODE 2 유지 (사용자 확인: rfid_test 에서 카드 번호 잘 읽힘)
-- 검증 도구 추가: `tools/sim/run_phys.sh` (실제 LineTrace/Nav/RunLog 코드 + 가짜 로봇). 로봇 치수는 추정값 → 방식 비교·코드 오류 확인용
-- 이 세션 환경에는 arduino-cli 없음 → `CORE=.. SERVO=.. RFID=.. tools/build_check.sh` (avr-gcc 직접 컴파일)로 확인함
-- 종목①(course1_drive)은 조향 로직 변경 없음 (공용 함수에 기록용 코드만 추가). 내일 종목①도 1회 다시 완주 확인할 것
-
 ## 미해결
 1. 종목② 실물 테스트 전부 (위 목록)
 2. OT 자료 원본 미확인 → 맵(파란 통로), 출발 위치, 팔레트 크기·진입 방향, 출발 방식 확인

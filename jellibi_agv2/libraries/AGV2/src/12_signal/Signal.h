@@ -14,11 +14,10 @@ void beepReady();                                // 준비 완료 (짧게 3번)
 void beepNode();                                 // 교차점 인식할 때 '삑'(SOUND_CROSS) + LED 토글
 void beepDone();                                 // 완료
 
-void uiFatal(const __FlashStringHelper* msg, uint8_t code = 0);   // 오류 정지: 모터 끄고 LED 0.3s/0.7s 반복 (복귀 안 함)
-                                                 //   code = 주행 기록에 남는 오류 번호 (COURSE2_TEST.md 표)
+void uiFatal(const __FlashStringHelper* msg);    // 오류 정지: 모터 끄고 LED 0.3s/0.7s 반복 (복귀 안 함)
 
 void uiArmAbort();                               // 출발 후 호출 → 버튼 비상정지 활성화
-void uiCheckAbort();                             // 주행 루프마다 호출: 버튼 눌리면 비상정지 (+ 주행 기록 1바이트 저장)
+void uiCheckAbort();                             // 주행 루프마다 호출: 버튼 눌리면 비상정지
 void waitMs(unsigned long ms);                   // 기다리면서 비상정지도 확인
 
 void showConfig();                               // 로봇에 들어간 config.h 주요 값을 시리얼로 출력 (업로드 확인용)

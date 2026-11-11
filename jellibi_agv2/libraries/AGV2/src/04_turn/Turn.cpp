@@ -4,7 +4,6 @@
 #include "02_sensor/Sensor.h"
 #include "03_linetrace/LineTrace.h"
 #include "12_signal/Signal.h"
-#include "14_runlog/RunLog.h"
 
 // 회전을 멈출 때 볼 센서 (config.h TURN_STOP_SENSOR)
 //   1 = 반대쪽: 우회전이면 왼쪽 IR, 좌회전이면 오른쪽 IR  (11-11 실측으로 선택)
@@ -66,7 +65,6 @@ void spinTurn(bool left, uint8_t quarters)
         while (millis() - t1 < TURN_EXIT_MAX_MS && sensorBlack(watchL)) uiCheckAbort();
     } else {
         Serial.println(F("[turn] 선을 찾지 못하고 시간으로 정지"));
-        runlogAdd(RL_TMISS);
     }
 
     // ④-2 최소 회전 보장 (TURN_MIN_DEG): 센서가 일찍 선을 봤어도 이 각도까지는 돈다

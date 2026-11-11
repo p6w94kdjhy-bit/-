@@ -2,7 +2,6 @@
 #include "config.h"
 #include "07_logistics/Pallet.h"
 #include "12_signal/Signal.h"
-#include "14_runlog/RunLog.h"
 
 #define MAX_CAND 8
 
@@ -49,14 +48,11 @@ static void setLane(int8_t i, LaneState st)
     s_lane[i] = st;
     deduceLanes();
     Serial.print(F("[lane]"));
-    uint8_t packed = 0xFF;                            // 주행 기록: 통로마다 2비트 (없는 칸은 3)
     for (uint8_t k = 0; k < s_nCand; k++) {
         Serial.print(' '); printNode(s_cand[k]); Serial.print('=');
         Serial.print("?OX"[s_lane[k]]);
-        if (k < 4) packed = (uint8_t)((packed & ~(3 << (2 * k))) | (s_lane[k] << (2 * k)));
     }
     Serial.println();
-    runlogAdd(RL_LANE, packed);
 }
 
 bool openLaneKnown()
@@ -90,7 +86,7 @@ void plannerBegin(const Seg* blue, uint8_t nBlue, const uint8_t* cand, uint8_t n
     for (uint8_t i = 0; i < nBlue; i++) {
         uint8_t n = blue[i].a;
         int8_t h = headingTo(blue[i].a, blue[i].b);
-        if (h < 0) uiFatal(F("BLUE seg not straight"), 10);
+        if (h < 0) uiFatal(F("BLUE seg not straight"));
         while (n != blue[i].b) {
             uint8_t m = stepNode(n, h);
             s_adj[n] |= 1 << h;
@@ -98,7 +94,7 @@ void plannerBegin(const Seg* blue, uint8_t nBlue, const uint8_t* cand, uint8_t n
             n = m;
         }
     }
-    if (nCand > MAX_CAND) uiFatal(F("too many candidates"), 11);
+    if (nCand > MAX_CAND) uiFatal(F("too many candidates"));
     s_cand = cand;
     s_nCand = nCand;
     s_openLanes = openLanes;
@@ -186,7 +182,6 @@ bool gotoNode(Nav& nav, uint8_t goal)
         Serial.print(F("[plan]"));
         for (uint8_t i = 0; i < planLen; i++) { Serial.print(' '); printNode(planPath[i]); }
         Serial.println();
-        runlogAdd(RL_PLAN, goal, planLen);
 
         if (planLen == 1) {                        // 이미 goal (접근 중이면 도착)
             nav.leg(goal, true);
@@ -221,7 +216,7 @@ void ensureOpenLane(Nav& nav)
                 bestCost = planCost; pick = i;
             }
         }
-        if (pick < 0) uiFatal(F("no lane to probe"), 12);
+        if (pick < 0) uiFatal(F("no lane to probe"));
         Serial.print(F("[probe] ")); printNode(s_cand[pick]); Serial.println();
         gotoNode(nav, s_cand[pick]);   // 막혀 있으면 false로 돌아오고 통로 상태가 갱신됨
     }

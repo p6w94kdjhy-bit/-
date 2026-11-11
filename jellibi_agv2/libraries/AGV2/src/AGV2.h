@@ -17,7 +17,6 @@
 //   11_start        출발: 버튼 / RFID 태그 신호 대기 (uiWaitStart)
 //   12_signal       알림·안전: LED·부저, 오류 정지, 비상정지 (beep, uiFatal, uiCheckAbort)
 //   13_rfid         RFID: 카드 읽기 — 출발 태그, 팔레트 확인, 카드로 배송지 (rfidRead, rfidWait)
-//   14_runlog       주행 기록: 교차점·회전·장애물·오류와 시각을 로봇 안에 저장 → USB 로 꺼내 보기 (runlogDump)
 // =====================================================================
 #ifndef AGV2_H
 #define AGV2_H
@@ -38,6 +37,5 @@
 #include "11_start/Start.h"
 #include "12_signal/Signal.h"
 #include "13_rfid/Rfid.h"
-#include "14_runlog/RunLog.h"
 
 #endif

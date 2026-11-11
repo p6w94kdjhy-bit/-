@@ -4,7 +4,6 @@
 #include "04_turn/Turn.h"
 #include "06_lift/Lift.h"
 #include "12_signal/Signal.h"
-#include "14_runlog/RunLog.h"
 
 static bool s_carrying = false;
 static RfidUid s_uid;
@@ -53,7 +52,6 @@ static void checkPalletCard()
 
 void PickPallet(Nav& nav)
 {
-    runlogAdd(RL_PICK, nav.node);
     shortMove(PICK_ADJ_MS);
     checkPalletCard();
     LiftUp();
@@ -64,7 +62,6 @@ void PickPallet(Nav& nav)
 
 void DropPallet(Nav& nav)
 {
-    runlogAdd(RL_DROP, nav.node);
     shortMove(DROP_ADJ_MS);
     LiftDown();
     s_carrying = false;
