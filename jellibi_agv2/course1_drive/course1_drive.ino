@@ -9,6 +9,7 @@
 //    ③ 아니면 교차점 위에 바퀴축을 맞추고 정지       AlignOnCross()       (LineTrace.cpp)
 //    ④ 정차가 있으면 2초 정차                        Hold()
 //    ⑤ 회전                                          TurnLeft90 / TurnRight90 / UTurn  (Turn.cpp)
+//    ⑥ (경로표 adjDeg 가 0이 아니면) 그 교차점만 각도 보정  TurnAdjust()
 //
 //  보정값은 libraries/AGV2/src/config.h 에서만 수정.
 // =====================================================================
@@ -26,32 +27,34 @@ struct Step {
     char   cross[3];   // 교차점 이름 (로그용)
     Action act;        // 이 교차점에서 할 동작
     bool   hold;       // 동작 전에 2초 정차
+    int8_t adjDeg;     // ★ 이 교차점의 회전만 각도 보정 (°): + = 더 돎, - = 덜 돎, 0 = 그대로
+                       //   (config.h 좌·우·U턴 공통값은 그대로 두고 이 교차점만 따로 맞출 때)
 };
 
 // ---------------------------------------------------------------------
 //  경로표: 만나는 교차점 순서대로 한 줄씩
 // ---------------------------------------------------------------------
 const Step ROUTE[] = {
-    // 교차점  동작    2초정차      (진행 방향)
-    { "H2",  GO,     false },   // 출발 직후 첫 교차점 (북쪽으로)
-    { "G2",  GO,     false },
-    { "F2",  RIGHT,  false },   // 북 → 동
-    { "F3",  GO,     false },
-    { "F4",  GO,     false },
-    { "F5",  LEFT,   false },   // 동 → 북
-    { "E5",  GO,     false },
-    { "D5",  GO,     false },
-    { "C5",  RIGHT,  true  },   // 북쪽으로 도착 → 2초 정차 → 우회전 (북 → 동)
-    { "C6",  GO,     false },
-    { "C7",  LEFT,   false },   // 동 → 북
-    { "B7",  UTURN,  false },   // 북 → 남
-    { "C7",  GO,     false },   // 돌아오면서 통과
-    { "D7",  GO,     false },
-    { "E7",  GO,     false },
-    { "F7",  RIGHT,  false },   // 남 → 서
-    { "F6",  LEFT,   false },   // 서 → 남
-    { "G6",  GO,     false },
-    { "H6",  END,    true  },   // 남쪽으로 도착 → 2초 정차 (최종)
+    // 교차점  동작    2초정차  각도보정(°)   (진행 방향)
+    { "H2",  GO,     false,     0 },   // 출발 직후 첫 교차점 (북쪽으로)
+    { "G2",  GO,     false,     0 },
+    { "F2",  RIGHT,  false,     0 },   // 북 → 동
+    { "F3",  GO,     false,     0 },
+    { "F4",  GO,     false,     0 },
+    { "F5",  LEFT,   false,     0 },   // 동 → 북
+    { "E5",  GO,     false,     0 },
+    { "D5",  GO,     false,     0 },
+    { "C5",  RIGHT,  true ,     0 },   // 북쪽으로 도착 → 2초 정차 → 우회전 (북 → 동)
+    { "C6",  GO,     false,     0 },
+    { "C7",  LEFT,   false,     0 },   // 동 → 북
+    { "B7",  UTURN,  false,     0 },   // 북 → 남
+    { "C7",  GO,     false,     0 },   // 돌아오면서 통과
+    { "D7",  GO,     false,     0 },
+    { "E7",  GO,     false,     0 },
+    { "F7",  RIGHT,  false,     0 },   // 남 → 서
+    { "F6",  LEFT,   false,   -30 },   // 서 → 남   ★ 11-11: F6 좌회전만 약 30° 더 돎 → -30
+    { "G6",  GO,     false,     0 },
+    { "H6",  END,    true ,     0 },   // 남쪽으로 도착 → 2초 정차 (최종)
 };
 const uint8_t ROUTE_LEN = sizeof(ROUTE) / sizeof(ROUTE[0]);
 
@@ -112,6 +115,12 @@ void setup()
             case RIGHT: Serial.println(F(" RIGHT")); TurnRight90(); break;
             case UTURN: Serial.println(F(" UTURN")); UTurn();       break;
             default:    Serial.println(F(" END"));                  break;
+        }
+
+        // ⑥ 이 교차점만의 각도 보정 (경로표 adjDeg)
+        if (st.adjDeg != 0 && st.act != END) {
+            bool turnLeft = (st.act == LEFT) || (st.act == UTURN && UTURN_LEFT);
+            TurnAdjust(turnLeft, st.adjDeg);
         }
     }
 

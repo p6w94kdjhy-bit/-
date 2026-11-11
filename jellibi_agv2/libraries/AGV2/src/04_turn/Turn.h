@@ -32,6 +32,10 @@ void TurnRight90();      // 오른쪽 90°
 void UTurn();            // 교차점 위에서: 조금 후진 → 회전 → 돌아갈 선을 찾으면 정지
 void UTurnOnEdge();      // 칸 중간에서(장애물 앞, 팔레트 하역 후): 후진 없이 회전 → 선 찾으면 정지
 
+// 회전이 끝난 뒤 특정 교차점에서만 각도 보정 (course1 경로표 adjDeg)
+//   turnLeft = 방금 한 회전이 왼쪽이었나, deg > 0 이면 같은 방향으로 더, deg < 0 이면 반대로 되돌림
+void TurnAdjust(bool turnLeft, int deg);
+
 // 공통 함수: left=true 왼쪽, quarters = 1(90°) / 2(180°)
 void spinTurn(bool left, uint8_t quarters);
 

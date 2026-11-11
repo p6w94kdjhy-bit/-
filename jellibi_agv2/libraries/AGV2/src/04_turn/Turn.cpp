@@ -89,5 +89,17 @@ void spinTurn(bool left, uint8_t quarters)
     lineTraceReset();
 }
 
+void TurnAdjust(bool turnLeft, int deg)
+{
+    if (deg == 0) return;
+    bool spinLeft = (deg > 0) ? turnLeft : !turnLeft;
+    if (spinLeft) drive(-TURN_PWM, TURN_PWM);
+    else          drive(TURN_PWM, -TURN_PWM);
+    waitMs(TURN_DEG_TO_MS(deg > 0 ? deg : -deg));
+    Brake();
+    delay(TURN_SETTLE_MS);
+    lineTraceReset();
+}
+
 void TurnLeft90()  { spinTurn(true, 1); }
 void TurnRight90() { spinTurn(false, 1); }

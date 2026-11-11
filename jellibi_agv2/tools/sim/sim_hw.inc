@@ -67,6 +67,7 @@ void TurnLeft90()  { spinTurn(true, 1); }
 void TurnRight90() { spinTurn(false, 1); }
 void UTurn()       { spinTurn(UTURN_LEFT, 2); }
 void UTurnOnEdge() { spinTurn(UTURN_LEFT, 2); }
+void TurnAdjust(bool, int) {}
 IrSample readIr() { return IrSample{0, 0}; }
 int irFront() { return 0; }
 bool irCalibrated() { return true; }
