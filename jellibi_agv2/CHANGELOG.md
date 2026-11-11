@@ -13,3 +13,4 @@
 | 11-11 | `IR_R_WHITE` `IR_R_BLACK` `FRONT_OBSTACLE_TH` `FRONT_NEAR_IS_HIGH` `LT_CENTER_OFFSET` | -1→428, -1→959, -1→29, 1→0, 0→18 | 연습 측정값(10mm 선). 왼쪽(L) 값은 전달받지 못해 아직 -1 |
 | 11-11 | `FRONT_OBSTACLE_TH` `LT_CENTER_OFFSET` | 29→660, 18→-8 | 2차 연습 측정. IR 흰/검 4줄은 아직 미전달(L -1, R 1차값 유지) |
 | 11-11 | `IR_L_WHITE` `IR_L_BLACK` `IR_R_WHITE` `IR_R_BLACK` | -1→486, -1→963, 428→426, 959→957 | 2차 연습 측정(10mm 선) 전체 반영. 기준값 L=724 R=691. 주행 가능 상태 |
+| 11-11 | `MOTOR_L_GAIN` 100→97, `TURN_BLIND_PCT` 65→40, `UTURN_BLIND_PCT` 70(신규), `TURN_EXIT_MAX_MS` 300→0, `XING_CLEAR_SAMPLES` 8(신규) | | tune_drive 1차: 직진 약간 오른쪽, l 약 120°, F 한 칸에서 정지(교차점 중복 카운트로 추정) |

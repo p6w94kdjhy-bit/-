@@ -15,6 +15,7 @@ static bool leadIsBlack(bool left)
 void spinTurn(bool left, uint8_t quarters)
 {
     unsigned long expect = (unsigned long)TURN90_MS * quarters;   // 예상 회전 시간
+    unsigned long blindPct = (quarters >= 2) ? UTURN_BLIND_PCT : TURN_BLIND_PCT;
 
     // ① 제자리 회전 시작
     if (left) drive(-TURN_PWM, TURN_PWM);
@@ -22,10 +23,10 @@ void spinTurn(bool left, uint8_t quarters)
 
 #if TURN_USE_SENSOR
     // ② 무시 구간
-    waitMs(expect * TURN_BLIND_PCT / 100);
+    waitMs(expect * blindPct / 100);
 
     // ③ 진행쪽 IR이 검정을 볼 때까지
-    unsigned long seekMax = expect * (100 - TURN_BLIND_PCT) / 100 + TURN_SEEK_MAX_MS;
+    unsigned long seekMax = expect * (100 - blindPct) / 100 + TURN_SEEK_MAX_MS;
     unsigned long t0 = millis();
     bool found = false;
     while (millis() - t0 < seekMax) {

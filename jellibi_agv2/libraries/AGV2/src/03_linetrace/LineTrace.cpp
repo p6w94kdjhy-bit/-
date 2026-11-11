@@ -12,19 +12,29 @@ static int s_prevErr = 0;        // 방식 1 미분항
 
 // ---- 교차점 1회만 세기 ----
 //  양쪽 검정이 연속 XING_CONFIRM_SAMPLES 회 → 1번 셈
-//  그 뒤 선을 벗어나고(양쪽 검정 아님) XING_SKIP_MS 가 지나야 다음 교차점을 셀 수 있음
+//  그 뒤 '양쪽 흰색'이 연속 XING_CLEAR_SAMPLES 회 나오고(선을 완전히 벗어남)
+//  XING_SKIP_MS 가 지나야 다음 교차점을 셀 수 있음
+//  (선 가장자리에서 한쪽 센서만 잠깐 흰색이 되는 깜빡임으로 같은 교차점을 두 번 세지 않게)
 static uint8_t s_crossCnt = 0;
+static uint8_t s_clearCnt = 0;
 static bool s_crossArmed = true;
 static unsigned long s_crossLast = 0;
 
 static bool crossDetected(const IrSample& s)
 {
-    bool both = (s.l > XING_TH_L) && (s.r > XING_TH_R);
-    if (!both) {
+    bool blackL = s.l > XING_TH_L;
+    bool blackR = s.r > XING_TH_R;
+    if (!(blackL && blackR)) {
         s_crossCnt = 0;
-        s_crossArmed = true;
+        if (!blackL && !blackR) {                       // 양쪽 흰색
+            if (s_clearCnt < 255) s_clearCnt++;
+            if (s_clearCnt >= XING_CLEAR_SAMPLES) s_crossArmed = true;
+        } else {
+            s_clearCnt = 0;
+        }
         return false;
     }
+    s_clearCnt = 0;
     if (s_crossCnt < 255) s_crossCnt++;
     if (s_crossArmed && s_crossCnt >= XING_CONFIRM_SAMPLES && millis() - s_crossLast >= XING_SKIP_MS) {
         s_crossArmed = false;
@@ -39,6 +49,7 @@ void lineTraceReset()
     s_speed = 0;
     s_prevErr = 0;
     s_crossCnt = 0;
+    s_clearCnt = 0;
     s_crossArmed = true;
     s_crossLast = millis() - XING_SKIP_MS;
 }

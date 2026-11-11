@@ -48,7 +48,7 @@
 // ---------------------------------------------------------------------
 #define LEFT_FWD_LEVEL   HIGH   // [현장] 예제 기준 왼쪽 전진=HIGH — 실측 확인 (tune_drive 's')
 #define RIGHT_FWD_LEVEL  LOW    // [현장] 예제 기준 오른쪽 전진=LOW — 실측 확인
-#define MOTOR_L_GAIN     100    // [현장] % — 직진('s')에서 오른쪽으로 휘면 L↓, 왼쪽으로 휘면 R↓
+#define MOTOR_L_GAIN      97    // [현장] 11-11: 직진 시 약간 오른쪽으로 휨 → 100→97. % — 직진('s')에서 오른쪽으로 휘면 L↓, 왼쪽으로 휘면 R↓
 #define MOTOR_R_GAIN     100    // [현장]
 
 // ---------------------------------------------------------------------
@@ -76,6 +76,7 @@
 // ---------------------------------------------------------------------
 #define XING_CONFIRM_SAMPLES 2   // 양쪽 검정이 연속 n회일 때 교차점
 #define XING_SKIP_MS       150   // [현장] 카운트 직후 이 시간 동안 재카운트 금지 (1회만 카운트)
+#define XING_CLEAR_SAMPLES  8    // [현장] 선을 완전히 벗어났다고 볼 '양쪽 흰색' 연속 횟수 (교차점 두 번 세기 방지)
 #define ALIGN_MS           150   // [현장] 교차점 감지 후 바퀴축 중점이 교차점에 올 때까지 더 가는 시간
                                  // (센서→바퀴축 거리 / SPEED_APPROACH 속도). tune_drive 'f'로 맞춤
 #define BRAKE_PWM           80   // 정지 시 역방향 펄스 세기 (0 = 브레이크 안 씀)
@@ -91,9 +92,11 @@
 #define TURN90_MS        420     // [현장] 90° 회전에 걸리는 대략 시간 (tune_drive 'L' 로 측정)
 // 회전 순서 (Turn.cpp, 강의안 방식):  ① 제자리 회전 시작  ② 무시 구간(TURN_BLIND_PCT)
 //   ③ 진행쪽 IR(왼회전=왼쪽)이 검정을 볼 때까지  ④ 그 IR이 다시 흰색이 될 때까지(선이 두 센서 사이로)  ⑤ 정지
-#define TURN_BLIND_PCT    65     // [현장] ② 예상시간의 이 % 까지는 센서 무시 (지나가는 다른 선을 무시)
+#define TURN_BLIND_PCT    40     // [현장] ② 90° 회전: 예상시간의 이 % 까지는 센서 무시
+#define UTURN_BLIND_PCT   70     // [현장] ② U턴: 이 % 까지 무시 (중간에 지나는 90° 선을 무시해야 함)
 #define TURN_SEEK_MAX_MS 500     // ③ 선 찾기 추가 허용시간 (넘으면 그냥 정지)
-#define TURN_EXIT_MAX_MS 300     // [현장] ④ 검정→흰색 기다리는 최대 시간 (0 = ④ 생략, 검정 보자마자 정지)
+#define TURN_EXIT_MAX_MS   0     // [현장] ④ 검정→흰색 기다리는 최대 시간 (0 = ④ 생략, 검정 보자마자 정지)
+                                 //  11-11: 300이면 왼회전이 약 120°까지 넘어감 → 0
 #define TURN_SETTLE_MS    60
 #define TURN_USE_SENSOR    1     // 0 = 시간만으로 회전 (TURN90_MS * 횟수)
 #define UTURN_LEFT         1     // U턴 회전 방향 1=왼쪽 0=오른쪽 (U턴 후 선을 잘 잡는 쪽)
