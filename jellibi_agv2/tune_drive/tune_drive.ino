@@ -10,6 +10,8 @@
 //   x : 하역 후 후진 탈출 (EXIT_BACK_MS) + U턴
 //   v : 시험 속도 바꾸기 (f F q 의 통과 속도) 168 → 190 → 210 → 230 → 255 → 168 ...  업로드 없이 속도별 조향 확인
 //       F 를 달리면 칸마다 'err=' (가장 크게 치우친 정도 %) 가 나온다. 칸마다 40 이하면 그 속도에서 조향 OK
+//   k / K : (종목② 조향) 게인 KP 5 내림 / 올림      t / T : 미분 TD 15 내림 / 올림
+//       업로드 없이 바로 적용. 바꿀 때마다 config.h 에 적을 줄이 출력됨 → 마음에 드는 값을 config.h 에 옮겨 적고 업로드
 //   c : 라인트레이싱 방식 바꾸기 — 종목①(비례) ↔ 종목②(부드러운 PD, config.h C2_LT_*). 바꾼 뒤 f / F / q 로 시험
 //   g : 지난 주행 기록 출력 (종목② 가 저장한 것)
 // =====================================================================
@@ -20,6 +22,16 @@ char lastCmd = 0;
 bool smoothOn = false;
 const int TEST_SPEEDS[] = { SPEED_CRUISE, 190, 210, 230, 255 };
 uint8_t speedIdx = 0;
+int kp = C2_LT_KP, td = C2_LT_TD_MS;
+
+void applySmooth()
+{
+    lineTraceSmooth(smoothOn ? kp : 0, td, C2_LT_MAX_PCT, C2_LT_SLOW_PCT);
+    Serial.print(smoothOn ? F("조향: 종목② 부드러운 PD") : F("조향: 종목① 비례 (k K t T 는 종목② 조향일 때만 효과)"));
+    Serial.print(F("   시험 속도 ")); Serial.println(nav.cruise);
+    Serial.print(F("  config.h 에 적을 값 →  #define C2_LT_KP ")); Serial.print(kp);
+    Serial.print(F("   #define C2_LT_TD_MS ")); Serial.println(td);
+}
 
 bool needIr()
 {
@@ -58,9 +70,12 @@ void run(char c)
         case 'x': Backward(EXIT_BACK_PWM); delay(EXIT_BACK_MS); Brake(); UTurnOnEdge(); break;
         case 'c':
             smoothOn = !smoothOn;
-            lineTraceSmooth(smoothOn ? C2_LT_KP : 0, C2_LT_TD_MS, C2_LT_MAX_PCT, C2_LT_SLOW_PCT);
-            Serial.println(smoothOn ? F("라인트레이싱: 종목② 부드러운 PD") : F("라인트레이싱: 종목① 비례"));
+            applySmooth();
             return;
+        case 'k': if (kp > 10) kp -= 5;  applySmooth(); return;
+        case 'K': if (kp < 100) kp += 5; applySmooth(); return;
+        case 't': if (td >= 15) td -= 15; applySmooth(); return;
+        case 'T': if (td < 200) td += 15; applySmooth(); return;
         case 'g': runlogDump(); return;
         case 'v':
             speedIdx = (speedIdx + 1) % (sizeof(TEST_SPEEDS) / sizeof(TEST_SPEEDS[0]));
@@ -81,7 +96,7 @@ void setup()
     uiInit();
     showConfig();
     liftInit();
-    Serial.println(F("tune_drive: s f F l r u L q p d x c g v  (버튼=반복)"));
+    Serial.println(F("tune_drive: s f F l r u L q p d x c g v k K t T  (버튼=반복)"));
 }
 
 void loop()
