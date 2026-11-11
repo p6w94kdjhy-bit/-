@@ -17,3 +17,4 @@
 | 11-11 | `MOTOR_L_GAIN` 97→94, `TURN90_MS` 420→460, `TURN_USE_SENSOR` 1→0(임시) | | tune_drive 2차: 여전히 오른쪽으로 휨, L 약 330°, r 조금만 돎, F 정상(3칸) |
 | 11-11 | `TURN_USE_SENSOR` 0→1, `TURN_STOP_SENSOR` 1(신규) | | 우회전은 왼쪽 IR, 좌회전은 오른쪽 IR이 새 선에 닿으면 정지 (사용자 실측 요청) |
 | 11-11 | `SPEED_CRUISE` 90→120, `SPEED_APPROACH` 60→70, `ALIGN_MS` 150→130, `TURN_AFTER_MS` 40(신규), `TURN_MIN_PCT` 85(신규) | | 교차점 좌우 회전이 덜 됨 → 최소 회전 보장 + 감지 후 추가 회전. 속도 상향 |
+| 11-11 | `SPEED_CRUISE` 120→168, `SPEED_APPROACH` 70→98, `SPEED_CARRY` 75→98, `ALIGN_MS` 130→93 | | 종목① 완주 확인(커밋 89f16ba) 후 주행 속도 ×1.4. 회전 설정은 그대로. 되돌리기: 120/70/75/130 |
