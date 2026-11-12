@@ -81,6 +81,7 @@ int lineError(const IrSample&) { return 0; }
 void lineTraceReset() {}
 void lineTraceSetGains(int, int, int, int) {}
 void lineTraceSmooth(int, int, int, int) {}
+void lineTraceBoost(int, unsigned long) {}
 void lineTraceStep(const IrSample&, int) {}
 
 void AlignOnCross() { lineTraceReset(); }

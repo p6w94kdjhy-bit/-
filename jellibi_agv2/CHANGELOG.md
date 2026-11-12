@@ -46,3 +46,5 @@
 | 11-12 | `MOTOR_L_GAIN_LOW` 98, `MOTOR_R_GAIN_LOW` 100, `MOTOR_GAIN_LOW_PWM` 70, `MOTOR_GAIN_HIGH_PWM` 98 (신규) | | motor_balance 측정: PWM 70 전진 L 98, PWM 98 이상 L 94. 느린 전진에만 적용(후진·회전 제외). SPEED_APPROACH 구간 직진이 달라지므로 정차 위치(ALIGN_MS) 재확인 |
 | 11-12 | `MOTOR_L_GAIN_REV` 99, `MOTOR_R_GAIN_REV` 100 (신규) | | motor_balance 측정: PWM 70 후진 L 99 / R 100. 후진하는 모든 동작에 적용 (이전엔 전진 값 94 를 그대로 써서 후진이 휘었음) |
 | 11-12 | `MOTOR_L_GAIN_REV` 99→94 | | 사용자 요청: 후진 보정 적용 전으로 되돌림 (현장 테스트에서 후진 이상 시 99 로) |
+| 11-12 | course1_fast 추가: `C1F_CRUISE` 200, `C1F_LATE_BRAKE_PCT` 40, `C1F_LT_SMOOTH` 0 (신규) | | 원본 course1_drive 그대로. 통과 속도 ↑ + 정차 칸 앞부분 빠르게. 실물 미검증 |
+| 11-12 | config_local.h (노트북 전용, GitHub 에 안 올라감) 지원 — config.h 모든 값을 덮어쓸 수 있게 | | 노트북에서 config.h 를 직접 고치면 Pull 충돌 → 앞으로는 config_local.h 에 |

@@ -41,6 +41,9 @@ void lineTraceSetGains(int kp, int kd, int maxPct, int deadband);
 //   slowPct: 한쪽으로 완전히 치우쳤을 때 속도를 (속도 - SPEED_APPROACH) 의 몇 % 만큼 낮출지 (0 = 감속 안 함)
 void lineTraceSmooth(int kp, int tdMs, int maxPct, int slowPct);
 
+// 늦은 감속: 바로 다음 LineTraceToCross 한 번에 한해, 처음 ms 동안은 fastSpeed 로 달리고 그 뒤 원래 속도로 (course1_fast)
+void lineTraceBoost(int fastSpeed, unsigned long ms);
+
 // --- 내부용 (회전·출발 직후 상태 초기화, 한 번의 조향) ---
 void lineTraceReset();
 void lineTraceStep(const IrSample& s, int speed);

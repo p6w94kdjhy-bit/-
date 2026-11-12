@@ -85,6 +85,9 @@ void waitMs(unsigned long ms)
 void showConfig()
 {
     Serial.println(F("----- config.h (로봇 안의 값) -----"));
+#ifdef CONFIG_LOCAL_USED
+    Serial.println(F("★ config_local.h 사용 중 (노트북에서 바꾼 값이 들어감 — 확정되면 Claude 에게 알려 config.h 에 반영)"));
+#endif
     Serial.print(F("IR  L 흰/검 = ")); Serial.print(IR_L_WHITE); Serial.print('/'); Serial.print(IR_L_BLACK);
     Serial.print(F("   R 흰/검 = ")); Serial.print(IR_R_WHITE); Serial.print('/'); Serial.println(IR_R_BLACK);
     Serial.print(F("속도 CRUISE/APPROACH = ")); Serial.print(SPEED_CRUISE); Serial.print('/'); Serial.print(SPEED_APPROACH);

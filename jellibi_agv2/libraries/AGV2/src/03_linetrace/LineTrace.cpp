@@ -169,11 +169,25 @@ void lineTraceStep(const IrSample& s, int speed)
 }
 
 // ---- 다음 교차점까지 달리기 ----
+// ---- 늦은 감속: 다음 LineTraceToCross 한 번만, 처음 ms 동안 fastSpeed 로 (course1_fast) ----
+static int s_boostSpeed = 0;
+static unsigned long s_boostMs = 0;
+void lineTraceBoost(int fastSpeed, unsigned long ms)
+{
+    s_boostSpeed = fastSpeed;
+    s_boostMs = ms;
+}
+
 bool LineTraceToCross(int speed, bool checkObstacle)
 {
     ObstacleDetector obs;
     unsigned long startMs = millis();
     unsigned long lastMs = startMs;
+    const int slowSpeed = speed;                          // 늦은 감속: 처음 boostMs 동안만 boostSpeed
+    const int boostSpeed = s_boostSpeed;
+    const unsigned long boostMs = s_boostMs;
+    s_boostSpeed = 0;
+    s_boostMs = 0;                                        // 한 번만 적용
     for (;;) {
         IrSample s = readIr();
         if (crossDetected(s)) return true;               // 교차점 도착
@@ -182,6 +196,7 @@ bool LineTraceToCross(int speed, bool checkObstacle)
 #if HOP_TIMEOUT_MS > 0
         if (now - startMs > HOP_TIMEOUT_MS) uiFatal(F("교차점을 찾지 못함 (HOP_TIMEOUT_MS)"));
 #endif
+        speed = (boostMs && now - startMs < boostMs && boostSpeed > slowSpeed) ? boostSpeed : slowSpeed;
         if (s_speed < speed) {                            // 출발 가속 (바퀴 미끄러짐 방지)
             s_speed += (int)(now - lastMs) * ACCEL_PER_MS;
             if (s_speed > speed) s_speed = speed;

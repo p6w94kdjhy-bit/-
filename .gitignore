@@ -5,3 +5,6 @@ spice/out/
 # Arduino 라이브러리 매니저가 설치한 라이브러리(MFRC522, Servo 등)는 올리지 않음 — AGV2 만 저장소 코드
 jellibi_agv2/libraries/*
 !jellibi_agv2/libraries/AGV2/
+
+# 노트북 전용 보정값 (현장에서 직접 고치는 값) — GitHub 에 올리지 않음 → Pull 충돌 없음
+jellibi_agv2/libraries/AGV2/src/config_local.h
