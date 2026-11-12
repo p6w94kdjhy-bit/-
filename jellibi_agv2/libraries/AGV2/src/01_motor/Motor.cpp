@@ -22,10 +22,11 @@ static int clampPwm(long v)
     return (int)v;
 }
 
-// 속도에 따른 좌우 보정 %: 느린 전진(MOTOR_GAIN_LOW_PWM 이하)은 gLow, 빠른 전진(MOTOR_GAIN_HIGH_PWM 이상)과 후진은 gHigh
-static int gainFor(int cmd, int gHigh, int gLow)
+// 속도에 따른 좌우 보정 %: 느린 전진(MOTOR_GAIN_LOW_PWM 이하)은 gLow, 빠른 전진(MOTOR_GAIN_HIGH_PWM 이상)은 gHigh, 후진은 gRev
+static int gainFor(int cmd, int gHigh, int gLow, int gRev)
 {
-    if (cmd <= 0 || cmd >= MOTOR_GAIN_HIGH_PWM) return gHigh;
+    if (cmd < 0) return gRev;                                  // 후진
+    if (cmd >= MOTOR_GAIN_HIGH_PWM) return gHigh;
     if (cmd <= MOTOR_GAIN_LOW_PWM) return gLow;
     return gLow + (int)((long)(gHigh - gLow) * (cmd - MOTOR_GAIN_LOW_PWM) / (MOTOR_GAIN_HIGH_PWM - MOTOR_GAIN_LOW_PWM));
 }
@@ -34,8 +35,8 @@ void drive(int left, int right)
 {
     s_lastL = left;
     s_lastR = right;
-    int l = clampPwm((long)left * gainFor(left, MOTOR_L_GAIN, MOTOR_L_GAIN_LOW) / 100);    // 좌우 모터 성능 보정 (속도별)
-    int r = clampPwm((long)right * gainFor(right, MOTOR_R_GAIN, MOTOR_R_GAIN_LOW) / 100);
+    int l = clampPwm((long)left * gainFor(left, MOTOR_L_GAIN, MOTOR_L_GAIN_LOW, MOTOR_L_GAIN_REV) / 100);    // 좌우 모터 성능 보정 (속도별)
+    int r = clampPwm((long)right * gainFor(right, MOTOR_R_GAIN, MOTOR_R_GAIN_LOW, MOTOR_R_GAIN_REV) / 100);
     digitalWrite(PIN_L_DIR, l >= 0 ? LEFT_FWD_LEVEL : !LEFT_FWD_LEVEL);    // 방향
     digitalWrite(PIN_R_DIR, r >= 0 ? RIGHT_FWD_LEVEL : !RIGHT_FWD_LEVEL);
     analogWrite(PIN_L_PWM, abs(l));                                        // 속도

@@ -48,3 +48,4 @@
 | 11-12 | `LIFT_DOWN_ANGLE` 70→58 | | 실측: 60 에서 살짝 뜸, 55 에서 서보가 버팀 |
 | 11-12 | `LIFT_UP_ANGLE` 170→165 | | 실물에서 확인한 올린 각도 |
 | 11-12 | `MOTOR_L_GAIN_LOW` 98, `MOTOR_R_GAIN_LOW` 100, `MOTOR_GAIN_LOW_PWM` 70, `MOTOR_GAIN_HIGH_PWM` 98 (신규) | | motor_balance 측정: PWM 70 전진 L 98, PWM 98 이상 L 94. 느린 전진에만 적용(후진·회전 제외). SPEED_APPROACH 구간 직진이 달라지므로 정차 위치(ALIGN_MS) 재확인 |
+| 11-12 | `MOTOR_L_GAIN_REV` 99, `MOTOR_R_GAIN_REV` 100 (신규) | | motor_balance 측정: PWM 70 후진 L 99 / R 100. 후진하는 모든 동작에 적용 (이전엔 전진 값 94 를 그대로 써서 후진이 휘었음) |
