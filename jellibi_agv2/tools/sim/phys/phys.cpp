@@ -168,9 +168,9 @@ int analogRead(int pin)
     if (pin == PIN_IR_R) return (int)(IR_R_WHITE + blackFrac(false) * (IR_R_BLACK - IR_R_WHITE)) + nz(g_rng);
     for (uint8_t n : g_obs) {
         double lat, face = obsFace(lat, n);
-        if (lat < OBS_HALF + 20 && face > -60 && face < OBS_SENSE) return 400 + nz(g_rng);   // 가까우면 작음
+        if (lat < OBS_HALF + 20 && face > -60 && face < OBS_SENSE) return 640 + nz(g_rng);   // 가까우면 큼
     }
-    return 1000;                                              // 전방 IR: 장애물 없음
+    return 60;                                                // 전방 IR: 장애물 없음 (작은 값)
 }
 uint8_t EEPROMStub::read(int a) { while (g_us < g_eeBusyUntil) advance(50); return g_ee[a]; }
 void EEPROMStub::write(int a, uint8_t v) { while (g_us < g_eeBusyUntil) advance(50); g_ee[a] = v; g_eeBusyUntil = g_us + 3400; }
