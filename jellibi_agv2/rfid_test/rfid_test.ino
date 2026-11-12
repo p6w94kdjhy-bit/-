@@ -3,10 +3,11 @@
 //   - 처음에 리더 칩 버전 출력: 0x91 / 0x92 = 정상, 0x00 / 0xFF = 연결 안 됨
 //   - 카드를 대면 번호(UID)와, course2_pallet.ino 의 RFID_DEST[] 에 붙여넣을 줄을 출력
 //   - 카드를 대고 있는 동안 0.5초마다 다시 읽음 → 팔레트 밑에서 얼마나 떨어져도 읽히는지 확인 가능
-//   필요: 라이브러리 매니저에서 'MFRC522' (by GithubCommunity) 설치
+//   MFRC522 라이브러리는 AGV2 안에 들어 있음 (따로 설치할 필요 없음)
 // =====================================================================
+#include <AGV2.h>
 #include <SPI.h>
-#include <MFRC522.h>
+#include <13_rfid/mfrc522/MFRC522.h>
 
 MFRC522 rfid(2, 4);   // SS=D2, RST=D4
 
