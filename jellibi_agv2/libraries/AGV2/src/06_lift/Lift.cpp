@@ -26,17 +26,20 @@ static void moveTo(int target)
 }
 
 // 전원을 켜면 리프터가 약간 올라가는 현상 처리 — 교본 26쪽 '전원을 켤 때 리프터가 올라가는 현상의 처리'
-//   setup() 맨 처음에 리프터 내리기 실행: 서보 연결 → 내린 각도 → 0.3초 → 연결 해제  (교본 LifterDown 과 같음)
-//   (연결하기 전에 내린 각도를 먼저 넣어 둠 → 연결하는 순간 가운데 90° 로 튀지 않음)
+//   교본: setup() 에서 "먼저 필요한 초기화 코드 실행 이후" 리프터 내리기(LifterDown) 실행
+//         LifterDown = 서보 연결 → 10ms → 내린 각도 쓰기 → 300ms → 연결 해제 → 10ms
+//   전원이 들어온 직후에는 서보가 스스로 움찔하며 올라갈 수 있어서, 너무 일찍 내리면 그 뒤에 다시 올라온다.
+//   → 다른 초기화가 끝난 뒤에 호출하고, 시작 전에 LIFT_INIT_WAIT_MS 만큼 기다렸다가 내린다.
 void liftInit()
 {
+    delay(LIFT_INIT_WAIT_MS);      // 전원이 안정될 때까지 (서보의 전원 켤 때 움찔거림이 끝난 뒤)
     s_angle = LIFT_DOWN_ANGLE;
-    s_servo.write(s_angle);
+    s_servo.write(s_angle);        // (연결하는 순간 가운데 90° 로 튀지 않게 내린 각도를 먼저 넣어 둠)
     s_servo.attach(PIN_SERVO);     // 서보 연결
     delay(10);
     s_servo.write(s_angle);        // 리프터 아래로 내림
-    delay(300);
-    s_servo.detach();              // 서보 연결 해제 (떨림·소음 방지)
+    delay(LIFT_INIT_HOLD_MS);
+    s_servo.detach();              // 서보 연결 해제
     delay(10);
     s_up = false;
 }

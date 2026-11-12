@@ -262,6 +262,8 @@
 // ---------------------------------------------------------------------
 #define LIFT_UP_ANGLE    170     // [현장] 예제값(180-10) — 실측 확인 (tune_drive 'p')
 #define LIFT_DOWN_ANGLE   80     // [현장] 예제값(90-10)  — 실측 확인 (tune_drive 'd')
+#define LIFT_INIT_WAIT_MS 300     // [현장] 전원 켠 뒤 리프터를 내리기 전에 기다리는 시간 (그래도 올라와 있으면 300→600)
+#define LIFT_INIT_HOLD_MS 400     // [현장] 내린 각도를 유지하는 시간 (교본 300). 다 내려가기 전에 풀리면 ↑
 #define LIFT_STEP_DEG      3
 #define LIFT_STEP_MS      15
 #define LIFT_SETTLE_MS   250

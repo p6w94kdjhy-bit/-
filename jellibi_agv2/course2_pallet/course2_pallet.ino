@@ -109,7 +109,6 @@ void deliver(const Job& j)
 // ----------------------------------------------------------------- main
 void setup()
 {
-    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     driveInit();
     uiInit();
@@ -127,6 +126,7 @@ void setup()
     lineTraceSmooth(C2_LT_KP, C2_LT_TD_MS, C2_LT_MAX_PCT, C2_LT_SLOW_PCT);
 #endif
 
+    liftInit();                      // 리프터 내리기 — 교본 26쪽: 초기화가 끝난 뒤 실행 (전원 켤 때 올라가는 현상 처리)
     Serial.println(F("COURSE2 ready - waiting start"));
     beepReady();
     uiWaitStart();                   // 출발 신호: 버튼 또는 RFID 카드 태그 (config.h START_MODE)
