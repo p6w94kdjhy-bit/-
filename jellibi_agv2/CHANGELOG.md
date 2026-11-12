@@ -43,3 +43,4 @@
 | 11-12 | `LIFT_DOWN_ANGLE` 80→70 | | 새 코드에서도 전원 켠 뒤 리프터가 살짝 떠 있고 출발 후에도 안 내려감 → 이 로봇은 80° 가 완전히 내린 위치가 아님 |
 | 11-12 | `LIFT_DOWN_ANGLE` 70→58 | | 실측: 60 에서 살짝 뜸, 55 에서 서보가 버팀 |
 | 11-12 | `LIFT_UP_ANGLE` 170→165 | | 실물에서 확인한 올린 각도 |
+| 11-12 | `MOTOR_L_GAIN_LOW` 98, `MOTOR_R_GAIN_LOW` 100, `MOTOR_GAIN_LOW_PWM` 70, `MOTOR_GAIN_HIGH_PWM` 98 (신규) | | motor_balance 측정: PWM 70 전진 L 98, PWM 98 이상 L 94. 느린 전진에만 적용(후진·회전 제외). SPEED_APPROACH 구간 직진이 달라지므로 정차 위치(ALIGN_MS) 재확인 |

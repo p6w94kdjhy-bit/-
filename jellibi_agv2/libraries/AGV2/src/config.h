@@ -50,6 +50,14 @@
 #define RIGHT_FWD_LEVEL  LOW    // [현장] 예제 기준 오른쪽 전진=LOW — 실측 확인
 #define MOTOR_L_GAIN      94    // [현장] 11-11: 직진 시 오른쪽으로 휨 → 100→97→94. % — 직진('s')에서 오른쪽으로 휘면 L↓, 왼쪽으로 휘면 R↓
 #define MOTOR_R_GAIN     100    // [현장]
+// 느린 속도에서의 좌우 보정 (motor_balance 스케치로 측정). 모터는 속도에 따라 좌우 차이가 달라진다.
+//   전진 명령이 MOTOR_GAIN_LOW_PWM 이하면 *_GAIN_LOW, MOTOR_GAIN_HIGH_PWM 이상이면 위의 MOTOR_x_GAIN, 그 사이는 비례해서 섞음
+//   후진·제자리 회전에는 적용하지 않음 (후진은 측정값이 위 값과 같았고, 따로 REV_L/R_GAIN 이 있음)
+//   11-12 측정: PWM 70 전진 L 98 / R 100,  PWM 98·168·210 전진 L 94 / R 100
+#define MOTOR_L_GAIN_LOW     98    // [현장] PWM 70 에서 똑바로 가는 왼쪽 보정 %
+#define MOTOR_R_GAIN_LOW    100    // [현장]
+#define MOTOR_GAIN_LOW_PWM   70    // 이 속도 이하는 *_GAIN_LOW
+#define MOTOR_GAIN_HIGH_PWM  98    // 이 속도 이상은 MOTOR_x_GAIN
 
 // ---------------------------------------------------------------------
 // [4] 속도 (PWM 0~255)  — 초기값. 회전·정차 안정화 후 CRUISE부터 올린다.
