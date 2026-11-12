@@ -35,6 +35,7 @@ struct SerialStub {
     int read() { return -1; }
     template <class T> void print(T v) { if (g_serialEcho) out(v); }
     template <class T> void println(T v) { if (g_serialEcho) { out(v); std::putchar('\n'); } }
+    template <class T> void print(T v, int) { if (g_serialEcho) out(v); }
     void println() { if (g_serialEcho) std::putchar('\n'); }
     void out(const __FlashStringHelper* s) { std::fputs(reinterpret_cast<const char*>(s), stdout); }
     void out(const char* s) { std::fputs(s, stdout); }
