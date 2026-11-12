@@ -13,7 +13,6 @@ MFRC522 rfid(2, 4);   // SS=D2, RST=D4
 
 void setup()
 {
-    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     SPI.begin();
     rfid.PCD_Init();
@@ -23,6 +22,7 @@ void setup()
     Serial.print(F("rfid_test: reader version 0x"));
     Serial.print(v, HEX);
     Serial.println((v == 0x00 || v == 0xFF) ? F("  → 연결 안 됨 (배선/전원 확인)") : F("  → 정상"));
+    liftInit();                      // 리프터 내리기 — 교본 26쪽: 초기화가 끝난 뒤 실행 (전원 켤 때 올라가는 현상 처리)
     Serial.println(F("카드를 대세요"));
 }
 

@@ -58,11 +58,11 @@ void run(char c)
 
 void setup()
 {
-    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     driveInit();
     uiInit();
     showConfig();
+    liftInit();                      // 리프터 내리기 — 교본 26쪽: 초기화가 끝난 뒤 실행 (전원 켤 때 올라가는 현상 처리)
     Serial.println(F("tune_drive: s f F l r u L q p d x  (버튼=반복)"));
 }
 
