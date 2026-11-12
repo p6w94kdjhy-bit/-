@@ -26,6 +26,18 @@ bool LineTraceToCross(int speed, bool checkObstacle = false);
 // 교차점 감지 직후 호출: ALIGN_MS 동안 더 가서 바퀴축 중점을 교차점 위에 두고 정지
 void AlignOnCross();
 
+// 후진하면서 가로선(교차점)을 count 개 셀 때까지 뒤로 간다. 다 세면 멈추지 않고(후진 중) true.
+//   바닥 IR 이 바퀴축보다 앞에 있어 후진 중에는 선을 따라 조향할 수 없다 → 똑바로 후진 (MOTOR_x_GAIN 적용)
+//   후진 중 한쪽 센서가 세로선에 걸려도 교차점으로 세지 않음 (양쪽이 동시에 검정일 때만)
+//   한 칸에서 HOP_TIMEOUT_MS 안에 못 찾으면 오류 정지
+bool LineTraceBackCross(uint8_t count, int speed);
+
+// 후진 뒤: 똑바로(조향 없이) 천천히 앞으로 가서 가로선을 찾고 REV_ALIGN_MS 더 가서 정지 (바퀴축을 교차점 위에)
+void RecatchCrossStraight();
+
+// 다음 교차점은 센서가 양쪽 흰색을 지난 뒤에만 세게 함 (후진 뒤 회전처럼 센서가 옛 선 위에서 출발할 때)
+void lineTraceDisarm();
+
 // 비례 제어(LT_MODE 1) 강도를 스케치마다 따로 정할 때 (setup 에서 1번)
 //   kp: 한쪽 IR이 선 위에 완전히 올라갔을 때 안쪽 바퀴를 줄이는 %
 //   kd: 흔들림 억제 (0 = 안 씀)

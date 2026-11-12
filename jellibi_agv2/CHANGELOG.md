@@ -38,3 +38,4 @@
 | 11-11 | course1_drive_v2 추가: `V2_LT_KP` 35, `V2_LT_KD` 15, `V2_LT_MAX_PCT` 45, `V2_LT_DEADBAND` 80 | | 원본(course1_drive)은 그대로. v2는 직진 조향을 부드럽게 |
 | 11-12 | `IR_L_WHITE` `IR_L_BLACK` `IR_R_WHITE` `IR_R_BLACK` `FRONT_OBSTACLE_TH` `LT_CENTER_OFFSET` | 486→470, 963→958, 426→404, 957→953, 660→634, -8→-23 | calib_ir 11-12 측정 (기준값 L=714 R=678, 선 중앙 주행 L=2% R=4%) |
 | 11-12 | `IR_L_WHITE` `IR_L_BLACK` `IR_R_WHITE` `IR_R_BLACK` `FRONT_OBSTACLE_TH` `LT_CENTER_OFFSET` | 470→475, 958→957, 404→408, 953→952, 634→637, -23→-12 | calib_ir 11-12 2차 측정 (기준값 L=716 R=680, 선 중앙 주행 L=0% R=1%) |
+| 11-12 | course2_drive 추가 / `REV_PWM` 70, `REV_PAST_MS` 150, `REV_SKIP_MS` 250, `REV_ALIGN_MS`=ALIGN_MS, `REV_L_GAIN` `REV_R_GAIN` 100, `REV_SETTLE` 0, `OBST_BACK` `PICK_BACK` `DROP_BACK` 1 (신규) | | 종목① 주행 방식 + 교차점 세며 후진(장애물·들기·내리기). 실물 미검증. 후진 직진(REV_L/R_GAIN) 먼저 맞출 것 |

@@ -29,6 +29,7 @@ enum RunLogType : uint8_t {
     RL_DONE,        // 완주
     RL_FATAL,       // 오류 정지            a = 오류 번호 (COURSE2_TEST.md 표)
     RL_ABORT,       // 버튼 비상정지
+    RL_BACK,        // 후진 시작            a = 돌아갈 교차점, b = 셀 교차점 수
     RL_TYPE_END
 };
 

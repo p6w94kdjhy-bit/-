@@ -161,6 +161,14 @@ void lineTraceReset()
     s_smFirst = true;
 }
 
+// 다음 교차점은 '양쪽 흰색'을 한 번 지난 뒤에만 셈 (후진 뒤 회전하면 센서가 옛 선 위에 있을 수 있어서)
+void lineTraceDisarm()
+{
+    s_crossArmed = false;
+    s_clearCnt = 0;
+    s_crossCnt = 0;
+}
+
 // ---- 한 번의 조향 ----
 void lineTraceStep(const IrSample& s, int speed)
 {
@@ -231,6 +239,85 @@ bool LineTraceToCross(int speed, bool checkObstacle)
         }
         uiCheckAbort();                                   // 버튼 = 비상정지
     }
+}
+
+// ---- 후진하며 교차점 세기 ----
+//  전진과 다른 점: 후진 중엔 한쪽 센서가 세로선 위에 계속 있을 수 있어서
+//  '양쪽 흰색'이 아니라 '양쪽 검정이 아님'이 연속 XING_CLEAR_SAMPLES 회 + REV_SKIP_MS 가 지나면 다음 교차점을 셀 수 있음
+bool LineTraceBackCross(uint8_t count, int speed)
+{
+    if (count == 0) return true;
+    uint8_t both = 0, notBoth = 0;
+    bool armed = true;
+    unsigned long last = millis() - REV_SKIP_MS;
+    unsigned long cellStart = millis();
+    unsigned long lastMs = millis();
+    int spd = 0;
+    for (;;) {
+        IrSample s = readIr();
+        bool bl = s.l > XING_TH_L, br = s.r > XING_TH_R;
+        unsigned long now = millis();
+        if (bl && br) {
+            notBoth = 0;
+            if (both < 255) both++;
+            if (armed && both >= XING_CONFIRM_SAMPLES && now - last >= REV_SKIP_MS) {
+                armed = false;
+                last = now;
+                cellStart = now;
+                beepNode();
+                if (--count == 0) return true;            // 다 셈 (후진은 계속 중 — 호출한 쪽이 정지)
+            }
+        } else {
+            both = 0;
+            if (notBoth < 255) notBoth++;
+            if (notBoth >= XING_CLEAR_SAMPLES) armed = true;
+        }
+#if HOP_TIMEOUT_MS > 0
+        if (now - cellStart > HOP_TIMEOUT_MS) uiFatal(F("후진 중 교차점을 찾지 못함 (HOP_TIMEOUT_MS)"), 4);
+#endif
+        if (spd < speed) {                                 // 부드럽게 출발 (팔레트 미끄럼 방지)
+            spd += (int)(now - lastMs) * ACCEL_PER_MS;
+            if (spd > speed) spd = speed;
+        }
+        lastMs = now;
+        drive(-(int)((long)spd * REV_L_GAIN / 100), -(int)((long)spd * REV_R_GAIN / 100));
+        uiCheckAbort();
+    }
+}
+
+// ---- 후진 뒤 교차점 다시 찾아 정렬 (조향 없이 똑바로) ----
+//  후진하면 조금 비뚤어질 수 있다. 이때 선 따라 조향하면 짧은 거리에서 크게 꺾여 더 비뚤어지므로
+//  똑바로 천천히 앞으로 가서 가로선(양쪽 검정)을 찾고 REV_ALIGN_MS 더 가서 정지.
+//  남은 방향 오차는 바로 뒤에 오는 회전(센서로 새 선을 찾아 멈춤)이 바로잡는다.
+void RecatchCrossStraight()
+{
+    uint8_t both = 0;
+    unsigned long t0 = millis(), lastMs = t0;
+    int spd = 0;
+    for (;;) {
+        IrSample s = readIr();
+        if (s.l > XING_TH_L && s.r > XING_TH_R) {
+            if (++both >= XING_CONFIRM_SAMPLES) break;
+        } else {
+            both = 0;
+        }
+        unsigned long now = millis();
+#if HOP_TIMEOUT_MS > 0
+        if (now - t0 > HOP_TIMEOUT_MS) uiFatal(F("후진 뒤 교차점을 다시 찾지 못함"), 5);
+#endif
+        if (spd < SPEED_APPROACH) {
+            spd += (int)(now - lastMs) * ACCEL_PER_MS;
+            if (spd > SPEED_APPROACH) spd = SPEED_APPROACH;
+        }
+        lastMs = now;
+        Forward(spd);
+        uiCheckAbort();
+    }
+    beepNode();
+    Forward(SPEED_APPROACH);
+    waitMs(REV_ALIGN_MS);
+    Brake();
+    lineTraceReset();
 }
 
 // ---- 교차점 위에 정지 ----

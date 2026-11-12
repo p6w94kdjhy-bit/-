@@ -48,6 +48,19 @@ static struct {
     void clear() { *this = {}; }
 } M;
 
+// 장애물 (course2_drive 시험): 교차점 위 80mm 상자. 전방 IR 은 상자 면까지 OBS_SENSE mm 안이면 '가까움'
+static std::vector<uint8_t> g_obs;
+static const double OBS_HALF = 40, FRONT_OFS = 60, OBS_SENSE = 110;
+static bool g_crash = false;
+static double obsFace(double& lat, uint8_t n)
+{
+    double fx = std::sin(PHI), fy = -std::cos(PHI);
+    double px = X + fx * FRONT_OFS, py = Y + fy * FRONT_OFS;
+    double ox = colOf(n) * 200.0 - px, oy = rowOf(n) * 200.0 - py;
+    lat = std::fabs(-ox * fy + oy * fx);
+    return ox * fx + oy * fy - OBS_HALF;
+}
+
 static double wrapPi(double a) { while (a > M_PI) a -= 2 * M_PI; while (a < -M_PI) a += 2 * M_PI; return a; }
 
 static bool onLine(double px, double py)
@@ -101,6 +114,10 @@ static void physStep(double dt)
     X += v * std::sin(PHI) * dt;
     Y -= v * std::cos(PHI) * dt;
 
+    for (uint8_t n : g_obs) {                                 // 장애물에 닿으면 = 밀기 (실격)
+        double lat, face = obsFace(lat, n);
+        if (lat < OBS_HALF + 30 && face < 0 && face > -60) g_crash = true;
+    }
     if (std::fabs(v) > 40) {                                  // 달리는 동안만 측정
         double herr = wrapPi(PHI - g_nomPhi) * 180 / M_PI;
         int axis = (int)std::lround(g_nomPhi / (M_PI / 2)) & 1;   // 0 = 남북, 1 = 동서
@@ -149,6 +166,10 @@ int analogRead(int pin)
     std::uniform_int_distribution<int> nz(-3, 3);
     if (pin == PIN_IR_L) return (int)(IR_L_WHITE + blackFrac(true) * (IR_L_BLACK - IR_L_WHITE)) + nz(g_rng);
     if (pin == PIN_IR_R) return (int)(IR_R_WHITE + blackFrac(false) * (IR_R_BLACK - IR_R_WHITE)) + nz(g_rng);
+    for (uint8_t n : g_obs) {
+        double lat, face = obsFace(lat, n);
+        if (lat < OBS_HALF + 20 && face > -60 && face < OBS_SENSE) return 400 + nz(g_rng);   // 가까우면 작음
+    }
     return 1000;                                              // 전방 IR: 장애물 없음
 }
 uint8_t EEPROMStub::read(int a) { while (g_us < g_eeBusyUntil) advance(50); return g_ee[a]; }
@@ -161,6 +182,7 @@ static void idealTurn(double deg)
 {
     Stop();
     advance(60000);
+    if (getenv("C2ONE")) printf("    [turn %+.0f at %.0f,%.0f h%.1f]\n", deg, X, Y, PHI * 180 / M_PI);
     g_nomPhi = wrapPi(g_nomPhi + deg * M_PI / 180);
     std::uniform_real_distribution<double> e(-g_turnErrDeg, g_turnErrDeg);
     PHI = g_nomPhi + e(g_rng) * M_PI / 180;
@@ -168,10 +190,58 @@ static void idealTurn(double deg)
     advance((uint64_t)(std::fabs(deg) / 90.0 * TURN90_MS * 1000));
     lineTraceReset();
 }
-void TurnLeft90()  { idealTurn(-90); }
-void TurnRight90() { idealTurn(90); }
-void UTurn()       { idealTurn(180); }
-void UTurnOnEdge() { idealTurn(180); }
+// 센서 회전 (C2 모드): 실제 Turn.cpp 처럼 제자리에서 돌다가 센서가 새 선을 찾으면 멈춤
+//   90°: 무시 37° → 반대쪽 센서가 흰색 → 검정 → (보정각) 정지
+//   U턴: 무시 90° → 진행쪽 센서가 흰색 → 검정 → 흰색 → (보정각) 정지
+//   보정각은 로봇마다 '교차점 정중앙에서 돌면 정확히 90°/180°' 가 되게 미리 잼 (= 실물에서 TURN_AFTER 를 맞춘 상태)
+static bool g_sensorTurn = false;
+static double g_extra[3] = { 0, 0, 0 };          // 우 / 좌 / U턴 보정각 (rad)
+static void sensorSpin(int kind)                 // 0 우90, 1 좌90, 2 U턴(왼쪽)
+{
+    Stop();
+    advance(60000);
+    VL = VR = 0;
+    double dir = kind == 0 ? 1 : -1;
+    double target = g_nomPhi + dir * (kind == 2 ? M_PI : M_PI / 2);
+    double turned = 0, step = 0.5 * M_PI / 180;
+    bool watchLeft = kind == 0 ? true : (kind == 1 ? false : true);
+    double blind = (kind == 2 ? 90 : 37) * M_PI / 180, maxA = (kind == 2 ? 220 : 140) * M_PI / 180;
+    auto rot = [&](double a) { PHI += dir * a; turned += a; advance((uint64_t)(a / (M_PI / 2) * TURN90_MS * 1000)); };
+    while (turned < blind) rot(step);
+    while (turned < maxA && blackFrac(watchLeft) > 0.5) rot(step);
+    while (turned < maxA && blackFrac(watchLeft) <= 0.5) rot(step);
+    if (kind == 2) while (turned < maxA && blackFrac(watchLeft) > 0.5) rot(step);
+    double ex = g_extra[kind];
+    if (ex > 0) rot(ex); else if (ex < 0) { PHI -= dir * (-ex); }
+    std::uniform_real_distribution<double> e(-g_turnErrDeg, g_turnErrDeg);
+    PHI += e(g_rng) * M_PI / 180;
+    g_nomPhi = wrapPi(target);
+    PHI = g_nomPhi + wrapPi(PHI - g_nomPhi);
+    advance(60000);
+    lineTraceReset();
+}
+static void calibrateTurns()
+{
+    for (int k = 0; k < 3; k++) {
+        g_extra[k] = 0;
+        X = 600; Y = 800; PHI = 0; g_nomPhi = 0; VL = VR = 0;
+        double save = g_turnErrDeg; g_turnErrDeg = 0;
+        sensorSpin(k);
+        g_turnErrDeg = save;
+        double err = wrapPi(PHI - g_nomPhi);
+        g_extra[k] = (k == 0 ? -err : err);      // 돈 방향 기준으로 부족(+)/넘침(-)
+    }
+}
+void TurnLeft90()  { if (g_sensorTurn) sensorSpin(1); else idealTurn(-90); }
+void TurnRight90() { if (g_sensorTurn) sensorSpin(0); else idealTurn(90); }
+void UTurn()                                     // 교차점 위 U턴: 실제처럼 먼저 조금 후진(UTURN_BACK_MS)
+{
+    if (g_sensorTurn && UTURN_BACK_MS > 0) {
+        Backward(UTURN_BACK_PWM); delay(UTURN_BACK_MS); Brake(); delay(TURN_SETTLE_MS);
+    }
+    if (g_sensorTurn) sensorSpin(2); else idealTurn(180);
+}
+void UTurnOnEdge() { if (g_sensorTurn) sensorSpin(2); else idealTurn(180); }
 void TurnAdjust(bool, int) {}
 void spinTurn(bool, uint8_t) {}
 
@@ -179,7 +249,7 @@ struct Fatal : std::runtime_error { using std::runtime_error::runtime_error; };
 void uiInit() {}
 void beep(unsigned int, unsigned int ms) { delay(ms); }
 void beepReady() {}
-void beepNode() { if (getenv("TRACE2")) printf("    count at %.0f,%.0f hdg %.1f  v=%.0f\n", X, Y, PHI * 180 / M_PI, (VL + VR) / 2); }
+void beepNode() { if (getenv("C2ONE")) printf("    [cnt %.0f,%.0f h%.0f]\n", X, Y, PHI * 180 / M_PI); if (getenv("TRACE2")) printf("    count at %.0f,%.0f hdg %.1f  v=%.0f\n", X, Y, PHI * 180 / M_PI, (VL + VR) / 2); }
 void beepDone() {}
 void uiFatal(const __FlashStringHelper* m, uint8_t code)
 {
@@ -192,6 +262,27 @@ void uiArmAbort() {}
 void uiCheckAbort() { runlogPump(); advance(2); }
 void waitMs(unsigned long ms) { unsigned long t0 = millis(); while (millis() - t0 < ms) uiCheckAbort(); }
 void showConfig() {}
+void uiWaitStart() {}
+
+// 리프트: 들기·내리기 순간의 바퀴축 위치 오차 기록
+static double g_liftErrMax = 0;
+static std::string g_liftLog;
+static void liftNote(const char* what)
+{
+    double tx = std::round(X / 200.0) * 200.0, ty = std::round(Y / 200.0) * 200.0;
+    double e = std::hypot(X - tx, Y - ty);
+    g_liftErrMax = std::max(g_liftErrMax, e);
+    char b[64];
+    snprintf(b, sizeof b, "%s(%.0fmm) ", what, e);
+    g_liftLog += b;
+}
+void liftInit() {}
+void LiftUp()   { liftNote("UP");   advance(1200000); }
+void LiftDown() { liftNote("DOWN"); advance(1200000);
+    if (getenv("C2ONE")) printf("    [drop pose %.0f,%.0f h%.1f  sensL %.2f sensR %.2f]\n", X, Y, PHI * 180 / M_PI, blackFrac(true), blackFrac(false)); }
+bool liftIsUp() { return false; }
+
+
 
 // ------------------------------------------------------------------ 시험
 struct Ctl { const char* name; int smooth; int a, b, c, d; };
@@ -320,8 +411,79 @@ static const Plant PLANTS[] = {
     { "차폭 넓음",    130, 25, 22, 3.5, 3.0, 25, 0.07 },
 };
 
+#define setup c2_setup
+#define loop c2_loop
+#include "../../../course2_drive/course2_drive.ino"
+#undef setup
+#undef loop
+
+// course2_drive 전체를 물리 세계에서: 막힌 통로 3가지 × 로봇 특성 × seed
+static int runCourse2(unsigned seeds)
+{
+    const uint8_t cand[3] = { P('D', 2), P('D', 4), P('D', 6) };
+    int fails = 0, runs = 0;
+    double worstLift = 0, worstPark = 0, sumT = 0;
+    int perPlant[16] = {};
+    int onlyP = -1, onlyK = -1; unsigned onlyS = 0;
+    if (getenv("C2ONE")) { sscanf(getenv("C2ONE"), "%d %d %u", &onlyP, &onlyK, &onlyS); g_serialEcho = true; }
+    int pi = -1;
+    for (const Plant& p : PLANTS) {
+        PL = p;
+        pi++;
+        if (onlyP >= 0 && pi != onlyP) continue;
+        for (int k = 0; k < 3; k++)
+            for (unsigned seed = 1; seed <= seeds; seed++) {
+                if (onlyK >= 0 && (k != onlyK || seed != onlyS)) continue;
+                resetWorld(600, 1400 + 50, ((int)seed % 5 - 2) * 3.0, seed);
+                g_stopBias = 0;
+                g_sensorTurn = true;
+                g_turnErrDeg = 3;
+                calibrateTurns();
+                resetWorld(600, 1400 + 50, ((int)seed % 5 - 2) * 3.0, seed);
+                memset(g_ee, 0xFF, sizeof g_ee);
+                g_obs.clear();
+                for (int j = 0; j < 3; j++) if (j != k) g_obs.push_back(cand[j]);
+                g_crash = false; g_liftErrMax = 0; g_liftLog.clear();
+                for (int i = 0; i < 3; i++) lane[i] = L_UNKNOWN;
+                openLane = -1;
+                nav = Nav();
+                if (getenv("C2PD")) lineTraceSmooth(C2_LT_KP, C2_LT_TD_MS, C2_LT_MAX_PCT, C2_LT_SLOW_PCT);
+                else { lineTraceSmooth(0, 0, 100, 0); lineTraceSetGains(LT_KP, LT_KD, 100, 0); }   // 종목① 과 같은 조향
+                runs++;
+                uint64_t t0 = g_us;
+                std::string why;
+                try {
+                    c2_setup();
+                    if (g_crash) why = "장애물 밀기";
+                } catch (Fatal& f) { why = f.what(); }
+                if (g_crash && why.empty()) why = "장애물 밀기";
+                double park = std::hypot(X - 600, Y - 1400);
+                if (why.empty() && park > 30) why = "H4 정지 위치 오차 큼";
+                if (why.empty() && g_liftErrMax > 30) why = "들기/내리기 위치 오차 큼";
+                if (!why.empty()) {
+                    fails++;
+                    perPlant[pi]++;
+                    if (fails <= 6) printf("  FAIL %-10s open=D%d seed %u: %s  (위치 %.0f,%.0f)  %s\n", p.name,
+                                           (int)colOf(cand[k]) + 1, seed, why.c_str(), X, Y, g_liftLog.c_str());
+                } else {
+                    worstLift = std::max(worstLift, g_liftErrMax);
+                    worstPark = std::max(worstPark, park);
+                    sumT += (g_us - t0) * 1e-6;
+                }
+            }
+    }
+    printf("로봇별 실패:");
+    for (int i = 0; i < (int)(sizeof(PLANTS) / sizeof(PLANTS[0])); i++) printf(" %s %d", PLANTS[i].name, perPlant[i]);
+    printf("\n");
+    printf("course2_drive 물리 시뮬레이션: %d회 중 실패 %d, 성공 평균 %.1f초 (리프트 없는 이동만, 리프트 1.2초×4 포함), "
+           "들기/내리기 위치 최대오차 %.1fmm, H4 정지 최대오차 %.1fmm\n",
+           runs, fails, runs - fails ? sumT / (runs - fails) : 0, worstLift, worstPark);
+    return fails;
+}
+
 int main(int argc, char** argv)
 {
+    if (getenv("C2")) return runCourse2(getenv("C2")[0] ? (unsigned)atoi(getenv("C2")) : 4) ? 1 : 0;
     if (getenv("ONE")) {                                   // 디버그: ONE="로봇번호 방식번호 seed" 한 번만
         int pi, ci; unsigned seed;
         sscanf(getenv("ONE"), "%d %d %u", &pi, &ci, &seed);

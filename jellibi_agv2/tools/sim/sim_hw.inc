@@ -81,6 +81,7 @@ int lineError(const IrSample&) { return 0; }
 void lineTraceReset() {}
 void lineTraceSetGains(int, int, int, int) {}
 void lineTraceSmooth(int, int, int, int) {}
+void lineTraceDisarm() {}
 void lineTraceBoost(int, unsigned long) {}
 uint16_t lineTraceTakeMaxErr() { return 0; }
 void runlogBegin() {}
@@ -91,6 +92,29 @@ void runlogDump() {}
 void lineTraceStep(const IrSample&, int) {}
 
 void AlignOnCross() { lineTraceReset(); }
+
+// 후진: 마지막으로 센 교차점(센서가 그 선 앞에 있음)부터 뒤쪽으로 count 개를 셈.
+// 끝나면 센서는 마지막으로 센 교차점 바로 뒤 → 다음 전진(LineTraceToCross)에서 그 교차점을 다시 셈
+bool LineTraceBackCross(uint8_t count, int)
+{
+    uint8_t back = reverseH(W.hdg);
+    uint8_t n = W.cur;
+    for (uint8_t i = 0; i < count; i++) {
+        if (n == NODE_NONE) failNow("후진 중 맵 밖");
+        W.log.push_back("<" + nodeStr(n));
+        W.tgt = n;
+        uint8_t m = stepNode(n, back);
+        if (i + 1 < count && W.edgeAllowed && !W.edgeAllowed(m, n)) failNow("후진 금지 통로 " + nodeStr(n) + "-" + nodeStr(m));
+        if (i + 1 < count && W.blocked[m]) failNow("후진 중 장애물 " + nodeStr(m));
+        n = m;
+    }
+    W.cur = n; W.midEdge = false; W.hops += count;
+    return true;
+}
+void RecatchCrossStraight()
+{
+    if (!LineTraceToCross(0, false)) failNow("recatch");
+}
 
 // 라인트레이싱: 다음 교차점으로 한 칸 이동. 장애물 감시 중이면 앞 칸에 장애물이 있을 때 멈춤
 bool LineTraceToCross(int, bool checkObstacle)

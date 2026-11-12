@@ -10,3 +10,6 @@ $CXX -DSIM_SXP=0 -DCOURSE1_INO='"../../course1_drive_v2/course1_drive_v2.ino"' "
 for f in 0 1; do
   $CXX -DFRONT_CHECK_WHILE_CARRY=$f "$D/sim_course2.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" "$L/10_planner/Planner.cpp" "$L/07_logistics/Pallet.cpp" -o "$O/c2_$f" && "$O/c2_$f"
 done
+for f in 0; do
+  $CXX "$D/sim_course2_drive.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" -o "$O/c2d" && echo "[course2_drive]" && "$O/c2d"
+done

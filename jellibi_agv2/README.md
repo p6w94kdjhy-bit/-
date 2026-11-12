@@ -12,7 +12,8 @@ jellibi_agv2/                  ← Arduino IDE '스케치북 위치'로 지정 (
 ├─ tune_drive/                ② 직진·회전·정렬·리프트 보정 테스트
 ├─ rfid_test/  hello_test/    RFID 모듈 확인 / 업로드 연결 확인
 ├─ course1_drive/             종목① 지정경로 순회정차
-├─ course2_pallet/            종목② 팔레트 운반 + 장애물 (제출본)
+├─ course2_pallet/            종목② 팔레트 운반 + 장애물 (경로 자동 계산 판)
+├─ course2_drive/             ★ 종목② 종목①과 같은 주행 + 교차점 세며 후진 (11-12, COURSE2_TEST.md 0번)
 ├─ tools/build_check.sh       4개 스케치 컴파일 확인
 ├─ tools/sim/run.sh           PC에서 경로 로직 시뮬레이션 (종목① 순서, 종목② 차단 3가지)
 ├─ tools/sim/run_phys.sh      PC에서 물리 시뮬레이션 (실제 라인트레이싱 코드를 가짜 로봇으로 주행, 방식 비교)

@@ -94,7 +94,7 @@ void runlogFlush()
 }
 
 static const char RL_NAMES[] PROGMEM =
-    "START\0NODE\0STOP\0TURN\0TMISS\0OBST\0LANE\0PLAN\0PICK\0DROP\0HOLD\0DONE\0FATAL\0ABORT\0";
+    "START\0NODE\0STOP\0TURN\0TMISS\0OBST\0LANE\0PLAN\0PICK\0DROP\0HOLD\0DONE\0FATAL\0ABORT\0BACK\0";
 
 static void printTypeName(uint8_t type)
 {
@@ -127,6 +127,9 @@ void runlogDump()
                 case RL_NODE:
                     Serial.print(' '); printNode(a & 0x3F); Serial.print(' '); Serial.print(headingChar(a >> 6));
                     Serial.print(F(" err=")); Serial.print(b);
+                    break;
+                case RL_BACK:
+                    Serial.print(' '); printNode(a); Serial.print(F(" n=")); Serial.print(b);
                     break;
                 case RL_STOP: case RL_OBST: case RL_PICK: case RL_DROP: case RL_HOLD:
                     Serial.print(' '); printNode(a);

@@ -34,6 +34,41 @@ void Nav::turnTo(uint8_t h)
     else if (d == 3) TurnLeft90();
     else if (d == 2) UTurn();
     hdg = h;
+    if (afterBack && d) lineTraceDisarm();     // 후진 뒤 회전: 센서가 옛 선 위일 수 있음 → 흰색을 지난 뒤부터 셈
+    afterBack = false;
+}
+
+void Nav::backTo(uint8_t target)
+{
+    // 세어야 할 교차점 수 = (마지막으로 센 교차점 ~ target 칸 수) + 1
+    //   센서가 바퀴축보다 앞에 있으므로, 후진하면 '마지막으로 센 교차점'의 선을 센서가 먼저 다시 지난다
+    if (approach) uiFatal(F("backTo: approach"), 3);
+    if (target != node && headingTo(node, target) != (int8_t)reverseH(hdg)) uiFatal(F("backTo: target not behind"), 3);
+    uint8_t behind = stepNode(target, reverseH(hdg));
+    bool settle = REV_SETTLE && behind != NODE_NONE;       // 한 칸 더 후진 → 선 따라 한 칸 전진하며 중앙으로
+    uint8_t count = straightDist(node, target) + 1 + (settle ? 1 : 0);
+    runlogAdd(RL_BACK, target, count);
+    Serial.print(F("[nav] BACK to ")); printNode(target); Serial.print(F(" count=")); Serial.println(count);
+
+    LineTraceBackCross(count, REV_PWM);    // 후진하며 교차점 세기
+    waitMs(REV_PAST_MS);                   // 마지막 선을 조금 더 지나서
+    Brake();
+    delay(TURN_SETTLE_MS);
+
+    if (settle) {
+        // 뒤 교차점(behind) → target 한 칸을 종목① 과 같이 선 따라 전진 → 후진 중 생긴 옆 어긋남·비뚤어짐을 바로잡고 정렬
+        lineTraceReset();
+        LineTraceToCross(SPEED_APPROACH);  // behind 선
+        LineTraceToCross(SPEED_APPROACH);  // target 선
+        AlignOnCross();
+    } else {
+        RecatchCrossStraight();            // 앞으로 똑바로 천천히 → target 선을 다시 찾아 바퀴축 정렬
+    }
+    afterBack = true;
+    node = target;
+    approach = false;
+    moving = false;
+    runlogAdd(RL_STOP, node);
 }
 
 void Nav::uturnOnEdge()

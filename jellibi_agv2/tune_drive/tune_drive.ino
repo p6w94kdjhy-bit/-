@@ -12,6 +12,9 @@
 //       F 를 달리면 칸마다 'err=' (가장 크게 치우친 정도 %) 가 나온다. 칸마다 40 이하면 그 속도에서 조향 OK
 //   k / K : (종목② 조향) 게인 KP 5 내림 / 올림      t / T : 미분 TD 15 내림 / 올림
 //       업로드 없이 바로 적용. 바꿀 때마다 config.h 에 적을 줄이 출력됨 → 마음에 드는 값을 config.h 에 옮겨 적고 업로드
+//   B : 라인 없이 후진 3초 (선 위에서 출발해 끝에서 선과 얼마나 벌어졌는지 확인) → 비뚤어지는 방향으로 REV_L_GAIN / REV_R_GAIN (course2_drive 후진)
+//   b : 후진 시험 — E4 앞에서 북쪽으로 C4 까지 3칸 → E4 까지 교차점을 세며 후진 → E4 에 다시 정렬
+//       (선 3칸 이상 필요. 정지 후 바퀴축이 출발 교차점 위인지, 비뚤어졌는지 확인 → REV_* 조정)
 //   c : 라인트레이싱 방식 바꾸기 — 종목①(비례) ↔ 종목②(부드러운 PD, config.h C2_LT_*). 바꾼 뒤 f / F / q 로 시험
 //   g : 지난 주행 기록 출력 (종목② 가 저장한 것)
 // =====================================================================
@@ -77,6 +80,10 @@ void run(char c)
         case 't': if (td >= 15) td -= 15; applySmooth(); return;
         case 'T': if (td < 200) td += 15; applySmooth(); return;
         case 'g': runlogDump(); return;
+        case 'B': { int sp = REV_PWM; drive(-(int)((long)sp * REV_L_GAIN / 100), -(int)((long)sp * REV_R_GAIN / 100)); delay(3000); Brake(); break; }
+        case 'b':
+            if (!needIr()) break;
+            nav.setApproach(P('E', 4), HN); nav.leg(P('C', 4), true); delay(500); nav.backTo(P('E', 4)); break;
         case 'v':
             speedIdx = (speedIdx + 1) % (sizeof(TEST_SPEEDS) / sizeof(TEST_SPEEDS[0]));
             nav.cruise = TEST_SPEEDS[speedIdx];
@@ -96,7 +103,7 @@ void setup()
     uiInit();
     showConfig();
     liftInit();
-    Serial.println(F("tune_drive: s f F l r u L q p d x c g v k K t T  (버튼=반복)"));
+    Serial.println(F("tune_drive: s f F l r u L q p d x B b c g v k K t T  (버튼=반복)"));
 }
 
 void loop()

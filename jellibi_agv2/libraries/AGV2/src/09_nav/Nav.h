@@ -35,6 +35,7 @@ public:
 
     // 늦은 감속용: 이번 주행에서 잰 '통과 속도로 한 칸 가는 시간'의 최솟값 (0 = 아직 못 잼)
     uint16_t hopMs = 0;
+    bool afterBack = false;             // 방금 후진했나 (다음 회전 뒤 교차점 세기를 잠시 막음)
     int hopMsSpeed = 0;                 // 그 시간을 잰 속도 (속도가 바뀌면 다시 잼)
 
     void setApproach(uint8_t n, uint8_t h);   // n 앞에서 h 방향으로 대기/진입 중
@@ -45,6 +46,12 @@ public:
     NavResult leg(uint8_t target, bool stopAtEnd);
 
     void turnTo(uint8_t h);                   // 교차점 위(정지 상태)에서 회전
+
+    // 지금 방향을 유지한 채 뒤쪽(같은 줄)의 target 교차점까지 후진 → target 위에 바퀴축을 맞춰 정지 (방향 그대로)
+    //   장애물 앞(칸 중간)에서 G·B행으로 돌아갈 때, 팔레트를 든 뒤/내린 뒤 빠져나올 때 사용
+    //   순서: 교차점을 세며 후진 → REV_PAST_MS 더 후진 → 정지 → 앞으로 똑바로 천천히 가며 target 을 다시 찾아 정렬
+    //   후진 뒤에는 항상 회전이 오므로(센서로 새 선을 찾아 멈춤) 후진 중 생긴 작은 방향 오차는 그 회전에서 바로잡힌다
+    void backTo(uint8_t target);
     void uturnOnEdge();                       // 장애물 앞(칸 중간)에서 U턴 → obsFrom으로 접근 상태
     void hold(unsigned long ms);              // 정차 유지 (+부저)
 
