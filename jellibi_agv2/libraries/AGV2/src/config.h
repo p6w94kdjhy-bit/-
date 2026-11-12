@@ -59,7 +59,7 @@
 #define MOTOR_GAIN_LOW_PWM   70    // 이 속도 이하는 *_GAIN_LOW
 #define MOTOR_GAIN_HIGH_PWM  98    // 이 속도 이상은 MOTOR_x_GAIN
 // 후진할 때의 좌우 보정 (motor_balance 'b' 로 측정, PWM 70). 후진하는 모든 동작에 적용: 교차점 세며 후진, U턴 전 후진 등
-#define MOTOR_L_GAIN_REV     99    // [현장] 11-12 측정: 후진 L 99 / R 100
+#define MOTOR_L_GAIN_REV     94    // [현장] 94 = 후진 보정 적용 전과 같음 (전진 값 그대로). 11-12 motor_balance 측정값은 99 → 후진이 휘면 99 로
 #define MOTOR_R_GAIN_REV    100    // [현장]
 
 // ---------------------------------------------------------------------
