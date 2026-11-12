@@ -5,7 +5,7 @@
 
 #if RFID_USED
 #include <SPI.h>
-#include <MFRC522.h>
+#include "mfrc522/MFRC522.h"   // 라이브러리를 AGV2 안에 포함 (IDE 에 MFRC522 설치 불필요)
 
 static MFRC522 s_reader(PIN_RFID_SS, PIN_RFID_RST);
 static bool s_on = false;
