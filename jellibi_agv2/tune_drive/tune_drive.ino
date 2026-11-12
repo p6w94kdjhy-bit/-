@@ -7,6 +7,8 @@
 //   L : 센서 없이 TURN90_MS×4 왼쪽 회전 → 정확히 한 바퀴면 TURN90_MS OK
 //   q : 사각 주행 (1칸 + 우회전) ×4 → 제자리 복귀 확인
 //   p / d : 리프트 올림 / 내림 (LIFT_UP/DOWN_ANGLE)
+//   , / . : 리프트 각도를 5° 내림 / 올림 (바로 움직임) → 완전히 내려간 각도를 찾아 config.h LIFT_DOWN_ANGLE 에,
+//           적재함이 충분히 들린 각도를 LIFT_UP_ANGLE 에 적는다.  서보가 '웅' 소리를 내며 버티면 너무 간 것 → 5° 되돌림
 //   x : 하역 후 후진 탈출 (EXIT_BACK_MS) + U턴
 //   v : 시험 속도 바꾸기 (f F q 의 통과 속도) 168 → 190 → 210 → 230 → 255 → 168 ...  업로드 없이 속도별 조향 확인
 //       F 를 달리면 칸마다 'err=' (가장 크게 치우친 정도 %) 가 나온다. 칸마다 40 이하면 그 속도에서 조향 OK
@@ -23,6 +25,7 @@
 Nav nav;
 char lastCmd = 0;
 bool smoothOn = false;
+int liftAngle = LIFT_DOWN_ANGLE;
 const int TEST_SPEEDS[] = { SPEED_CRUISE, 190, 210, 230, 255 };
 uint8_t speedIdx = 0;
 int kp = C2_LT_KP, td = C2_LT_TD_MS;
@@ -68,8 +71,16 @@ void run(char c)
             nav.leg(P('D', 5), true); nav.turnTo(HW);
             nav.leg(P('D', 4), true); nav.turnTo(HN);
             break;
-        case 'p': LiftUp(); break;
-        case 'd': LiftDown(); break;
+        case 'p': LiftUp(); liftAngle = LIFT_UP_ANGLE; break;
+        case 'd': LiftDown(); liftAngle = LIFT_DOWN_ANGLE; break;
+        case ',': case '.':
+            liftAngle += (c == '.') ? 5 : -5;
+            if (liftAngle < 0) liftAngle = 0;
+            if (liftAngle > 180) liftAngle = 180;
+            LiftGoto(liftAngle);
+            Serial.print(F("리프트 각도 = ")); Serial.print(liftAngle);
+            Serial.println(F("   (내린 위치면 LIFT_DOWN_ANGLE, 올린 위치면 LIFT_UP_ANGLE 에 이 숫자)"));
+            return;
         case 'x': Backward(EXIT_BACK_PWM); delay(EXIT_BACK_MS); Brake(); UTurnOnEdge(); break;
         case 'c':
             smoothOn = !smoothOn;
@@ -103,7 +114,7 @@ void setup()
     uiInit();
     showConfig();
     liftInit();
-    Serial.println(F("tune_drive: s f F l r u L q p d x B b c g v k K t T  (버튼=반복)"));
+    Serial.println(F("tune_drive: s f F l r u L q p d , . x B b c g v k K t T  (버튼=반복)"));
 }
 
 void loop()

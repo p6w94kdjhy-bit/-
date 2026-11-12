@@ -144,6 +144,7 @@ void liftInit() {}
 void LiftUp()   { W.carrying = true;  W.log.push_back("PICK@" + nodeStr(W.cur) + "/" + "NESW"[W.hdg]); }
 void LiftDown() { W.carrying = false; W.log.push_back("DROP@" + nodeStr(W.cur) + "/" + "NESW"[W.hdg]); }
 bool liftIsUp() { return W.carrying; }
+void LiftGoto(int) {}
 
 // ---- Ui ----
 void uiInit() {}

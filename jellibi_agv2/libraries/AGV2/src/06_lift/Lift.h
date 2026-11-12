@@ -11,5 +11,6 @@ void liftInit();     // 내린 상태로 초기화 후 detach
 void LiftUp();
 void LiftDown();
 bool liftIsUp();
+void LiftGoto(int angle);   // (보정용) 리프트를 이 각도로 천천히 이동 — tune_drive 에서 내린/올린 각도를 찾을 때
 
 #endif
