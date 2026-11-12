@@ -69,11 +69,11 @@ void Hold(unsigned long ms)
 
 void setup()
 {
+    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     driveInit();
     uiInit();
     showConfig();
-    liftInit();
 
     if (!irCalibrated()) uiFatal(F("config.h IR 현장값 미입력"));
 
