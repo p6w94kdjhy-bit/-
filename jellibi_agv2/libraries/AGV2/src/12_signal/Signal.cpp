@@ -100,7 +100,9 @@ void showConfig()
     Serial.print(F("  NEAR_IS_HIGH = ")); Serial.println(FRONT_NEAR_IS_HIGH);
     Serial.print(F("속도 CRUISE/APPROACH = ")); Serial.print(SPEED_CRUISE); Serial.print('/'); Serial.print(SPEED_APPROACH);
     Serial.print(F("   ALIGN_MS = ")); Serial.print(ALIGN_MS);
-    Serial.print(F("   MOTOR_GAIN L/R = ")); Serial.print(MOTOR_L_GAIN); Serial.print('/'); Serial.println(MOTOR_R_GAIN);
+    Serial.print(F("   MOTOR_GAIN L/R = ")); Serial.print(MOTOR_L_GAIN); Serial.print('/'); Serial.print(MOTOR_R_GAIN);
+    Serial.print(F("  (PWM ")); Serial.print(MOTOR_GAIN_LOW_PWM); Serial.print(F(" 이하 ")); Serial.print(MOTOR_L_GAIN_LOW);
+    Serial.print('/'); Serial.print(MOTOR_R_GAIN_LOW); Serial.println(')');
     Serial.print(F("라인 LT_MODE = ")); Serial.print(LT_MODE); Serial.print(F("  LT_KP = ")); Serial.println(LT_KP);
     Serial.print(F("회전 TURN90_MS = ")); Serial.print(TURN90_MS);
     Serial.print(F("  AFTER 좌/우 = ")); Serial.print(TURN_AFTER_LEFT_DEG); Serial.print('/');
