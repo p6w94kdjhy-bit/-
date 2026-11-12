@@ -36,3 +36,4 @@
 | 11-11 | `LATE_BRAKE_PCT` 0 (신규) | | 늦은 감속: 정차 칸 앞부분을 통과 속도로. 기본 꺼짐. 완주 확인 후 40→55→70 |
 | 11-11 | 주행 기록 `RUNLOG_ON` 1 (신규, 14_runlog), `uiFatal` 오류 번호, tune_drive `c` `g` 명령 | | 주행 중 일어난 일을 EEPROM 에 저장 → USB 로 꺼내 전달. 주행 타이밍에는 영향 없음(한가할 때 1바이트씩) |
 | 11-11 | course1_drive_v2 추가: `V2_LT_KP` 35, `V2_LT_KD` 15, `V2_LT_MAX_PCT` 45, `V2_LT_DEADBAND` 80 | | 원본(course1_drive)은 그대로. v2는 직진 조향을 부드럽게 |
+| 11-12 | `IR_L_WHITE` `IR_L_BLACK` `IR_R_WHITE` `IR_R_BLACK` `FRONT_OBSTACLE_TH` `LT_CENTER_OFFSET` | 486→470, 963→958, 426→404, 957→953, 660→634, -8→-23 | calib_ir 11-12 측정 (기준값 L=714 R=678, 선 중앙 주행 L=2% R=4%) |
