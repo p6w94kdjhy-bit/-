@@ -80,6 +80,7 @@ int irNormR(int) { return 0; }
 int lineError(const IrSample&) { return 0; }
 void lineTraceReset() {}
 void lineTraceSetGains(int, int, int, int) {}
+void lineTraceSmooth(int, int, int, int) {}
 void lineTraceStep(const IrSample&, int) {}
 
 void AlignOnCross() { lineTraceReset(); }
