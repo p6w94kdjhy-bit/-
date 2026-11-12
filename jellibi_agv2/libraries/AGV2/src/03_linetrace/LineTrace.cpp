@@ -4,8 +4,9 @@
 #include "12_signal/Signal.h"
 
 // 교차점 판정 레벨: 흰 + (검-흰) * XING_LEVEL_PCT%   (50% = 흑백 기준값과 같음)
-#define XING_TH_L (IR_L_WHITE + (long)(IR_L_BLACK - IR_L_WHITE) * XING_LEVEL_PCT / 100)
-#define XING_TH_R (IR_R_WHITE + (long)(IR_R_BLACK - IR_R_WHITE) * XING_LEVEL_PCT / 100)
+//   (적재함을 들면 그림자용 측정값으로 바뀌므로 02_sensor 에서 받아 온다)
+#define XING_TH_L (irXingThL())
+#define XING_TH_R (irXingThR())
 
 static int s_speed = 0;          // 현재 속도 (출발 시 서서히 올림)
 
@@ -63,7 +64,7 @@ static void noteErr(int err)
 static void smoothStep(const IrSample& s, int speed)
 {
     int nl = irNormL(s.l), nr = irNormR(s.r);
-    int e = nl - nr - LT_CENTER_OFFSET;
+    int e = nl - nr - irCenterOffset();
     if (nl > SMOOTH_XLINE_NORM && nr > SMOOTH_XLINE_NORM) e = 0;   // 가로선 위: 조향하지 않음
     s_smAcc += e;
     s_smN++;

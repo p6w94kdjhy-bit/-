@@ -93,6 +93,11 @@ void showConfig()
     Serial.println(F("----- config.h (로봇 안의 값) -----"));
     Serial.print(F("IR  L 흰/검 = ")); Serial.print(IR_L_WHITE); Serial.print('/'); Serial.print(IR_L_BLACK);
     Serial.print(F("   R 흰/검 = ")); Serial.print(IR_R_WHITE); Serial.print('/'); Serial.println(IR_R_BLACK);
+    Serial.print(F("IR(적재함 든 상태) L 흰/검 = ")); Serial.print(IR_L_WHITE_CARRY); Serial.print('/'); Serial.print(IR_L_BLACK_CARRY);
+    Serial.print(F("   R 흰/검 = ")); Serial.print(IR_R_WHITE_CARRY); Serial.print('/'); Serial.print(IR_R_BLACK_CARRY);
+    Serial.println(IR_L_WHITE_CARRY < 0 ? F("  (미측정 → 평소 값 사용)") : F(""));
+    Serial.print(F("전방 FRONT_OBSTACLE_TH = ")); Serial.print(FRONT_OBSTACLE_TH);
+    Serial.print(F("  NEAR_IS_HIGH = ")); Serial.println(FRONT_NEAR_IS_HIGH);
     Serial.print(F("속도 CRUISE/APPROACH = ")); Serial.print(SPEED_CRUISE); Serial.print('/'); Serial.print(SPEED_APPROACH);
     Serial.print(F("   ALIGN_MS = ")); Serial.print(ALIGN_MS);
     Serial.print(F("   MOTOR_GAIN L/R = ")); Serial.print(MOTOR_L_GAIN); Serial.print('/'); Serial.println(MOTOR_R_GAIN);

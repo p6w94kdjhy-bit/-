@@ -2,6 +2,7 @@
 #include <Servo.h>
 #include "config.h"
 #include "pins.h"
+#include "02_sensor/Sensor.h"
 
 static Servo s_servo;
 static int s_angle = LIFT_DOWN_ANGLE;
@@ -9,7 +10,10 @@ static bool s_up = false;
 
 static void moveTo(int target)
 {
-    if (!s_servo.attached()) s_servo.attach(PIN_SERVO);
+    if (!s_servo.attached()) {
+        s_servo.write(s_angle);        // 켜기 전에 지금 각도를 먼저 넣어 둠 → 켜는 순간 튀지 않음
+        s_servo.attach(PIN_SERVO);
+    }
     int step = (target > s_angle) ? LIFT_STEP_DEG : -LIFT_STEP_DEG;
     while (abs(target - s_angle) > LIFT_STEP_DEG) {
         s_angle += step;
@@ -23,9 +27,11 @@ static void moveTo(int target)
 
 void liftInit()
 {
-    s_servo.attach(PIN_SERVO);
+    // 서보는 켜는(attach) 순간 '마지막으로 넣어 둔 각도'로 움직인다. 아무것도 안 넣으면 가운데(90°)로 가서
+    // 리프트가 잠깐 들린다 → 내린 각도를 먼저 넣고 나서 켠다.
     s_angle = LIFT_DOWN_ANGLE;
     s_servo.write(s_angle);
+    s_servo.attach(PIN_SERVO);
     delay(300);
     s_servo.detach();          // 서보 소음 방지 (예제와 동일)
     s_up = false;
@@ -35,6 +41,7 @@ void LiftUp()
 {
     moveTo(LIFT_UP_ANGLE);
     s_up = true;
+    irUseCarry(true);              // 적재함 그림자용 바닥 IR 값으로 (config.h _CARRY, 미측정이면 그대로)
 #if !LIFT_HOLD_WHILE_CARRY
     s_servo.detach();
 #endif
@@ -44,6 +51,7 @@ void LiftDown()
 {
     moveTo(LIFT_DOWN_ANGLE);
     s_up = false;
+    irUseCarry(false);             // 평소 바닥 IR 값으로
     s_servo.detach();
 }
 

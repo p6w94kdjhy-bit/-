@@ -72,6 +72,11 @@ void TurnAdjust(bool, int) {}
 IrSample readIr() { return IrSample{0, 0}; }
 int irFront() { return 0; }
 bool irCalibrated() { return true; }
+void irUseCarry(bool) {}
+bool irCarryCalibrated() { return false; }
+int irXingThL() { return 0; }
+int irXingThR() { return 0; }
+int irCenterOffset() { return 0; }
 bool frontCalibrated() { return true; }
 bool isBlackL(int) { return false; }
 bool isBlackR(int) { return false; }

@@ -41,3 +41,4 @@
 | 11-12 | course2_drive 추가 / `REV_PWM` 70, `REV_PAST_MS` 150, `REV_SKIP_MS` 250, `REV_ALIGN_MS`=ALIGN_MS, `REV_L_GAIN` `REV_R_GAIN` 100, `REV_SETTLE` 0, `OBST_BACK` `PICK_BACK` `DROP_BACK` 1 (신규) | | 종목① 주행 방식 + 교차점 세며 후진(장애물·들기·내리기). 실물 미검증. 후진 직진(REV_L/R_GAIN) 먼저 맞출 것 |
 | 11-12 | `FRONT_NEAR_IS_HIGH` 0→1, `FRONT_OBSTACLE_TH` 637→400 | | 실측: 앞에 아무것도 없으면 100 미만, 멈출 거리의 장애물 637 → 가까울수록 큼. 기준은 그 사이 |
 | 11-12 | `DROP_BACK` 1→0 (0 의 뜻 변경: 후진 없이 교차점 위 U턴) | | 실물: 하차 후 후진하면 경로가 틀어짐 → U턴으로 |
+| 11-12 | `IR_L/R_WHITE/BLACK_CARRY` -1, `LT_CENTER_OFFSET_CARRY` 0 (신규) / 리프트 초기화 순서 변경 | | 적재함을 들면 그림자로 바닥 IR 값이 달라짐 → 든 상태 측정값을 따로 두고 리프트 올림/내림에 맞춰 자동 전환. calib_ir u/n. 전원 켤 때 리프트가 들리던 것: 서보를 켜기 전에 내린 각도를 먼저 넣음 |

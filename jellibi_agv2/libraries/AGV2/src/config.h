@@ -21,6 +21,16 @@
 #define IR_R_WHITE  408   // [현장] 11-12 2차 측정 (A7, 흰 바닥) — calib_ir w
 #define IR_R_BLACK  952   // [현장] 11-12 2차 측정 (A7, 선 정중앙에 센서) — calib_ir b
 
+// 적재함을 들고 있을 때의 바닥 IR 값 (적재함 그림자 때문에 값이 달라짐) — 종목②
+//   측정: calib_ir 에서 적재함을 로봇 위에 놓고 'u'(리프트 올림) → w, b, c → p  →  출력된 _CARRY 줄을 여기에 붙여넣기
+//   -1 = 측정 안 함 → 들고 있을 때도 위의 평소 값을 그대로 사용
+//   리프트를 올리면 자동으로 이 값으로, 내리면 평소 값으로 바뀐다 (06_lift → 02_sensor irUseCarry)
+#define IR_L_WHITE_CARRY  -1   // [현장]
+#define IR_L_BLACK_CARRY  -1   // [현장]
+#define IR_R_WHITE_CARRY  -1   // [현장]
+#define IR_R_BLACK_CARRY  -1   // [현장]
+#define LT_CENTER_OFFSET_CARRY  0   // [현장] 들고 있을 때 선 중앙에서의 err (calib_ir 가 출력)
+
 // 흑백 판정 기준값 = (흰 + 검) / 2  — 왼쪽·오른쪽 각각 (수정 금지, 위 측정값만 바꾼다)
 #define IR_L_TH  ((IR_L_WHITE + IR_L_BLACK) / 2)
 #define IR_R_TH  ((IR_R_WHITE + IR_R_BLACK) / 2)
