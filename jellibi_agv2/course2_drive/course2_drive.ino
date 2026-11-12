@@ -10,7 +10,7 @@
 //                 → G행에서 앞으로 간 칸 수만큼 '교차점을 세며 후진' → G행 교차점에 다시 정렬 → 다른 통로로
 //                 (2곳이 막힌 걸 알면 남은 1곳은 확인 없이 열린 통로로 사용)
 //   ② 배송 2건 : 적재함 밑 교차점(A2/A6)까지 → 정렬 → 리프트 올림 → 든 채로 B행까지 후진
-//                → 열린 통로로 남쪽 → 도착 교차점(H6/H2) 정렬 → 리프트 내림 → G행까지 후진(적재함 밑에서 빠져나옴)
+//                → 열린 통로로 남쪽 → 도착 교차점(H6/H2) 정렬 → 리프트 내림 → 그 자리에서 U턴 → 앞으로 빠져나옴 (DROP_BACK 0)
 //   ③ 복귀     : H4 정렬 → 2초 정지
 //
 //  주행 기록: 주행 후 USB 를 꽂고 시리얼 모니터(115200)를 열면 '지난 주행 기록'이 나온다 → 복사해서 전달
@@ -216,8 +216,10 @@ static void dropAt(uint8_t at)
     shortMove(DROP_ADJ_MS);
     LiftDown();
     nav.cruise = SPEED_CRUISE;
-#if DROP_BACK
+#if DROP_BACK == 1
     nav.backTo(rowNode(ROW_G, colOf(at)));           // G행까지 후진 → 적재함 밑에서 완전히 빠져나옴
+#elif DROP_BACK == 0
+    // 후진 없음: 다음 이동을 시작할 때 이 교차점 위에서 U턴(센서로 선을 찾아 멈춤) → 앞으로 달려 적재함 밑에서 빠져나옴
 #else
     Backward(EXIT_BACK_PWM);                         // 적재함 밑에서 빠져나올 만큼 후진
     waitMs(EXIT_BACK_MS);
@@ -249,10 +251,10 @@ static uint16_t orderCost(uint8_t first)
         }
         n = goals[k];
         if ((k == 0 || k == 2) && PICK_BACK) { n = rowNode(ROW_B, colOf(n)); cost += PLAN_COST_HOP; }   // 든 뒤 B행까지 후진
-        if (k == 1 || k == 3) {                                                                  // 내린 뒤 G행 쪽으로
+        if ((k == 1 || k == 3) && DROP_BACK != 0) {                                              // 내린 뒤 G행 쪽으로
             n = rowNode(ROW_G, colOf(n));
             cost += PLAN_COST_HOP;
-            if (!DROP_BACK) h = reverseH(h);
+            if (DROP_BACK == 2) h = reverseH(h);
         }
     }
     return cost;

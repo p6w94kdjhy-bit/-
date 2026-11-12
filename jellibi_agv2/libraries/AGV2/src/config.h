@@ -135,7 +135,8 @@
 #define PICK_BACK           1    // [현장] 적재함 든 뒤 → 1: B행까지 후진  0: 적재함 밑(교차점 위)에서 U턴
 #endif
 #ifndef DROP_BACK
-#define DROP_BACK           1    // [현장] 적재함 내린 뒤 → 1: G행까지 후진  0: EXIT_BACK_MS 만큼 후진 → 칸 중간 U턴 → G행으로
+#define DROP_BACK           0    // [현장] 적재함 내린 뒤 → 0: 후진 없이 그 교차점 위에서 U턴 후 전진 (11-12: 후진하면 경로가 틀어짐)
+                                 //        1: G행까지 교차점을 세며 후진   2: EXIT_BACK_MS 만큼만 후진 → 칸 중간 U턴
 #endif
 #ifndef REV_SETTLE
 #define REV_SETTLE          0    // [현장] 1 = 목표 교차점보다 한 칸 더 후진한 뒤 선 따라 한 칸 전진해 정렬 (옆 어긋남을 바로잡음, 약 1.5초 더 걸림)
