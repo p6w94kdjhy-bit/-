@@ -263,12 +263,12 @@ static uint16_t orderCost(uint8_t first)
 // ----------------------------------------------------------------- main
 void setup()
 {
+    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     driveInit();
     uiInit();
     showConfig();
     runlogDump();                    // 지난 주행 기록 출력
-    liftInit();
 
     if (!irCalibrated())    uiFatal(F("config.h IR 현장값 미입력"));
     if (!frontCalibrated()) uiFatal(F("config.h FRONT_OBSTACLE_TH 미입력"));

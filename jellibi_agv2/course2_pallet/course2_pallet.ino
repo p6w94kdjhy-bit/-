@@ -109,12 +109,12 @@ void deliver(const Job& j)
 // ----------------------------------------------------------------- main
 void setup()
 {
+    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     driveInit();
     uiInit();
     showConfig();
     runlogDump();                    // 지난 주행 기록 출력 (USB 를 꽂고 시리얼 모니터를 열면 여기서 나옴)
-    liftInit();
     palletInit();
 
     if (!irCalibrated())    uiFatal(F("config.h IR 현장값 미입력"));

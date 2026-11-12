@@ -104,11 +104,11 @@ void printCarry()
 
 void setup()
 {
+    liftInit();                      // 맨 먼저 리프터 내리기 (교본 26쪽: 전원을 켤 때 리프터가 올라가는 현상 처리)
     Serial.begin(115200);
     driveInit();
     uiInit();
     Stop();
-    liftInit();
     Serial.println(F("calib_ir: w b c f p m u n   (u 로 올린 뒤 재면 적재함 든 상태 값)"));
 }   
 
