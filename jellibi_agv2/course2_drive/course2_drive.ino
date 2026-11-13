@@ -20,12 +20,12 @@
 //  적재 위치 = A행 바깥 T자 (하역과 같은 방식): A 교차점에 정렬 → T자까지 → 올림 → A 교차점까지 짧게 후진 → 거기서 U턴
 //  하역 위치 = H행 바깥 T자: 열의 선이 H행 밖으로 약 50mm 나와 끝에 짧은 가로선(T자)이 있다.
 //   남쪽으로 내려와 H 교차점에 정렬 → 선 따라 천천히 더 가서 센서가 T자를 보는 순간 정지 → 내림
-//   ① 은 내린 뒤 교차점을 세며 G행까지 후진으로 빠져나온다. ② 는 내리면 종료.
+//   ① 은 내린 뒤 T자·H 선만 세며 H 교차점까지 짧게(약 5cm) 후진 → 정렬 → 거기서 돌아 나간다. ② 는 내리면 종료.
 //
 //  경로 (3열이 열린 경우)
 //   가는 길 ①  H5 → F5 → F3 → E3(정지·측정) → (D3) → B3 → B6 → A6 → T자
-//   운반 ①     A6 → B6 → B3 → (D3) → F3 → F2 → H2 → T자        → G2 까지 후진
-//   가는 길 ②  G2 → G3 → (D3) → B3 → B4 → A4
+//   운반 ①     A6 → B6 → B3 → (D3) → F3 → F2 → H2 → T자        → H2 까지 짧게 후진
+//   가는 길 ②  H2 → H3 → (D3) → B3 → B4 → A4
 //   운반 ②     A4 → B4 → B3 → (D3) → F3 → F6 → H6 → T자 = 종료
 //
 //  주행 기록: 주행 후 USB 를 꽂고 시리얼 모니터(115200)를 열면 '지난 주행 기록'이 나온다 → 복사해서 전달
@@ -269,7 +269,7 @@ static void dropHere(bool last)                      // 하역 열의 H 교차�
     LiftDown();
     nav.cruise = SPEED_CRUISE;
     if (last) return;                                // 마지막 하역 = 종료 (빠져나오지 않음)
-    leaveOuter(DROP_BACK == 1, DROP_AT_BAR, bar);    // ① : 후진으로 G행까지 빠져나옴
+    leaveOuter(DROP_BACK == 1, DROP_AT_BAR, bar);    // ① : H 교차점까지 짧게 후진해 정렬 (DROP_BACK 1 이면 G행까지)
 }
 
 // ----------------------------------------------------------------- main
@@ -313,7 +313,7 @@ void setup()
     goNorthProbing(PICK1);           // ① 적재물까지 (통로 확인)
     pickHere();
     goVia(DROP1, ROW_B, ROW_F);      // ① 운반 → F행에서 2열로 → 남쪽으로 H2 (T자까지는 dropHere 가)
-    dropHere(false);                 //    내리고 G2 까지 후진
+    dropHere(false);                 //    내리고 H2 까지 짧게 후진·정렬
 
     goVia(PICK2, rowOf(nav.node), ROW_B);   // ② 적재물까지 (지금 있는 행에서 통로 열로)
     pickHere();
