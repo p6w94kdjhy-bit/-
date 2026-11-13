@@ -88,6 +88,17 @@
 #endif
                                    //  (강의안 5차시: '장애물 없으면 약 970 이상' → 가까우면 작아지는 센서일 수 있음.
                                    //   calib_ir 연속출력에서 손을 가까이 대며 F 값 방향 확인)
+// 정지 상태 측정 (course2_drive): 통로의 E 교차점에 정렬해 선 뒤 전방 값을 평균해서 장애물 판단
+//   E 교차점에 서면 D 교차점의 장애물(20cm)까지 약 3cm → 값이 매우 큼(659). 없으면 65~79.
+//   그 사이 넉넉한 값으로 둔다 (정차 위치가 1~2cm 달라져도 판단이 바뀌지 않게)
+#ifndef FRONT_STOP_TH
+#define FRONT_STOP_TH       300  // [현장] 서서 잰 값이 이보다 크면 장애물
+#endif
+// (선택) F 교차점에서 미리 보기: F3 에 서서 북쪽을 보고 잰 값이 이보다 크면 E3 까지 가지 않고 바로 막힘 처리. 0 = 사용 안 함
+//   쓰려면: 로봇을 F3 에 북향으로 세우고 D3 에 장애물이 있을 때/없을 때 값을 재서 그 중간 값을 넣는다
+#ifndef FRONT_FAR_TH
+#define FRONT_FAR_TH          0  // [현장]
+#endif
 #ifndef FRONT_CONFIRM_SAMPLES
 #define FRONT_CONFIRM_SAMPLES   3  // 연속 n회 넘어야 장애물로 판정(노이즈 방지)
 #endif
@@ -284,7 +295,10 @@
 
 // course2_drive: 어떤 동작에 후진을 쓸지 (1 = 교차점을 세며 후진, 0 = U턴). 대회 당일 바꿀 수 있게 config 에 둠
 #ifndef OBST_BACK
-#define OBST_BACK           1    // [현장] 장애물 → 1: F행까지 교차점을 세며 후진 (큰 장애물 앞에서 돌지 않음)  0: 그 자리에서 U턴 후 F행으로
+#define OBST_BACK           0    // [현장] 장애물 확인 후 → 0: E 교차점에서 조금 물러나 U턴 → F행으로 전진 (11-13: 후진은 오류가 남)  1: 교차점을 세며 F행까지 후진
+#endif
+#ifndef OBST_UTURN_BACK_MS
+#define OBST_UTURN_BACK_MS 150   // [현장] 장애물 앞 U턴 전에 더 물러나는 시간 (U턴 자체의 후진 UTURN_BACK_MS 에 더해짐). 돌 때 장애물에 닿으면 ↑
 #endif
 #ifndef PICK_BACK
 #define PICK_BACK           0    // [현장] 적재물 든 뒤 → 0: A 교차점까지만 짧게 후진해 정렬 → 그 위에서 U턴   1: B행까지 후진 (U턴 없음)

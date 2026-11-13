@@ -12,9 +12,10 @@
 //  파란 통로 제한 없음 (모든 선 사용 가능). 주행 방식은 종목①과 같다 (선 따라가기·정렬·제자리 회전).
 //
 //  D행을 건너는 통로: 서쪽 3열 → 2열 → 1열 순서로 확인해서 처음 열린 곳 하나만 쓴다 (동쪽 7·8열은 쓰지 않음)
-//   - 확인은 첫 이동(빈 차) 때만: 통로를 북쪽으로 올라가며 전방 거리센서로 감시, SPEED_ZONE 으로 천천히
-//   - 장애물이면 정지 → F행까지 후진(장애물이 커서 그 앞에서 돌지 않음) → 서쪽 옆 통로로
-//   - 추론하지 않는다: 3열이 막혀도 2열을 '열림'으로 단정하지 않고 2열도 감시하며 지나간다
+//   - 확인은 첫 이동(빈 차) 때만: F 교차점 → E 교차점에 '정렬해서 정지' → 그 자리에서 전방 거리센서로 판단
+//     (교차점에 선 뒤에 재므로 로봇이 자기 위치를 정확히 안다. E 교차점에서 D 의 장애물까지는 약 3cm)
+//   - 장애물이면 조금 물러나 U턴 → F 교차점 → 서쪽 옆 통로의 E 교차점에서 다시 측정 (후진으로 돌아가지 않음)
+//   - 추론하지 않는다: 3열이 막혀도 2열을 '열림'으로 단정하지 않고 2열도 서서 잰다
 //
 //  적재 위치 = A행 바깥 T자 (하역과 같은 방식): A 교차점에 정렬 → T자까지 → 올림 → A 교차점까지 짧게 후진 → 거기서 U턴
 //  하역 위치 = H행 바깥 T자: 열의 선이 H행 밖으로 약 50mm 나와 끝에 짧은 가로선(T자)이 있다.
@@ -22,7 +23,7 @@
 //   ① 은 내린 뒤 교차점을 세며 G행까지 후진으로 빠져나온다. ② 는 내리면 종료.
 //
 //  경로 (3열이 열린 경우)
-//   가는 길 ①  H5 → F5 → F3 → (D3) → B3 → B6 → A6
+//   가는 길 ①  H5 → F5 → F3 → E3(정지·측정) → (D3) → B3 → B6 → A6 → T자
 //   운반 ①     A6 → B6 → B3 → (D3) → F3 → F2 → H2 → T자        → G2 까지 후진
 //   가는 길 ②  G2 → G3 → (D3) → B3 → B4 → A4
 //   운반 ②     A4 → B4 → B3 → (D3) → F3 → F6 → H6 → T자 = 종료
@@ -35,6 +36,7 @@
 //  행: A(0, 북쪽) ~ H(7, 남쪽)   열: 1(0, 서쪽) ~ 8(7)
 #define ROW_B 1                                     // 가림막 북쪽에서 동서로 이동하는 행
 #define ROW_D 3                                     // 장애물·가림막 행
+#define ROW_E 4                                     // 장애물 확인 행: E 교차점에 서서 전방을 잰다 (장애물까지 약 3cm)
 #define ROW_F 5                                     // 출발 직후 서쪽으로 이동하는 행 / 장애물을 보면 물러나는 행
 #define ROW_G 6
 #define ROW_H 7
@@ -78,14 +80,27 @@ static void setLane(uint8_t i, LaneState st)
 }
 
 // ----------------------------------------------------------------- Nav 콜백
-// 전방 거리센서 감시: 아직 모르는 통로를 F행 → D행으로 올라갈 때만 (다른 곳에서는 적재물·가림막을 장애물로 착각하지 않게)
+// 달리는 중 전방 감시(안전망): 서서 잰 결과 '없음'이었던 통로를 E → D 로 처음 지나갈 때만. 평소 판단은 probeHere() 가 한다
 static bool hopCheck(uint8_t from, uint8_t to)
 {
     if (colOf(from) != colOf(to)) return false;
     int8_t i = laneOfCol(colOf(to));
     if (i < 0 || lane[i] != L_UNKNOWN) return false;
     uint8_t r1 = rowOf(from), r2 = rowOf(to);
-    return r1 >= ROW_D && r1 <= ROW_F && r2 >= ROW_D && r2 <= ROW_F;
+    return r1 >= ROW_D && r1 <= ROW_E && r2 >= ROW_D && r2 <= ROW_E;
+}
+
+// 교차점에 정지한 상태에서 전방 거리센서를 여러 번 읽어 평균 → th 보다 가까우면(값이 크면) true
+static bool frontBlocked(int th)
+{
+    long sum = 0;
+    for (uint8_t i = 0; i < 16; i++) { sum += irFront(); delay(4); }
+    int v = (int)(sum / 16);
+    bool blocked = FRONT_NEAR_IS_HIGH ? (v > th) : (v < th);
+    Serial.print(F("[front] ")); printNode(nav.node); Serial.print(F(" F=")); Serial.print(v);
+    Serial.println(blocked ? F(" → 장애물") : F(" → 없음"));
+    runlogAdd(RL_FRONT, nav.node, (uint8_t)(v / 4 > 255 ? 255 : v / 4));
+    return blocked;
 }
 
 // D 교차점을 지나갔다 = 그 통로는 열림
@@ -144,23 +159,58 @@ static void goVia(uint8_t to, uint8_t fromRow, uint8_t toRow)
 }
 
 // ----------------------------------------------------------------- 첫 이동: 통로를 확인하며 북쪽으로
-//  F행에서 통로 열로 가서 북쪽으로. 장애물이면 F행으로 물러난 뒤 다음(서쪽) 통로로 다시.
+//  통로마다:  F 교차점 → (북쪽으로 한 칸) E 교차점에 '정렬해서 정지' → 그 자리에서 전방을 재서 판단
+//    없음 → 그대로 북쪽으로 D 를 지나 B행 → 적재 위치
+//    있음 → 조금 물러나 U턴 → F 교차점으로 돌아가 서쪽 옆 통로에서 다시  (교차점을 세며 후진하지 않는다)
+//  교차점에 선 뒤에 재므로 로봇은 언제나 자기 위치(E 교차점)를 정확히 안다.
 static void goNorthProbing(uint8_t to)
 {
     for (uint8_t k = 0; k < N_LANE; k++) {
         if (lane[k] == L_BLOCKED) continue;
         uint8_t c = LANE_COL[k];
+        uint8_t fNode = rowNode(ROW_F, c), eNode = rowNode(ROW_E, c);
         Serial.print(F("[probe] ")); printNode(rowNode(ROW_D, c)); Serial.println();
-        buildVia(to, ROW_F, ROW_B, c);
-        if (runPath() == NAV_OK) {
-            setLane(k, L_OPEN);
-            return;
+
+        // ① F행을 따라 통로의 F 교차점까지
+        g_np = 0;
+        addPt(nav.node);
+        addPt(rowNode(ROW_F, colOf(nav.node)));
+        addPt(fNode);
+        if (g_np > 1 && runPath() != NAV_OK) uiFatal(F("obstacle before probe"), 25);
+#if FRONT_FAR_TH > 0
+        nav.turnTo(HN);                              // (선택) F 교차점에서 북쪽을 보고 미리 보기
+        if (frontBlocked(FRONT_FAR_TH)) { setLane(k, L_BLOCKED); continue; }
+#endif
+        // ② 북쪽으로 한 칸: E 교차점에 정렬해서 정지 (장애물이 있으면 약 3cm 앞)
+        if (nav.leg(eNode, true) != NAV_OK) uiFatal(F("obstacle before probe"), 25);
+
+        // ③ 서서 전방 측정
+        bool blocked = frontBlocked(FRONT_STOP_TH);
+        if (!blocked) {
+            // ④ 없음 → 북쪽으로. (E → D 한 칸은 천천히 가며 한 번 더 감시 = 안전망)
+            g_np = 0;
+            addPt(nav.node);
+            addPt(rowNode(ROW_B, c));
+            addPt(rowNode(ROW_B, colOf(to)));
+            addPt(to);
+            if (runPath() == NAV_OK) {
+                setLane(k, L_OPEN);
+                return;
+            }
+            setLane(k, L_BLOCKED);                   // 달리다 감지됨 (드묾) → 그 자리에서 U턴
+            nav.uturnOnEdge();
+            continue;
         }
+
+        // ⑤ 있음 → F행으로 돌아감
         setLane(k, L_BLOCKED);
 #if OBST_BACK
-        nav.backTo(rowNode(ROW_F, c));              // 교차점을 세며 F행까지 후진 → F 교차점에 정렬 (큰 장애물 앞에서 돌지 않음)
+        nav.backTo(fNode);                           // E·F 선을 세며 F 교차점까지 후진
 #else
-        nav.uturnOnEdge();                          // 그 자리에서 U턴 → 다음 경로에서 F행으로 되돌아감
+        Backward(UTURN_BACK_PWM);                    // 장애물에서 조금 더 물러난 뒤
+        waitMs(OBST_UTURN_BACK_MS);
+        Brake();
+        nav.turnTo(reverseH(nav.hdg));               // 제자리 U턴 (센서로 선을 찾아 멈춤) → 다음 경로가 F 교차점으로 전진
 #endif
     }
     uiFatal(F("no open lane"), 12);

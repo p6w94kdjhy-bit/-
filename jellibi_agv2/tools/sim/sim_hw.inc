@@ -72,7 +72,7 @@ void UTurn()       { spinTurn(UTURN_LEFT, 2); }
 void UTurnOnEdge() { spinTurn(UTURN_LEFT, 2); }
 void TurnAdjust(bool, int) {}
 IrSample readIr() { return IrSample{0, 0}; }
-int irFront() { return 0; }
+int irFront() { return (W.tgt != NODE_NONE && W.blocked[W.tgt]) ? 650 : 70; }   // 바로 앞 교차점에 장애물이 있으면 큰 값
 bool irCalibrated() { return true; }
 void irUseCarry(bool) {}
 bool irCarryCalibrated() { return false; }

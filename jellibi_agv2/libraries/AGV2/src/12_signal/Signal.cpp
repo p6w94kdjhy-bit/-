@@ -100,7 +100,8 @@ void showConfig()
     Serial.print(F("   R 흰/검 = ")); Serial.print(IR_R_WHITE_CARRY); Serial.print('/'); Serial.print(IR_R_BLACK_CARRY);
     Serial.println(IR_L_WHITE_CARRY < 0 ? F("  (미측정 → 평소 값 사용)") : F(""));
     Serial.print(F("전방 FRONT_OBSTACLE_TH = ")); Serial.print(FRONT_OBSTACLE_TH);
-    Serial.print(F("  NEAR_IS_HIGH = ")); Serial.println(FRONT_NEAR_IS_HIGH);
+    Serial.print(F("  NEAR_IS_HIGH = ")); Serial.print(FRONT_NEAR_IS_HIGH);
+    Serial.print(F("  STOP_TH = ")); Serial.print(FRONT_STOP_TH); Serial.print(F("  FAR_TH = ")); Serial.println(FRONT_FAR_TH);
     Serial.print(F("속도 CRUISE/APPROACH = ")); Serial.print(SPEED_CRUISE); Serial.print('/'); Serial.print(SPEED_APPROACH);
     Serial.print(F("   ALIGN_MS = ")); Serial.print(ALIGN_MS);
     Serial.print(F("   MOTOR_GAIN L/R = ")); Serial.print(MOTOR_L_GAIN); Serial.print('/'); Serial.print(MOTOR_R_GAIN);

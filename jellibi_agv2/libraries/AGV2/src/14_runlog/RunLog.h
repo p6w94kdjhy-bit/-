@@ -30,6 +30,7 @@ enum RunLogType : uint8_t {
     RL_FATAL,       // 오류 정지            a = 오류 번호 (COURSE2_TEST.md 표)
     RL_ABORT,       // 버튼 비상정지
     RL_BACK,        // 후진 시작            a = 돌아갈 교차점, b = 셀 교차점 수
+    RL_FRONT,       // 정지 상태 전방 측정   a = 교차점, b = 전방 센서 값 / 4
     RL_TYPE_END
 };
 
