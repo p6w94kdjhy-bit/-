@@ -20,14 +20,17 @@ static std::string checkPallets()
 {
     std::vector<std::string> pal = { "A6", "A4" };
     bool carrying = false;
+    std::string here;                                                    // 방금 하역한 교차점 (떠나기 전까지)
     auto has = [&](const std::string& n) { return std::find(pal.begin(), pal.end(), n) != pal.end(); };
     for (size_t i = 0; i < W.log.size(); i++) {
         const std::string& t = W.log[i];
         if (t.rfind("PICK@", 0) == 0) { std::string n = t.substr(5, 2); pal.erase(std::remove(pal.begin(), pal.end(), n), pal.end()); carrying = true; continue; }
-        if (t.rfind("DROP@", 0) == 0) { pal.push_back(t.substr(5, 2)); carrying = false; continue; }
+        if (t.rfind("DROP@", 0) == 0) { pal.push_back(t.substr(5, 2)); carrying = false; here = t.substr(5, 2); continue; }
         if (t[0] == '<') continue;                                        // 후진으로 빠져나오는 중
         const std::string& n = t;
         if (n.size() != 2 || n[0] < 'A' || n[0] > 'H') continue;         // 교차점 이름이 아님 (L R U !obs)
+        if (n == here) continue;                                          // 방금 내려놓은 자리에서 다시 정렬하는 것은 통과가 아님
+        here.clear();
         if (!has(n)) continue;
         if (carrying) return "운반 중 다른 적재물과 충돌 " + n;
         size_t j = i + 1;
