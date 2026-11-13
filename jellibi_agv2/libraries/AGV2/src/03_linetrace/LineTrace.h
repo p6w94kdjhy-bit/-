@@ -32,6 +32,10 @@ void AlignOnCross();
 //   한 칸에서 HOP_TIMEOUT_MS 안에 못 찾으면 오류 정지
 bool LineTraceBackCross(uint8_t count, int speed);
 
+// 출발용: 천천히 가며 첫 가로선들을 본다. T자 뒤에서 출발했으면 2(T자 + 교차점), T자와 교차점 사이에서 출발했으면 1.
+//   돌아올 때 로봇은 첫 교차점을 막 지나 달리는 중 (멈추지 않음)
+uint8_t LineTraceStartLines(int speed, unsigned long gapMs);
+
 // T자(선 끝의 짧은 가로선)까지: 바깥 행 교차점에 정지한 상태에서 선 따라 천천히 전진 → 두 센서가 T자를 보는 순간 정지
 //   찾으면 true. maxMs 안에 못 찾으면 그 자리에 정지하고 false
 bool LineTraceToBar(int speed, unsigned long maxMs);

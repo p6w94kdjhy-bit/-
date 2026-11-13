@@ -81,7 +81,7 @@
 // [2] 전방 거리센서 IR (A0, 가까울수록 값이 큼: 없으면 100 미만) — 종목② 장애물 감지
 // ---------------------------------------------------------------------
 #ifndef FRONT_OBSTACLE_TH
-#define FRONT_OBSTACLE_TH     250  // [현장] 11-13 대회장: 비었을 때 65~79, 검은 장애물 10cm = 467 → 그 사이. 이 값보다 크면 장애물 (10cm 보다 조금 멀리서 감지)
+#define FRONT_OBSTACLE_TH     600  // [현장] 11-13: 검은 장애물이 멈추고 싶은 거리(약 3cm)일 때 659 → 조금 낮게. 이 값보다 크면 장애물 (비었을 때 65~79, 10cm 467)
 #endif
 #ifndef FRONT_NEAR_IS_HIGH
 #define FRONT_NEAR_IS_HIGH      1  // [현장] 11-12 실측: 가까울수록 값이 커짐 (없으면 100 미만) → 1
@@ -234,6 +234,9 @@
 #ifndef XING_SKIP_MS
 #define XING_SKIP_MS       150   // [현장] 카운트 직후 이 시간 동안 재카운트 금지 (1회만 카운트)
 #endif
+#ifndef XING_SKIP_MAX_MS
+#define XING_SKIP_MAX_MS   500   // 느리게 달릴 때 늘어나는 재카운트 금지 시간의 상한
+#endif
 #ifndef XING_CLEAR_SAMPLES
 #define XING_CLEAR_SAMPLES  8    // [현장] 선을 완전히 벗어났다고 볼 '양쪽 흰색' 연속 횟수 (교차점 두 번 세기 방지)
 #endif
@@ -271,6 +274,9 @@
 #endif
 #ifndef PICK_AT_BAR
 #define PICK_AT_BAR         0    // [현장] 1 = 적재물이 A행 바깥 T자 위치에 있음 (T자까지 가서 들기),  0 = A 교차점 위에서 들기
+#endif
+#ifndef START_BAR_GAP_MS
+#define START_BAR_GAP_MS  700    // [현장] 출발: 첫 가로선 뒤 이 시간 안에 또 가로선이 나오면 처음 것은 T자 (T자~교차점 50mm, 교차점 간격 200mm)
 #endif
 #ifndef BAR_MAX_MS
 #define BAR_MAX_MS        900    // [현장] 교차점에서 T자를 찾는 최대 시간. 못 찾으면 그 자리에 정지 (맵 밖으로 안 나가게)

@@ -245,8 +245,20 @@ void setup()
     unsigned long t0 = millis();
     runlogBegin();
 
-    if (START_XING_PASSED) nav.setAt(START_NODE, START_HDG);
-    else                   nav.setApproach(START_NODE, START_HDG);
+    if (START_XING_PASSED) {
+        nav.setAt(START_NODE, START_HDG);
+    } else {
+        // 출발 위치(T자 근처)에서 H5 를 지난다. 센서가 T자 뒤에 있었든 T자와 H5 사이에 있었든 스스로 구분해서
+        // 'H5 를 막 지난 상태'로 맞춘다 → 놓는 위치가 조금 달라도 경로가 한 칸씩 밀리지 않는다
+        uint8_t lines = LineTraceStartLines(SPEED_APPROACH, START_BAR_GAP_MS);
+        Serial.print(F("[start] 가로선 ")); Serial.print(lines);
+        Serial.println(lines == 2 ? F("개 (T자 뒤에서 출발)") : F("개 (T자와 H5 사이에서 출발)"));
+        nav.node = START_NODE;
+        nav.hdg = START_HDG;
+        nav.approach = false;
+        nav.moving = true;
+        runlogAdd(RL_NODE, (uint8_t)(START_NODE | (START_HDG << 6)), lines);
+    }
 
     goNorthProbing(PICK1);           // ① 적재물까지 (통로 확인)
     pickHere();

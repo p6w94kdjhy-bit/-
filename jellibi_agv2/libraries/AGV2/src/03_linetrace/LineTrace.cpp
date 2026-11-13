@@ -140,7 +140,14 @@ static bool crossDetected(const IrSample& s)
     }
     s_clearCnt = 0;
     if (s_crossCnt < 255) s_crossCnt++;
-    if (s_crossArmed && s_crossCnt >= XING_CONFIRM_SAMPLES && millis() - s_crossLast >= XING_SKIP_MS) {
+    // 재카운트 금지 시간: 느리게 달릴수록 같은 선 위에 오래 머무르므로 속도에 반비례해서 늘림 (거리로는 같음)
+    //   장애물 감시 칸(SPEED_ZONE)처럼 느리게 '통과'할 때 같은 교차점을 두 번 세는 것을 막는다
+    unsigned long skip = XING_SKIP_MS;
+    if (s_speed > 0 && s_speed < SPEED_CRUISE) {
+        skip = (unsigned long)XING_SKIP_MS * SPEED_CRUISE / s_speed;
+        if (skip > XING_SKIP_MAX_MS) skip = XING_SKIP_MAX_MS;
+    }
+    if (s_crossArmed && s_crossCnt >= XING_CONFIRM_SAMPLES && millis() - s_crossLast >= skip) {
         s_crossArmed = false;
         s_crossLast = millis();
         return true;
@@ -155,7 +162,7 @@ void lineTraceReset()
     s_crossCnt = 0;
     s_clearCnt = 0;
     s_crossArmed = true;
-    s_crossLast = millis() - XING_SKIP_MS;
+    s_crossLast = millis() - XING_SKIP_MAX_MS;         // 초기화 직후의 첫 교차점은 시간 제한 없이 셈
     s_smAcc = 0;
     s_smN = 0;
     s_smErrF = 0;
@@ -284,6 +291,54 @@ bool LineTraceBackCross(uint8_t count, int speed)
         drive(-(int)((long)spd * REV_L_GAIN / 100), -(int)((long)spd * REV_R_GAIN / 100));
         uiCheckAbort();
     }
+}
+
+// ---- 출발: T자 뒤에서 출발했는지, T자와 첫 교차점 사이에서 출발했는지 스스로 구분 ----
+//  출발 위치의 선: [T자] ─ 50mm ─ [바깥 행 교차점(H5)] ─ 200mm ─ [G5] ...
+//  천천히 가며 첫 가로선을 본 뒤, gapMs 안에 가로선이 또 나오면 → 처음 것은 T자였고 지금 것이 교차점 (2 반환, 센서는 교차점 선 위)
+//  gapMs 동안 안 나오면 → 처음 것이 교차점이었음 (1 반환, 센서는 교차점을 조금 지난 곳)
+//  어느 쪽이든 돌아올 때 로봇은 '첫 교차점을 막 지난 상태로 달리는 중'이다. 멈추지 않는다.
+uint8_t LineTraceStartLines(int speed, unsigned long gapMs)
+{
+    lineTraceReset();
+    uint8_t both = 0, notBoth = 0, lines = 0;
+    bool armed = true;
+    unsigned long t0 = millis(), lastMs = t0, tLine = 0;
+    int spd = 0;
+    for (;;) {
+        IrSample s = readIr();
+        unsigned long now = millis();
+        if (s.l > XING_TH_L && s.r > XING_TH_R) {
+            notBoth = 0;
+            if (both < 255) both++;
+            if (armed && both >= XING_CONFIRM_SAMPLES) {
+                armed = false;
+                lines++;
+                tLine = now;
+                beepNode();
+                if (lines == 2) break;                       // T자 + 교차점
+            }
+        } else {
+            both = 0;
+            if (notBoth < 255) notBoth++;
+            if (notBoth >= XING_CLEAR_SAMPLES) armed = true;
+        }
+        if (lines == 1 && now - tLine > gapMs) break;        // 교차점 하나만 (T자 없이)
+#if HOP_TIMEOUT_MS > 0
+        if (lines == 0 && now - t0 > HOP_TIMEOUT_MS) uiFatal(F("출발 후 첫 가로선을 찾지 못함"), 6);
+#endif
+        if (spd < speed) {
+            spd += (int)(now - lastMs) * ACCEL_PER_MS;
+            if (spd > speed) spd = speed;
+        }
+        lastMs = now;
+        lineTraceStep(s, spd);
+        uiCheckAbort();
+    }
+    s_speed = speed;                                         // 이어서 달리는 LineTraceToCross 가 이 속도에서 시작
+    lineTraceDisarm();                                       // 지금 밟고 있는 선을 다음 교차점으로 다시 세지 않게
+    s_crossLast = millis();
+    return lines;
 }
 
 // ---- T자(선 끝의 짧은 가로선)까지 전진해서 정지 ----
