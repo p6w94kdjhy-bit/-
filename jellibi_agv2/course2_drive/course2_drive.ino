@@ -16,6 +16,7 @@
 //   - 장애물이면 정지 → F행까지 후진(장애물이 커서 그 앞에서 돌지 않음) → 서쪽 옆 통로로
 //   - 추론하지 않는다: 3열이 막혀도 2열을 '열림'으로 단정하지 않고 2열도 감시하며 지나간다
 //
+//  적재 위치 = A행 바깥 T자 (하역과 같은 방식): A 교차점에 정렬 → T자까지 → 올림 → A 교차점까지 짧게 후진 → 거기서 U턴
 //  하역 위치 = H행 바깥 T자: 열의 선이 H행 밖으로 약 50mm 나와 끝에 짧은 가로선(T자)이 있다.
 //   남쪽으로 내려와 H 교차점에 정렬 → 선 따라 천천히 더 가서 센서가 T자를 보는 순간 정지 → 내림
 //   ① 은 내린 뒤 교차점을 세며 G행까지 후진으로 빠져나온다. ② 는 내리면 종료.
@@ -180,17 +181,16 @@ static bool toBar()
     return found;
 }
 
-// T자 위치(교차점보다 바깥)에서 빠져나오기: 후진이면 T자·교차점을 세며 한 칸 안쪽까지, 아니면 제자리 U턴
+// T자 위치(교차점보다 약 5cm 바깥)에서 빠져나오기
+//   back = true : T자·교차점을 세며 한 칸 안쪽 교차점까지 후진 (H2 → G2) → 거기에 정렬
+//   back = false: T자와 바깥 행 교차점만 세며 그 교차점까지 짧게(약 5cm) 후진 → 교차점 위에 정렬
+//                 → 다음 이동이 그 교차점 위에서 평소처럼 U턴한다 (T자 위치에서 바로 돌면 가로선을 잘못 볼 수 있어서)
 static void leaveOuter(bool back, bool atBar, bool barFound)
 {
-    uint8_t inner = stepNode(nav.node, reverseH(nav.hdg));          // 한 칸 안쪽 교차점 (H2 → G2, A6 → B6)
-    if (back) {
-        if (atBar && barFound) ClearBarForward(300);                 // 센서를 T자 바깥쪽으로 → 후진하며 T자를 한 번 셈
-        nav.backTo(inner, (atBar && barFound) ? 1 : 0);
-    } else if (atBar) {
-        nav.turnTo(reverseH(nav.hdg));                               // 제자리 U턴 → 바깥 행 교차점을 다시 세며 들어감
-        nav.setApproach(nav.node, nav.hdg);
-    }                                                                // (교차점 위에서 U턴이면 다음 이동이 알아서 돈다)
+    uint8_t extra = (atBar && barFound) ? 1 : 0;                     // 후진하며 T자를 한 번 더 셈
+    if (extra) ClearBarForward(300);                                 // 센서를 T자 바깥쪽으로 (T자를 '정확히 한 번' 세도록)
+    if (back)       nav.backTo(stepNode(nav.node, reverseH(nav.hdg)), extra);
+    else if (atBar) nav.backTo(nav.node, extra);
 }
 
 static void pickHere()                               // 적재물 밑 교차점에 정렬된 상태에서

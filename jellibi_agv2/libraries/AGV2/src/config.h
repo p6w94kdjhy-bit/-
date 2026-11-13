@@ -273,7 +273,7 @@
 #define DROP_AT_BAR         1    // [현장] 1 = 하역은 H 교차점 정렬 후 T자까지 더 가서 정지,  0 = H 교차점 위에서 하역
 #endif
 #ifndef PICK_AT_BAR
-#define PICK_AT_BAR         0    // [현장] 1 = 적재물이 A행 바깥 T자 위치에 있음 (T자까지 가서 들기),  0 = A 교차점 위에서 들기
+#define PICK_AT_BAR         1    // [현장] 1 = 적재물이 A행 바깥 T자 위치 (T자까지 가서 들기, 11-13 규칙),  0 = A 교차점 위에서 들기
 #endif
 #ifndef START_BAR_GAP_MS
 #define START_BAR_GAP_MS  700    // [현장] 출발: 첫 가로선 뒤 이 시간 안에 또 가로선이 나오면 처음 것은 T자 (T자~교차점 50mm, 교차점 간격 200mm)
@@ -287,7 +287,7 @@
 #define OBST_BACK           1    // [현장] 장애물 → 1: F행까지 교차점을 세며 후진 (큰 장애물 앞에서 돌지 않음)  0: 그 자리에서 U턴 후 F행으로
 #endif
 #ifndef PICK_BACK
-#define PICK_BACK           0    // [현장] 적재물 든 뒤 → 0: 그 교차점 위에서 U턴 (11-13: 후진은 경로가 틀어져서 U턴으로)  1: 한 칸 후진
+#define PICK_BACK           0    // [현장] 적재물 든 뒤 → 0: A 교차점까지만 짧게 후진해 정렬 → 그 위에서 U턴   1: B행까지 후진 (U턴 없음)
 #endif
 #ifndef DROP_BACK
 #define DROP_BACK           1    // [현장] ① 내린 뒤 → 1: 교차점을 세며 한 칸 위(G행)까지 후진으로 빠져나옴 (11-13 규칙)  0: 그 자리에서 U턴  (② 는 내리면 종료)

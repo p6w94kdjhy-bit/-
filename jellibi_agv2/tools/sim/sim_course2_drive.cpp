@@ -30,7 +30,9 @@ static std::string checkPallets()
         if (n.size() != 2 || n[0] < 'A' || n[0] > 'H') continue;         // 교차점 이름이 아님 (L R U !obs)
         if (!has(n)) continue;
         if (carrying) return "운반 중 다른 적재물과 충돌 " + n;
-        if (!(i + 1 < W.log.size() && W.log[i + 1].rfind("PICK@" + n, 0) == 0)) return "적재물 위치 통과 " + n;
+        size_t j = i + 1;
+        while (j < W.log.size() && W.log[j] == "T") j++;                 // T자까지 더 가는 것은 같은 위치
+        if (!(j < W.log.size() && W.log[j].rfind("PICK@" + n, 0) == 0)) return "적재물 위치 통과 " + n;
     }
     return "";
 }
