@@ -304,6 +304,9 @@
 #ifndef REV_SKIP_MS
 #define REV_SKIP_MS       150    // [현장] 후진 중 한 선을 센 뒤 다음 선을 셀 수 있을 때까지 최소 시간 (T자와 H행 선 사이는 50mm 뿐이라 짧게)
 #endif
+#ifndef REV_CLEAR_SAMPLES
+#define REV_CLEAR_SAMPLES  40    // 후진 중 한 선을 센 뒤 '양쪽 검정이 아님'이 연속 이만큼 나와야 다음 선을 셈
+#endif                           //  (짐을 실어 느려져도 같은 선·T자를 두 번 세지 않게. 전진의 XING_CLEAR_SAMPLES 8 보다 크게)
 #ifndef REV_ALIGN_MS
 #define REV_ALIGN_MS      ALIGN_MS // [현장] 다시 찾은 가로선에서 바퀴축까지 더 가는 시간 (멈춘 상태에서 출발하므로 ALIGN_MS 보다 조금 길 수 있음)
 #endif

@@ -278,7 +278,7 @@ bool LineTraceBackCross(uint8_t count, int speed)
         } else {
             both = 0;
             if (notBoth < 255) notBoth++;
-            if (notBoth >= XING_CLEAR_SAMPLES) armed = true;
+            if (notBoth >= REV_CLEAR_SAMPLES) armed = true;    // 선을 '확실히' 벗어난 뒤에만 다음 선을 셈
         }
 #if HOP_TIMEOUT_MS > 0
         if (now - cellStart > HOP_TIMEOUT_MS) uiFatal(F("후진 중 교차점을 찾지 못함 (HOP_TIMEOUT_MS)"), 4);
