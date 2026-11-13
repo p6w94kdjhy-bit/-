@@ -51,7 +51,8 @@ public:
     //   장애물 앞(칸 중간)에서 G·B행으로 돌아갈 때, 팔레트를 든 뒤/내린 뒤 빠져나올 때 사용
     //   순서: 교차점을 세며 후진 → REV_PAST_MS 더 후진 → 정지 → 앞으로 똑바로 천천히 가며 target 을 다시 찾아 정렬
     //   후진 뒤에는 항상 회전이 오므로(센서로 새 선을 찾아 멈춤) 후진 중 생긴 작은 방향 오차는 그 회전에서 바로잡힌다
-    void backTo(uint8_t target);
+    //   extra: 후진하면서 교차점 말고 더 세야 하는 가로선 수 (T자 뒤에서 출발하면 1)
+    void backTo(uint8_t target, uint8_t extra = 0);
     void uturnOnEdge();                       // 장애물 앞(칸 중간)에서 U턴 → obsFrom으로 접근 상태
     void hold(unsigned long ms);              // 정차 유지 (+부저)
 

@@ -265,6 +265,17 @@
 //   │ 후진하면서 비뚤어짐 (tune_drive 'B')    │ 오른쪽으로 휘면 REV_L_GAIN ↓, 왼쪽이면 REV_R_GAIN ↓ │
 //   │ 다시 찾은 뒤 바퀴축이 교차점 앞/뒤       │ REV_ALIGN_MS ↑(덜 감) / ↓(지나침)  │
 //   └──────────────────────────────────────┴─────────────────────────────┘
+// course2_drive: T자(선 끝의 짧은 가로선) 위치에서 멈추기 — 하역 위치 H2·H6 은 H행 교차점을 지나 T자에서 정지
+#ifndef DROP_AT_BAR
+#define DROP_AT_BAR         1    // [현장] 1 = 하역은 H 교차점 정렬 후 T자까지 더 가서 정지,  0 = H 교차점 위에서 하역
+#endif
+#ifndef PICK_AT_BAR
+#define PICK_AT_BAR         0    // [현장] 1 = 적재물이 A행 바깥 T자 위치에 있음 (T자까지 가서 들기),  0 = A 교차점 위에서 들기
+#endif
+#ifndef BAR_MAX_MS
+#define BAR_MAX_MS        900    // [현장] 교차점에서 T자를 찾는 최대 시간. 못 찾으면 그 자리에 정지 (맵 밖으로 안 나가게)
+#endif
+
 // course2_drive: 어떤 동작에 후진을 쓸지 (1 = 교차점을 세며 후진, 0 = U턴). 대회 당일 바꿀 수 있게 config 에 둠
 #ifndef OBST_BACK
 #define OBST_BACK           1    // [현장] 장애물 → 1: F행까지 교차점을 세며 후진 (큰 장애물 앞에서 돌지 않음)  0: 그 자리에서 U턴 후 F행으로
@@ -273,7 +284,7 @@
 #define PICK_BACK           0    // [현장] 적재물 든 뒤 → 0: 그 교차점 위에서 U턴 (11-13: 후진은 경로가 틀어져서 U턴으로)  1: 한 칸 후진
 #endif
 #ifndef DROP_BACK
-#define DROP_BACK           0    // [현장] ① 내린 뒤 → 0: 그 교차점 위에서 U턴 후 전진  1: 한 칸 후진으로 빠져나옴  (② 는 내리면 종료)
+#define DROP_BACK           1    // [현장] ① 내린 뒤 → 1: 교차점을 세며 한 칸 위(G행)까지 후진으로 빠져나옴 (11-13 규칙)  0: 그 자리에서 U턴  (② 는 내리면 종료)
 #endif
 #ifndef REV_SETTLE
 #define REV_SETTLE          0    // [현장] 1 = 목표 교차점보다 한 칸 더 후진한 뒤 선 따라 한 칸 전진해 정렬 (옆 어긋남을 바로잡음, 약 1.5초 더 걸림)
@@ -285,7 +296,7 @@
 #define REV_PAST_MS       150    // [현장] 돌아갈 교차점 선을 센 뒤 더 후진하는 시간 (그 뒤 앞으로 다시 찾아 정렬)
 #endif
 #ifndef REV_SKIP_MS
-#define REV_SKIP_MS       250    // [현장] 후진 중 한 교차점을 센 뒤 다음 교차점을 셀 수 있을 때까지 최소 시간
+#define REV_SKIP_MS       150    // [현장] 후진 중 한 선을 센 뒤 다음 선을 셀 수 있을 때까지 최소 시간 (T자와 H행 선 사이는 50mm 뿐이라 짧게)
 #endif
 #ifndef REV_ALIGN_MS
 #define REV_ALIGN_MS      ALIGN_MS // [현장] 다시 찾은 가로선에서 바퀴축까지 더 가는 시간 (멈춘 상태에서 출발하므로 ALIGN_MS 보다 조금 길 수 있음)

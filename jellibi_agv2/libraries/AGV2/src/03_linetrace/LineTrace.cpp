@@ -286,6 +286,64 @@ bool LineTraceBackCross(uint8_t count, int speed)
     }
 }
 
+// ---- T자(선 끝의 짧은 가로선)까지 전진해서 정지 ----
+//  맵 바깥쪽: 각 열의 선이 H행(A행) 밖으로 약 50mm 더 나와 있고 끝에 짧은 가로선(T자)이 있다 = 출발·하역 위치.
+//  바깥 행 교차점에 정렬·정지한 상태에서 호출: 선을 따라 천천히 가다 두 센서가 동시에 검정(T자)이면 그 순간 정지.
+//  (센서가 아직 교차점 가로선 위에 있을 수 있으므로, 먼저 '양쪽 검정이 아님'을 본 뒤부터 T자를 찾는다)
+//  maxMs 안에 못 찾으면 그 자리에 정지하고 false (맵 밖으로 나가지 않게)
+bool LineTraceToBar(int speed, unsigned long maxMs)
+{
+    lineTraceReset();
+    uint8_t both = 0, notBoth = 0;
+    bool armed = false, found = false;
+    unsigned long t0 = millis(), lastMs = t0;
+    int spd = 0;
+    for (;;) {
+        IrSample s = readIr();
+        if (s.l > XING_TH_L && s.r > XING_TH_R) {
+            notBoth = 0;
+            if (armed && ++both >= XING_CONFIRM_SAMPLES) { found = true; break; }
+        } else {
+            both = 0;
+            if (notBoth < 255) notBoth++;
+            if (notBoth >= XING_CLEAR_SAMPLES) armed = true;
+        }
+        unsigned long now = millis();
+        if (now - t0 > maxMs) break;
+        if (spd < speed) {
+            spd += (int)(now - lastMs) * ACCEL_PER_MS;
+            if (spd > speed) spd = speed;
+        }
+        lastMs = now;
+        lineTraceStep(s, spd);
+        uiCheckAbort();
+    }
+    Brake();
+    lineTraceReset();
+    if (found) beepNode();
+    return found;
+}
+
+// T자 위에 센서가 걸쳐 있으면 조금 더 전진해서 완전히 지나간다 (이미 지나 있으면 움직이지 않음).
+//  → 그 뒤 후진할 때 T자를 '반드시 한 번' 세게 되어 교차점 수가 틀리지 않는다
+void ClearBarForward(unsigned long maxMs)
+{
+    unsigned long t0 = millis();
+    uint8_t clear = 0;
+    for (;;) {
+        IrSample s = readIr();
+        if (s.l > XING_TH_L && s.r > XING_TH_R) {
+            clear = 0;
+            Forward(SPEED_APPROACH);
+        } else if (++clear >= XING_CLEAR_SAMPLES) {
+            break;
+        }
+        if (millis() - t0 > maxMs) break;
+        uiCheckAbort();
+    }
+    Brake();
+}
+
 // ---- 후진 뒤 교차점 다시 찾아 정렬 (조향 없이 똑바로) ----
 //  후진하면 조금 비뚤어질 수 있다. 이때 선 따라 조향하면 짧은 거리에서 크게 꺾여 더 비뚤어지므로
 //  똑바로 천천히 앞으로 가서 가로선(양쪽 검정)을 찾고 REV_ALIGN_MS 더 가서 정지.

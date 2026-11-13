@@ -16,11 +16,15 @@
 //   - 장애물이면 정지 → F행까지 후진(장애물이 커서 그 앞에서 돌지 않음) → 서쪽 옆 통로로
 //   - 추론하지 않는다: 3열이 막혀도 2열을 '열림'으로 단정하지 않고 2열도 감시하며 지나간다
 //
+//  하역 위치 = H행 바깥 T자: 열의 선이 H행 밖으로 약 50mm 나와 끝에 짧은 가로선(T자)이 있다.
+//   남쪽으로 내려와 H 교차점에 정렬 → 선 따라 천천히 더 가서 센서가 T자를 보는 순간 정지 → 내림
+//   ① 은 내린 뒤 교차점을 세며 G행까지 후진으로 빠져나온다. ② 는 내리면 종료.
+//
 //  경로 (3열이 열린 경우)
 //   가는 길 ①  H5 → F5 → F3 → (D3) → B3 → B6 → A6
-//   운반 ①     A6 → B6 → B3 → (D3) → H3 → H2
-//   가는 길 ②  H2 → H3 → (D3) → B3 → B4 → A4
-//   운반 ②     A4 → B4 → B3 → (D3) → H3 → H6          (2열·1열이면 H2 의 ① 을 피해 G행으로: … → G2 → G6 → H6)
+//   운반 ①     A6 → B6 → B3 → (D3) → F3 → F2 → H2 → T자        → G2 까지 후진
+//   가는 길 ②  G2 → G3 → (D3) → B3 → B4 → A4
+//   운반 ②     A4 → B4 → B3 → (D3) → F3 → F6 → H6 → T자 = 종료
 //
 //  주행 기록: 주행 후 USB 를 꽂고 시리얼 모니터(115200)를 열면 '지난 주행 기록'이 나온다 → 복사해서 전달
 // =====================================================================
@@ -168,29 +172,54 @@ static void shortMove(int ms)                        // 정렬 후 앞(+)/뒤(-)
     else if (ms < 0) { Backward(SPEED_APPROACH); waitMs(-ms); Brake(); }
 }
 
+// 바깥 행 교차점에 정렬된 상태 → 선 끝 T자까지 더 가서 정지. 찾았으면 true
+static bool toBar()
+{
+    bool found = LineTraceToBar(SPEED_APPROACH, BAR_MAX_MS);
+    Serial.println(found ? F("[bar] T자에서 정지") : F("[bar] T자를 못 찾음 → 그 자리에 정지"));
+    return found;
+}
+
+// T자 위치(교차점보다 바깥)에서 빠져나오기: 후진이면 T자·교차점을 세며 한 칸 안쪽까지, 아니면 제자리 U턴
+static void leaveOuter(bool back, bool atBar, bool barFound)
+{
+    uint8_t inner = stepNode(nav.node, reverseH(nav.hdg));          // 한 칸 안쪽 교차점 (H2 → G2, A6 → B6)
+    if (back) {
+        if (atBar && barFound) ClearBarForward(300);                 // 센서를 T자 바깥쪽으로 → 후진하며 T자를 한 번 셈
+        nav.backTo(inner, (atBar && barFound) ? 1 : 0);
+    } else if (atBar) {
+        nav.turnTo(reverseH(nav.hdg));                               // 제자리 U턴 → 바깥 행 교차점을 다시 세며 들어감
+        nav.setApproach(nav.node, nav.hdg);
+    }                                                                // (교차점 위에서 U턴이면 다음 이동이 알아서 돈다)
+}
+
 static void pickHere()                               // 적재물 밑 교차점에 정렬된 상태에서
 {
+    bool bar = false;
+#if PICK_AT_BAR
+    bar = toBar();
+#endif
     runlogAdd(RL_PICK, nav.node);
     Serial.println(F("[pallet] PICK"));
     shortMove(PICK_ADJ_MS);
     LiftUp();                                        // 리프트 올림 (바닥 IR 값도 '든 상태' 값으로 바뀜)
     nav.cruise = min(SPEED_CRUISE, SPEED_CARRY);     // 들고 있는 동안 천천히 (낙하 방지)
-#if PICK_BACK
-    nav.backTo(stepNode(nav.node, reverseH(nav.hdg)));   // 든 채로 한 칸 후진
-#endif                                               // (0 이면 다음 이동을 시작할 때 이 교차점 위에서 U턴)
+    leaveOuter(PICK_BACK, PICK_AT_BAR, bar);
 }
 
-static void dropHere(bool last)                      // 하역 교차점에 정렬된 상태에서
+static void dropHere(bool last)                      // 하역 열의 H 교차점에 (남쪽을 보고) 정렬된 상태에서
 {
+    bool bar = false;
+#if DROP_AT_BAR
+    bar = toBar();                                   // T자를 센서가 보는 순간 정지 = 하역 위치
+#endif
     runlogAdd(RL_DROP, nav.node);
     Serial.println(F("[pallet] DROP"));
     shortMove(DROP_ADJ_MS);
     LiftDown();
     nav.cruise = SPEED_CRUISE;
     if (last) return;                                // 마지막 하역 = 종료 (빠져나오지 않음)
-#if DROP_BACK == 1
-    nav.backTo(stepNode(nav.node, reverseH(nav.hdg)));   // 한 칸 후진으로 빠져나옴
-#endif                                               // (0 이면 다음 이동을 시작할 때 이 교차점 위에서 U턴 후 전진)
+    leaveOuter(DROP_BACK == 1, DROP_AT_BAR, bar);    // ① : 후진으로 G행까지 빠져나옴
 }
 
 // ----------------------------------------------------------------- main
@@ -221,14 +250,13 @@ void setup()
 
     goNorthProbing(PICK1);           // ① 적재물까지 (통로 확인)
     pickHere();
-    goVia(DROP1, ROW_B, ROW_H);      // ① 운반 → H2
-    dropHere(false);
+    goVia(DROP1, ROW_B, ROW_F);      // ① 운반 → F행에서 2열로 → 남쪽으로 H2 (T자까지는 dropHere 가)
+    dropHere(false);                 //    내리고 G2 까지 후진
 
-    goVia(PICK2, ROW_H, ROW_B);      // ② 적재물까지
+    goVia(PICK2, rowOf(nav.node), ROW_B);   // ② 적재물까지 (지금 있는 행에서 통로 열로)
     pickHere();
-    // ② 운반 → H6.  통로가 2열·1열이면 H행으로 가다 H2 의 ① 과 부딪히므로 G행으로 돌아간다
-    goVia(DROP2, ROW_B, LANE_COL[openLane] <= colOf(DROP1) ? ROW_G : ROW_H);
-    dropHere(true);                  // 내리면 종료
+    goVia(DROP2, ROW_B, ROW_F);      // ② 운반 → F행에서 6열로 → 남쪽으로 H6 (F행이라 H2 쪽 ① 과 멀다)
+    dropHere(true);                  // T자에서 내리면 종료
 
     Stop();
     runlogAdd(RL_DONE);

@@ -38,7 +38,7 @@ void Nav::turnTo(uint8_t h)
     afterBack = false;
 }
 
-void Nav::backTo(uint8_t target)
+void Nav::backTo(uint8_t target, uint8_t extra)
 {
     // 세어야 할 교차점 수 = (마지막으로 센 교차점 ~ target 칸 수) + 1
     //   센서가 바퀴축보다 앞에 있으므로, 후진하면 '마지막으로 센 교차점'의 선을 센서가 먼저 다시 지난다
@@ -46,7 +46,7 @@ void Nav::backTo(uint8_t target)
     if (target != node && headingTo(node, target) != (int8_t)reverseH(hdg)) uiFatal(F("backTo: target not behind"), 3);
     uint8_t behind = stepNode(target, reverseH(hdg));
     bool settle = REV_SETTLE && behind != NODE_NONE;       // 한 칸 더 후진 → 선 따라 한 칸 전진하며 중앙으로
-    uint8_t count = straightDist(node, target) + 1 + (settle ? 1 : 0);
+    uint8_t count = straightDist(node, target) + 1 + (settle ? 1 : 0) + extra;
     runlogAdd(RL_BACK, target, count);
     Serial.print(F("[nav] BACK to ")); printNode(target); Serial.print(F(" count=")); Serial.println(count);
 

@@ -16,6 +16,7 @@ struct World {
     bool midEdge = false;            // 장애물 앞에서 멈춤 (칸 중간)
     bool blocked[64] = {};
     bool carrying = false;
+    bool atBar = false;              // 센서가 선 끝 T자 바깥에 있음
     bool (*edgeAllowed)(uint8_t, uint8_t) = nullptr;
     int hops = 0, turns = 0, uturns = 0;
     std::vector<std::string> log;
@@ -36,6 +37,7 @@ void worldStart(uint8_t start, uint8_t h)
 {
     W.cur = stepNode(start, reverseH(h)); W.tgt = start; W.hdg = h;
     W.midEdge = false; W.carrying = false; W.hops = W.turns = W.uturns = 0;
+    W.atBar = false;
     memset(W.blocked, 0, sizeof(W.blocked));
     W.log.clear(); W.fail.clear();
 }
@@ -100,8 +102,15 @@ void AlignOnCross() { lineTraceReset(); }
 
 // 후진: 마지막으로 센 교차점(센서가 그 선 앞에 있음)부터 뒤쪽으로 count 개를 셈.
 // 끝나면 센서는 마지막으로 센 교차점 바로 뒤 → 다음 전진(LineTraceToCross)에서 그 교차점을 다시 셈
+bool LineTraceToBar(int, unsigned long) { W.atBar = true; W.log.push_back("T"); return true; }
+void ClearBarForward(unsigned long) {}
+
 bool LineTraceBackCross(uint8_t count, int)
 {
+    if (W.atBar) {                               // T자를 먼저 한 번 셈
+        if (count == 0) failNow("후진 수 부족");
+        W.atBar = false; count--; W.log.push_back("<T");
+    }
     uint8_t back = reverseH(W.hdg);
     uint8_t n = W.cur;
     for (uint8_t i = 0; i < count; i++) {

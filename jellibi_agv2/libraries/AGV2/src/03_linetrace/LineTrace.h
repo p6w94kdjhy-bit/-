@@ -32,6 +32,12 @@ void AlignOnCross();
 //   한 칸에서 HOP_TIMEOUT_MS 안에 못 찾으면 오류 정지
 bool LineTraceBackCross(uint8_t count, int speed);
 
+// T자(선 끝의 짧은 가로선)까지: 바깥 행 교차점에 정지한 상태에서 선 따라 천천히 전진 → 두 센서가 T자를 보는 순간 정지
+//   찾으면 true. maxMs 안에 못 찾으면 그 자리에 정지하고 false
+bool LineTraceToBar(int speed, unsigned long maxMs);
+// 센서가 T자 위에 걸쳐 있으면 조금 더 전진해 완전히 지나감 (후진할 때 T자를 정확히 한 번 세도록)
+void ClearBarForward(unsigned long maxMs);
+
 // 후진 뒤: 똑바로(조향 없이) 천천히 앞으로 가서 가로선을 찾고 REV_ALIGN_MS 더 가서 정지 (바퀴축을 교차점 위에)
 void RecatchCrossStraight();
 
