@@ -49,3 +49,4 @@
 | 11-12 | course1_fast 추가: `C1F_CRUISE` 200, `C1F_LATE_BRAKE_PCT` 40, `C1F_LT_SMOOTH` 0 (신규) | | 원본 course1_drive 그대로. 통과 속도 ↑ + 정차 칸 앞부분 빠르게. 실물 미검증 |
 | 11-12 | config_local.h (노트북 전용, GitHub 에 안 올라감) 지원 — config.h 모든 값을 덮어쓸 수 있게 | | 노트북에서 config.h 를 직접 고치면 Pull 충돌 → 앞으로는 config_local.h 에 |
 | 11-13 | `FRONT_OBSTACLE_TH` 400→250 | | 대회장 실측: 비었을 때 65/73/79, 검은 장애물(20cm) 10cm 거리 467. 400 은 여유가 작아 더 일찍 감지하도록 |
+| 11-13 | `FRONT_OBSTACLE_TH` 250→600 | | 너무 멀리서 감지 → 원하는 정지 거리(약 3cm)에서 잰 값 659 의 약 90% |
