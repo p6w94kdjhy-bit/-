@@ -289,7 +289,7 @@
 //   올리는 순서: 그대로 완주 확인 → C2F_LATE_BRAKE_PCT 40 → 55 → 70 → C2F_CRUISE 200 → 220
 //   교차점을 지나쳐 서거나 회전이 틀어지면 C2F_LATE_BRAKE_PCT ↓, 직선에서 흔들리거나 선을 벗어나면 C2F_CRUISE ↓
 #ifndef C2F_CRUISE
-#define C2F_CRUISE        200   // [현장] 빈 차 통과 구간 속도 (course2_drive 는 SPEED_CRUISE 168)
+#define C2F_CRUISE        230   // [현장] 빈 차 통과 구간 속도 (course2_drive 는 SPEED_CRUISE 168). 11-13: 200 → 230. 최대 255
 #endif
 #ifndef C2F_LATE_BRAKE_PCT
 #define C2F_LATE_BRAKE_PCT 40   // [현장] 빈 차일 때 정차할 칸의 앞부분을 통과 속도로 달리는 비율 % (0 = 끔)
