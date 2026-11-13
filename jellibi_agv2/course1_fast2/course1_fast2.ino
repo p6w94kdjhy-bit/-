@@ -1,8 +1,8 @@
 // =====================================================================
 //  종목① 지정경로 순회정차 — 더 빠른 판 (course1_fast2).  완주 확인한 course1_fast 와 원본은 그대로
 //  course1_fast 와 다른 점 (값은 config.h 의 C1F2_...)
-//   - 통과 속도 C1F2_CRUISE (255 = 최대),  정차 칸 앞부분 C1F2_LATE_BRAKE_PCT % (60) 까지 통과 속도
-//   - 정차·회전 직전 접근 속도 C1F2_APPROACH (98) + 그에 맞춘 정렬 시간 C1F2_ALIGN_MS (93)
+//   - 통과 속도 C1F2_CRUISE (240),  정차 칸 앞부분 C1F2_LATE_BRAKE_PCT % (60) 까지 통과 속도
+//   - 정차·회전 직전 접근 속도 C1F2_APPROACH (84) + 그에 맞춘 정렬 시간 C1F2_ALIGN_MS (111)
 //  아래는 course1_fast 의 설명
 //  종목① 지정경로 순회정차 — 속도 올린 판 (course1_fast).  원본 course1_drive 는 그대로
 //  원본과 다른 점 (값은 config.h 의 C1F_...)
