@@ -67,3 +67,4 @@
 | 11-13 | course2_fast 추가: `C2F_CRUISE` 200, `C2F_LATE_BRAKE_PCT` 40 (신규) | | course2_drive(완주 확인) 그대로 두고 복사. 화물을 들지 않았을 때만 통과 속도 ↑ + 늦은 감속. 운반 중은 동일. 실물 미검증 |
 | 11-13 | `C2F_CRUISE` 200→230 | | course2_fast 빈 차 직선 속도를 더 올림 (사용자 요청) |
 | 11-13 | `DROP_BACK` 1→2, `DROP_BACK_MS` 600 (신규) | | G2 교차점에서 회전할 때 문제 → ① 하역 후 0.6초만 후진하고 G~H 사이에서 바로 U턴 (course2_drive, course2_fast 공통) |
+| 11-13 | course2_drive 를 원래대로 (`DROP_BACK` 2→1) / course2_fast 는 `C2F_DROP_BACK` 2 (신규) | | 사용자 요청: 완주 확인한 course2_drive 는 그대로 두고, 0.6초 후진 + U턴은 course2_fast 에만 |

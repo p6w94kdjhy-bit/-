@@ -320,11 +320,14 @@
 #define PICK_BACK           0    // [현장] 적재물 든 뒤 → 0: A 교차점까지만 짧게 후진해 정렬 → 그 위에서 U턴   1: B행까지 후진 (U턴 없음)
 #endif
 #ifndef DROP_BACK
-#define DROP_BACK           2    // [현장] ① 내린 뒤 → 2: DROP_BACK_MS 동안만 후진 → 그 자리(G~H 사이)에서 U턴 → 선 따라 전진 (11-13)
-                                 //        1: T자·H·G 선을 세며 G 교차점까지 후진 후 회전   0: H 교차점까지만 후진해 회전
+#define DROP_BACK           1    // [현장] (course2_drive) ① 내린 뒤 → 1: T자·H·G 선을 세며 G 교차점까지 후진 후 회전 (완주 확인한 방식)
+                                 //        0: H 교차점까지만 후진해 회전
 #endif
+#ifndef C2F_DROP_BACK
+#define C2F_DROP_BACK       2    // [현장] (course2_fast) ① 내린 뒤 → 2: DROP_BACK_MS 동안만 후진 → G~H 사이에서 바로 U턴 → 선 따라 전진
+#endif                           //        1·0 은 위 DROP_BACK 과 같은 뜻
 #ifndef DROP_BACK_MS
-#define DROP_BACK_MS      600    // [현장] (DROP_BACK 2) ① 을 내린 뒤 후진하는 시간. 이 뒤 바로 U턴. 너무 짧으면 U턴이 H행 가로선을 잘못 볼 수 있음
+#define DROP_BACK_MS      600    // [현장] (C2F_DROP_BACK 2) ① 을 내린 뒤 후진하는 시간. 이 뒤 바로 U턴. 너무 짧으면 U턴이 H행 가로선을 잘못 볼 수 있음
 #endif
 #ifndef REV_SETTLE
 #define REV_SETTLE          0    // [현장] 1 = 목표 교차점보다 한 칸 더 후진한 뒤 선 따라 한 칸 전진해 정렬 (옆 어긋남을 바로잡음, 약 1.5초 더 걸림)
