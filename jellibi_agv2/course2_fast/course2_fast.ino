@@ -26,12 +26,12 @@
 //  적재 위치 = A행 바깥 T자 (하역과 같은 방식): A 교차점에 정렬 → T자까지 → 올림 → A 교차점까지 짧게 후진 → 거기서 U턴
 //  하역 위치 = H행 바깥 T자: 열의 선이 H행 밖으로 약 50mm 나와 끝에 짧은 가로선(T자)이 있다.
 //   남쪽으로 내려와 H 교차점에 정렬 → 선 따라 천천히 더 가서 센서가 T자를 보는 순간 정지 → 내림
-//   ① 은 내린 뒤 T자·H·G 선을 세며 G 교차점까지 후진(화물 밖) → 정렬 → 거기서 돌아 나간다. ② 는 내리면 종료.
+//   ① 은 내린 뒤 0.6초만 후진 → G~H 사이에서 바로 U턴 → 선 따라 북쪽으로 (DROP_BACK 2). ② 는 내리면 종료.
 //   ※ 바닥 센서가 바퀴보다 앞에 있어 후진 중에는 선을 따라 조향할 수 없다 → 후진 좌우 균형(MOTOR_L/R_GAIN_REV)으로 똑바로 간다
 //
 //  경로 (3열이 열린 경우)
 //   가는 길 ①  H5 → F5 → F3 → E3(정지·측정) → (D3) → B3 → B6 → A6 → T자
-//   운반 ①     A6 → B6 → B3 → (D3) → F3 → F2 → H2 → T자        → G2 까지 후진
+//   운반 ①     A6 → B6 → B3 → (D3) → F3 → F2 → H2 → T자        → 0.6초 후진 → U턴
 //   가는 길 ②  G2 → G3 → (D3) → B3 → B4 → A4
 //   운반 ②     A4 → B4 → B3 → (D3) → F3 → F6 → H6 → T자 = 종료
 //
@@ -284,7 +284,21 @@ static void dropHere(bool last)                      // 하역 열의 H 교차�
     LiftDown();
     speedEmpty();                                    // 빈 차 → 다시 빠르게
     if (last) return;                                // 마지막 하역 = 종료 (빠져나오지 않음)
-    leaveOuter(DROP_BACK == 1, DROP_AT_BAR, bar);    // ① : G 교차점까지 후진해 화물 밖에서 정렬 (DROP_BACK 0 이면 H 교차점까지만)
+#if DROP_BACK == 2
+    // ① : 잠깐(DROP_BACK_MS) 후진 → G~H 사이에서 바로 U턴(센서로 선을 찾아 멈춤) → 북쪽으로 선 따라 전진, 다음 교차점이 G
+    (void)bar;
+    Backward(REV_PWM);
+    waitMs(DROP_BACK_MS);
+    Brake();
+    delay(TURN_SETTLE_MS);
+    uint8_t back = reverseH(nav.hdg);
+    uint8_t inner = stepNode(nav.node, back);        // H2 → G2
+    runlogAdd(RL_TURN, 'E');
+    UTurnOnEdge();
+    nav.setApproach(inner, back);
+#else
+    leaveOuter(DROP_BACK == 1, DROP_AT_BAR, bar);    // 1: G 교차점까지 후진해 정렬, 0: H 교차점까지만
+#endif
 }
 
 // ----------------------------------------------------------------- main
@@ -332,7 +346,7 @@ void setup()
     goNorthProbing(PICK1);           // ① 적재물까지 (통로 확인)
     pickHere();
     goVia(DROP1, ROW_B, ROW_F);      // ① 운반 → F행에서 2열로 → 남쪽으로 H2 (T자까지는 dropHere 가)
-    dropHere(false);                 //    내리고 G2 까지 후진·정렬 (화물 밖)
+    dropHere(false);                 //    내리고 0.6초 후진 → U턴 (다음 교차점 = G2)
 
     goVia(PICK2, rowOf(nav.node), ROW_B);   // ② 적재물까지 (지금 있는 행에서 통로 열로)
     pickHere();

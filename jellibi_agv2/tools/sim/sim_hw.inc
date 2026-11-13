@@ -134,6 +134,7 @@ void RecatchCrossStraight()
 // 라인트레이싱: 다음 교차점으로 한 칸 이동. 장애물 감시 중이면 앞 칸에 장애물이 있을 때 멈춤
 bool LineTraceToCross(int, bool checkObstacle)
 {
+    W.atBar = false;
     bool canSee = !(W.carrying && !FRONT_CHECK_WHILE_CARRY);   // 팔레트에 가려 못 봄
     if (checkObstacle && canSee && W.tgt != NODE_NONE && W.blocked[W.tgt]) {
         W.midEdge = true;
