@@ -80,7 +80,8 @@ static void setLane(uint8_t i, LaneState st)
 }
 
 // ----------------------------------------------------------------- Nav 콜백
-// 달리는 중 전방 감시(안전망): 서서 잰 결과 '없음'이었던 통로를 E → D 로 처음 지나갈 때만. 평소 판단은 probeHere() 가 한다
+// 달리는 중 전방 감시(안전망, config.h PROBE_SAFETY_NET 1 일 때만 동작): 아직 '모름'인 통로의 E → D 칸.
+//   기본(0)은 E 교차점에서 서서 잰 결과로 바로 '열림'을 확정하므로 이 감시는 걸리지 않고 D 구역을 통과 속도로 지나간다
 static bool hopCheck(uint8_t from, uint8_t to)
 {
     if (colOf(from) != colOf(to)) return false;
@@ -187,7 +188,10 @@ static void goNorthProbing(uint8_t to)
         // ③ 서서 전방 측정
         bool blocked = frontBlocked(FRONT_STOP_TH);
         if (!blocked) {
-            // ④ 없음 → 북쪽으로. (E → D 한 칸은 천천히 가며 한 번 더 감시 = 안전망)
+            // ④ 없음 → 이 통로는 열림으로 확정 → D 구역을 감속·감시 없이 통과 속도로 지나간다
+#if !PROBE_SAFETY_NET
+            setLane(k, L_OPEN);
+#endif
             g_np = 0;
             addPt(nav.node);
             addPt(rowNode(ROW_B, c));
@@ -197,7 +201,7 @@ static void goNorthProbing(uint8_t to)
                 setLane(k, L_OPEN);
                 return;
             }
-            setLane(k, L_BLOCKED);                   // 달리다 감지됨 (드묾) → 그 자리에서 U턴
+            setLane(k, L_BLOCKED);                   // (PROBE_SAFETY_NET 1 일 때만) 달리다 감지됨 → 그 자리에서 U턴
             nav.uturnOnEdge();
             continue;
         }
