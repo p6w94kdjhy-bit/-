@@ -291,6 +291,16 @@
 #ifndef C2F_CRUISE
 #define C2F_CRUISE        230   // [현장] 빈 차 통과 구간 속도 (course2_drive 는 SPEED_CRUISE 168). 11-13: 200 → 230. 최대 255
 #endif
+#ifndef C2F_CARRY
+#define C2F_CARRY         110   // [현장] 화물을 든 동안의 통과 속도 (course2_drive 는 SPEED_CARRY 98). 11-13: 110
+#endif
+// 회전하려고 멈추는 교차점 직전의 접근 속도 (빈 차·운반 공통). 회전 없이 멈추는 곳(적재·하역·장애물 측정)은 SPEED_APPROACH 70 / ALIGN_MS 그대로
+#ifndef C2F_TURN_APPROACH
+#define C2F_TURN_APPROACH  90   // [현장] 11-13: 70 → 90
+#endif
+#ifndef C2F_TURN_ALIGN_MS
+#define C2F_TURN_ALIGN_MS 104   // [현장] 접근 속도 90 에 맞춘 정렬 시간 (기록: 70 → 130ms, 98 → 93ms 의 사이 값). 회전 위치가 지나치면 ↓, 못 미치면 ↑
+#endif
 #ifndef C2F_LATE_BRAKE_PCT
 #define C2F_LATE_BRAKE_PCT 40   // [현장] 빈 차일 때 정차할 칸의 앞부분을 통과 속도로 달리는 비율 % (0 = 끔)
 #endif

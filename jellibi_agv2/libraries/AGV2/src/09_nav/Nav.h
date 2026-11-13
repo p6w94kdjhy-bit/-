@@ -29,6 +29,8 @@ public:
 
     int cruise = SPEED_CRUISE;          // 통과 구간 속도 (운반 중엔 낮춤)
     uint8_t lateBrakePct = LATE_BRAKE_PCT;   // 늦은 감속: 정차 칸의 앞부분을 통과 속도로 달리는 비율 % (0 = 끔)
+    int stopSpeed = SPEED_APPROACH;     // 멈출 교차점 직전 접근 속도 (기본 = config). 스케치가 구간마다 바꿀 수 있다
+    uint16_t stopAlignMs = ALIGN_MS;    // 그 속도에 맞는 정렬 시간
     HopCheckFn hopCheck = nullptr;
     NodeFn onNode = nullptr;
 

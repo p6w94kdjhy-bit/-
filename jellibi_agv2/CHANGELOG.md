@@ -68,3 +68,4 @@
 | 11-13 | `C2F_CRUISE` 200→230 | | course2_fast 빈 차 직선 속도를 더 올림 (사용자 요청) |
 | 11-13 | `DROP_BACK` 1→2, `DROP_BACK_MS` 600 (신규) | | G2 교차점에서 회전할 때 문제 → ① 하역 후 0.6초만 후진하고 G~H 사이에서 바로 U턴 (course2_drive, course2_fast 공통) |
 | 11-13 | course2_drive 를 원래대로 (`DROP_BACK` 2→1) / course2_fast 는 `C2F_DROP_BACK` 2 (신규) | | 사용자 요청: 완주 확인한 course2_drive 는 그대로 두고, 0.6초 후진 + U턴은 course2_fast 에만 |
+| 11-13 | course2_fast: `C2F_CARRY` 110, `C2F_TURN_APPROACH` 90, `C2F_TURN_ALIGN_MS` 104 (신규) | | 사용자 지정: 운반 속도 98→110, 회전 직전 속도 70→90 (정차는 70 유지). 회전·U턴·후진 모터값은 그대로. course2_drive 는 영향 없음 |

@@ -25,6 +25,8 @@ bool LineTraceToCross(int speed, bool checkObstacle = false);
 
 // 교차점 감지 직후 호출: ALIGN_MS 동안 더 가서 바퀴축 중점을 교차점 위에 두고 정지
 void AlignOnCross();
+// 같은 동작을 접근 속도·정렬 시간을 지정해서 (속도를 올린 스케치용: 접근 속도가 다르면 정렬 시간도 달라야 같은 자리에 선다)
+void AlignOnCrossAt(int speed, unsigned long ms);
 
 // 후진하면서 가로선(교차점)을 count 개 셀 때까지 뒤로 간다. 다 세면 멈추지 않고(후진 중) true.
 //   바닥 IR 이 바퀴축보다 앞에 있어 후진 중에는 선을 따라 조향할 수 없다 → 똑바로 후진 (MOTOR_x_GAIN 적용)

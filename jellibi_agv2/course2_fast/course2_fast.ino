@@ -2,8 +2,11 @@
 //  종목② 속도 올린 판 (course2_fast).  course2_drive 는 그대로 두고 이 파일만 빠르다.
 //  course2_drive 와 다른 점 — 화물을 들고 있지 않을 때만:
 //    1) 통과 구간 속도  C2F_CRUISE (course2_drive 는 SPEED_CRUISE)
-//    2) 늦은 감속       정차할 칸의 앞부분 C2F_LATE_BRAKE_PCT % 를 통과 속도로 → 남은 구간만 SPEED_APPROACH
-//  화물을 든 동안(SPEED_CARRY), 정차·회전·T자·리프트·장애물 확인·후진은 course2_drive 와 완전히 같다.
+//    2) 늦은 감속       정차할 칸의 앞부분 C2F_LATE_BRAKE_PCT % 를 통과 속도로 → 남은 구간만 접근 속도
+//  화물을 든 동안: 통과 속도 C2F_CARRY (course2_drive 는 SPEED_CARRY)
+//  회전하려고 멈추는 교차점 직전: 접근 속도 C2F_TURN_APPROACH + 정렬 시간 C2F_TURN_ALIGN_MS (빈 차·운반 공통)
+//  그대로인 것: 회전·U턴·후진의 모터값(TURN_PWM, UTURN_BACK_PWM, REV_PWM), 적재·하역·측정 위치에 설 때의 속도(70)와 정렬,
+//             T자 인식, 리프트, 장애물 확인
 //
 //  종목② 장애물 상황의 팔레트 이동 — 11-13 대회 당일 공개 맵
 //
@@ -67,7 +70,14 @@ static uint8_t rowNode(uint8_t row, uint8_t col) { return (uint8_t)(row * 8 + co
 
 // 속도 전환: 빈 차 = 빠르게, 화물을 든 동안 = course2_drive 와 같게
 static void speedEmpty() { nav.cruise = C2F_CRUISE; nav.lateBrakePct = C2F_LATE_BRAKE_PCT; }
-static void speedCarry() { nav.cruise = min(SPEED_CRUISE, SPEED_CARRY); nav.lateBrakePct = 0; }
+static void speedCarry() { nav.cruise = C2F_CARRY; nav.lateBrakePct = 0; }
+
+// 멈출 교차점 직전 접근 속도: 회전하려고 멈추는 곳은 빠르게(C2F_TURN_APPROACH), 그 밖의 정차(적재·하역·측정)는 기존 값
+static void stopForTurn(bool turn)
+{
+    nav.stopSpeed   = turn ? C2F_TURN_APPROACH : SPEED_APPROACH;
+    nav.stopAlignMs = turn ? C2F_TURN_ALIGN_MS : ALIGN_MS;
+}
 
 static int8_t laneOfCol(uint8_t col)
 {
@@ -145,7 +155,8 @@ static void buildVia(uint8_t to, uint8_t fromRow, uint8_t toRow, uint8_t laneCol
 }
 
 // g_pts 를 따라 이동. 방향이 바뀌는 곳과 마지막에서만 정지 (그 사이 교차점은 멈추지 않고 통과)
-static NavResult runPath()
+//   lastIsTurn: 경로의 마지막 교차점에서도 회전이 이어지는가 (false = 마지막은 정차: 적재·하역·측정 위치)
+static NavResult runPath(bool lastIsTurn = false)
 {
     Serial.print(F("[path]"));
     for (uint8_t i = 0; i < g_np; i++) { Serial.print(' '); printNode(g_pts[i]); }
@@ -155,7 +166,9 @@ static NavResult runPath()
     for (uint8_t i = 1; i < g_np; i++) {
         uint8_t next = (i + 1 < g_np) ? g_pts[i + 1] : NODE_NONE;
         if (next != NODE_NONE && !Nav::mustStopAt(prev, g_pts[i], next)) continue;
+        stopForTurn(next != NODE_NONE || lastIsTurn);   // 중간 교차점 = 회전하려고 멈춤, 마지막 = 정차
         NavResult r = nav.leg(g_pts[i], true);
+        stopForTurn(false);
         if (r != NAV_OK) return r;
         prev = g_pts[i];
     }
@@ -188,7 +201,7 @@ static void goNorthProbing(uint8_t to)
         addPt(nav.node);
         addPt(rowNode(ROW_F, colOf(nav.node)));
         addPt(fNode);
-        if (g_np > 1 && runPath() != NAV_OK) uiFatal(F("obstacle before probe"), 25);
+        if (g_np > 1 && runPath(true) != NAV_OK) uiFatal(F("obstacle before probe"), 25);   // F 교차점에서 북쪽으로 회전이 이어짐
 #if FRONT_FAR_TH > 0
         nav.turnTo(HN);                              // (선택) F 교차점에서 북쪽을 보고 미리 보기
         if (frontBlocked(FRONT_FAR_TH)) { setLane(k, L_BLOCKED); continue; }
@@ -320,7 +333,9 @@ void setup()
     liftInit();                      // 리프터 내리기 — 교본 26쪽: 초기화가 끝난 뒤 실행 (전원 켤 때 올라가는 현상 처리)
     Serial.print(F("fast: 빈 차 CRUISE ")); Serial.print(C2F_CRUISE);
     Serial.print(F("  LATE_BRAKE ")); Serial.print(C2F_LATE_BRAKE_PCT);
-    Serial.print(F("%  / 운반 ")); Serial.println(min(SPEED_CRUISE, SPEED_CARRY));
+    Serial.print(F("%  / 운반 ")); Serial.print(C2F_CARRY);
+    Serial.print(F("  / 회전 전 ")); Serial.print(C2F_TURN_APPROACH);
+    Serial.print(F(" 정렬 ")); Serial.print(C2F_TURN_ALIGN_MS); Serial.println(F("ms"));
     Serial.println(F("COURSE2 fast ready - waiting start"));
     beepReady();
     uiWaitStart();                   // 출발 신호: 버튼 또는 RFID 카드 태그 (config.h START_MODE)

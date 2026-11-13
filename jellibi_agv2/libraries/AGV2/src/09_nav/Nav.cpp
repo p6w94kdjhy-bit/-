@@ -122,7 +122,7 @@ NavResult Nav::hops(uint8_t count, bool stopAtEnd)
         else          { from = node; to = stepNode(node, hdg); }
 
         bool last = (i == count - 1);
-        int spd = (last && stopAtEnd) ? SPEED_APPROACH : cruise;
+        int spd = (last && stopAtEnd) ? stopSpeed : cruise;
         bool chk = hopCheck && from != NODE_NONE && to != NODE_NONE && hopCheck(from, to);
         if (chk && spd > SPEED_ZONE) spd = SPEED_ZONE;
 
@@ -166,7 +166,7 @@ NavResult Nav::hops(uint8_t count, bool stopAtEnd)
 // 교차점 위에 바퀴축을 맞추고 정지 (LineTrace.cpp)
 void Nav::alignAndStop()
 {
-    AlignOnCross();
+    AlignOnCrossAt(stopSpeed, stopAlignMs);
     moving = false;
     runlogAdd(RL_STOP, node);
 }

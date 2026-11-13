@@ -436,13 +436,15 @@ void RecatchCrossStraight()
 
 // ---- 교차점 위에 정지 ----
 // 바닥 IR은 바퀴축보다 앞에 있으므로, 교차점을 본 뒤 ALIGN_MS 만큼 더 가야 바퀴축이 교차점 위에 온다
-void AlignOnCross()
+void AlignOnCrossAt(int speed, unsigned long ms)
 {
     unsigned long t0 = millis();
-    while (millis() - t0 < ALIGN_MS) {
-        lineTraceStep(readIr(), SPEED_APPROACH);
+    while (millis() - t0 < ms) {
+        lineTraceStep(readIr(), speed);
         uiCheckAbort();
     }
     Brake();
     lineTraceReset();
 }
+
+void AlignOnCross() { AlignOnCrossAt(SPEED_APPROACH, ALIGN_MS); }

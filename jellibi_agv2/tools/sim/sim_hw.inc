@@ -99,6 +99,7 @@ void runlogDump() {}
 void lineTraceStep(const IrSample&, int) {}
 
 void AlignOnCross() { lineTraceReset(); }
+void AlignOnCrossAt(int, unsigned long) { lineTraceReset(); }
 
 // 후진: 마지막으로 센 교차점(센서가 그 선 앞에 있음)부터 뒤쪽으로 count 개를 셈.
 // 끝나면 센서는 마지막으로 센 교차점 바로 뒤 → 다음 전진(LineTraceToCross)에서 그 교차점을 다시 셈
