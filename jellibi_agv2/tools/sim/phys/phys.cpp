@@ -420,7 +420,7 @@ static const Plant PLANTS[] = {
 // course2_drive 전체를 물리 세계에서: 막힌 통로 3가지 × 로봇 특성 × seed
 static int runCourse2(unsigned seeds)
 {
-    const uint8_t cand[3] = { P('D', 2), P('D', 4), P('D', 6) };
+    const uint8_t cand[3] = { P('D', 1), P('D', 2), P('D', 3) };      // 서쪽 3곳 중 1개가 막힘 (k), 동쪽은 D7 고정
     int fails = 0, runs = 0;
     double worstLift = 0, worstPark = 0, sumT = 0;
     int perPlant[16] = {};
@@ -434,15 +434,16 @@ static int runCourse2(unsigned seeds)
         for (int k = 0; k < 3; k++)
             for (unsigned seed = 1; seed <= seeds; seed++) {
                 if (onlyK >= 0 && (k != onlyK || seed != onlyS)) continue;
-                resetWorld(600, 1400 + 50, ((int)seed % 5 - 2) * 3.0, seed);
+                resetWorld(800, 1400 + 50, ((int)seed % 5 - 2) * 3.0, seed);
                 g_stopBias = 0;
                 g_sensorTurn = true;
                 g_turnErrDeg = 3;
                 calibrateTurns();
-                resetWorld(600, 1400 + 50, ((int)seed % 5 - 2) * 3.0, seed);
+                resetWorld(800, 1400 + 50, ((int)seed % 5 - 2) * 3.0, seed);
                 memset(g_ee, 0xFF, sizeof g_ee);
                 g_obs.clear();
-                for (int j = 0; j < 3; j++) if (j != k) g_obs.push_back(cand[j]);
+                g_obs.push_back(cand[k]);
+                g_obs.push_back(P('D', 4)); g_obs.push_back(P('D', 5)); g_obs.push_back(P('D', 6)); g_obs.push_back(P('D', 7));
                 g_crash = false; g_liftErrMax = 0; g_liftLog.clear();
                 for (int i = 0; i < 3; i++) lane[i] = L_UNKNOWN;
                 openLane = -1;
@@ -457,13 +458,13 @@ static int runCourse2(unsigned seeds)
                     if (g_crash) why = "장애물 밀기";
                 } catch (Fatal& f) { why = f.what(); }
                 if (g_crash && why.empty()) why = "장애물 밀기";
-                double park = std::hypot(X - 600, Y - 1400);
-                if (why.empty() && park > 30) why = "H4 정지 위치 오차 큼";
+                double park = std::hypot(X - 1000, Y - 1400);
+                if (why.empty() && park > 30) why = "H6 하역 위치 오차 큼";
                 if (why.empty() && g_liftErrMax > 30) why = "들기/내리기 위치 오차 큼";
                 if (!why.empty()) {
                     fails++;
                     perPlant[pi]++;
-                    if (fails <= 6) printf("  FAIL %-10s open=D%d seed %u: %s  (위치 %.0f,%.0f)  %s\n", p.name,
+                    if (fails <= 6) printf("  FAIL %-10s 막힘=D%d seed %u: %s  (위치 %.0f,%.0f)  %s\n", p.name,
                                            (int)colOf(cand[k]) + 1, seed, why.c_str(), X, Y, g_liftLog.c_str());
                 } else {
                     worstLift = std::max(worstLift, g_liftErrMax);

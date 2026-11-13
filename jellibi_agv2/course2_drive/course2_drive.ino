@@ -1,98 +1,86 @@
 // =====================================================================
-//  종목② 팔레트 운반 + 장애물 (제한 180초) — 종목①과 같은 주행 방식으로 다시 짠 판
-//   배송 ① A2 → H6, ② A6 → H2 (한 번에 1개, 순서는 자동), 두 배송 후 H4 복귀 2초 정지.
-//   2열·4열·6열의 D 교차점(D2 D4 D6) 중 2곳이 막힘 → 전방 IR 로 찾아서 열린 통로 1곳만 사용.
+//  종목② 장애물 상황의 팔레트 이동 — 11-13 대회 당일 공개 맵
 //
-//  주행: 종목①과 똑같다 — 선 따라 달리기(LT_KP), 교차점 정렬(ALIGN_MS), 제자리 회전(TURN_*). 값은 config.h 그대로.
+//        1   2   3   4   5   6   7   8
+//   A                [②]     [①]              적재 ① A6, 적재 ② A4
+//   B   ─────────── 북쪽 연결 행 ───────────
+//   D   ?   ?   ?   ■■■■■■■■■   ?   ?         D4~D6 고정 가림막, D1~D3 중 1개·D7~D8 중 1개 장애물
+//   F   ─── 출발 직후 서쪽으로 가는 행 ───
+//   H      <①>         ▲   <②>                하역 ① H2, 출발 H5(북향), 하역 ② H6
 //
-//  흐름
-//   ① 통로 찾기 : H4 출발 → D4 → D2 → D6 순서로 확인. 4열로 북쪽으로 가다 전방 거리센서(IR)가 장애물을 보면 정지
-//                 → G행에서 앞으로 간 칸 수만큼 '교차점을 세며 후진' → G행 교차점에 다시 정렬 → 다른 통로로
-//                 (2곳이 막힌 걸 알면 남은 1곳은 확인 없이 열린 통로로 사용)
-//   ② 배송 2건 : 적재함 밑 교차점(A2/A6)까지 → 정렬 → 리프트 올림 → 든 채로 B행까지 후진
-//                → 열린 통로로 남쪽 → 도착 교차점(H6/H2) 정렬 → 리프트 내림 → 그 자리에서 U턴 → 앞으로 빠져나옴 (DROP_BACK 0)
-//   ③ 복귀     : H4 정렬 → 2초 정지
+//  순서(고정): 출발 H5 → ① A6 들기 → H2 내리기 → ② A4 들기 → H6 내리기 = 종료
+//  파란 통로 제한 없음 (모든 선 사용 가능). 주행 방식은 종목①과 같다 (선 따라가기·정렬·제자리 회전).
+//
+//  D행을 건너는 통로: 서쪽 3열 → 2열 → 1열 순서로 확인해서 처음 열린 곳 하나만 쓴다 (동쪽 7·8열은 쓰지 않음)
+//   - 확인은 첫 이동(빈 차) 때만: 통로를 북쪽으로 올라가며 전방 거리센서로 감시, SPEED_ZONE 으로 천천히
+//   - 장애물이면 정지 → F행까지 후진(장애물이 커서 그 앞에서 돌지 않음) → 서쪽 옆 통로로
+//   - 추론하지 않는다: 3열이 막혀도 2열을 '열림'으로 단정하지 않고 2열도 감시하며 지나간다
+//
+//  경로 (3열이 열린 경우)
+//   가는 길 ①  H5 → F5 → F3 → (D3) → B3 → B6 → A6
+//   운반 ①     A6 → B6 → B3 → (D3) → H3 → H2
+//   가는 길 ②  H2 → H3 → (D3) → B3 → B4 → A4
+//   운반 ②     A4 → B4 → B3 → (D3) → H3 → H6          (2열·1열이면 H2 의 ① 을 피해 G행으로: … → G2 → G6 → H6)
 //
 //  주행 기록: 주행 후 USB 를 꽂고 시리얼 모니터(115200)를 열면 '지난 주행 기록'이 나온다 → 복사해서 전달
-//  ※ 맵(파란 통로)·출발 위치는 현장 확인 필요 — 아래 '맵' 부분만 고치면 된다.
 // =====================================================================
 #include <AGV2.h>
 
-// ----------------------------------------------------------------- 맵   (운영안 11-09 그림과 일치, '변경될 수 있음')
+// ----------------------------------------------------------------- 맵
 //  행: A(0, 북쪽) ~ H(7, 남쪽)   열: 1(0, 서쪽) ~ 8(7)
-//  파란 통로: 2열 A~H, 6열 A~H, 4열 B~H, B행 2~6열, G행 2~6열.  ① A2 → H6 하역, ② A6 → H2 하역, H4 출발·복귀
-#define ROW_B 1                                     // 북쪽 연결 행 (B행)
-#define ROW_G 6                                     // 남쪽 연결 행 (G행)
-#define ROW_D 3                                     // 장애물 후보 행 (D행)
-const uint8_t LANE_COL[3]  = { 1, 3, 5 };           // 통로 열: 2열, 4열, 6열 (0부터 센 번호)
-const uint8_t OPEN_LANES   = 1;                     // 3곳 중 열린 통로 수
-// 통로 확인 순서: D4 → D2 → D6   (LANE_COL 의 번호: 0 = 2열, 1 = 4열, 2 = 6열)
-//   D4 가 열려 있으면 4열만 사용 / 막혔으면 D2 확인 → 열려 있으면 2열만 사용 / D2 도 막혔으면 D6 는 확인 없이 6열 사용
-const uint8_t PROBE_ORDER[3] = { 1, 0, 2 };
+#define ROW_B 1                                     // 가림막 북쪽에서 동서로 이동하는 행
+#define ROW_D 3                                     // 장애물·가림막 행
+#define ROW_F 5                                     // 출발 직후 서쪽으로 이동하는 행 / 장애물을 보면 물러나는 행
+#define ROW_G 6
+#define ROW_H 7
+const uint8_t N_LANE = 3;
+const uint8_t LANE_COL[N_LANE] = { 2, 1, 0 };       // 통로 확인 순서: 3열(D3) → 2열(D2) → 1열(D1)  (0부터 센 열 번호)
 
-// ----------------------------------------------------------------- 임무
-struct Job { uint8_t from, to; };
-const Job JOBS[2] = {
-    { P('A', 2), P('H', 6) },                       // ① 적재함 A2 → 도착지 H6
-    { P('A', 6), P('H', 2) },                       // ② 적재함 A6 → 도착지 H2
-};
-const uint8_t PARK_NODE  = P('H', 4);               // 복귀, 2초 정지
+const uint8_t PICK1 = P('A', 6), DROP1 = P('H', 2); // ① 적재 → 하역
+const uint8_t PICK2 = P('A', 4), DROP2 = P('H', 6); // ② 적재 → 하역 (내리면 종료)
 
-// 출발: START_NODE 바깥(남쪽 50mm)에서 START_HDG 를 보고 대기   ※ 현장 확인
-const uint8_t START_NODE = P('H', 4);
+// 출발: START_NODE 에서 START_HDG 를 보고 대기.  config.h START_XING_PASSED:
+//   0 = 바닥 센서가 H5 가로선 앞(남쪽)에 있음 → 출발하면 H5 를 처음 셈   1 = 센서가 이미 H5 선을 지나 있음
+const uint8_t START_NODE = P('H', 5);
 const uint8_t START_HDG  = HN;
-
-#define AUTO_ORDER 1                                // 1 = 열린 통로를 안 뒤 더 빠른 배송 순서 자동 선택, 0 = ① → ②
 
 // ----------------------------------------------------------------- 상태
 Nav nav;
-LaneState lane[3] = { L_UNKNOWN, L_UNKNOWN, L_UNKNOWN };
-int8_t openLane = -1;                               // 열린 통로 번호 (0~2), 모르면 -1
+LaneState lane[N_LANE] = { L_UNKNOWN, L_UNKNOWN, L_UNKNOWN };
+int8_t openLane = -1;                               // 쓰는 통로 번호 (LANE_COL 의 순서), 모르면 -1
 
 static uint8_t rowNode(uint8_t row, uint8_t col) { return (uint8_t)(row * 8 + col); }
 
 static int8_t laneOfCol(uint8_t col)
 {
-    for (uint8_t i = 0; i < 3; i++) if (LANE_COL[i] == col) return i;
+    for (uint8_t i = 0; i < N_LANE; i++) if (LANE_COL[i] == col) return i;
     return -1;
 }
 
-static void logLanes()
+static void setLane(uint8_t i, LaneState st)
 {
-    uint8_t packed = 0xC0;                          // 4번째 칸은 없음(3)
+    if (lane[i] == st) return;
+    lane[i] = st;
+    if (st == L_OPEN) openLane = i;
+    uint8_t packed = 0xC0;                          // 주행 기록: 통로마다 2비트 (D3 D2 D1 순), 4번째 칸 없음
     Serial.print(F("[lane]"));
-    for (uint8_t i = 0; i < 3; i++) {
-        packed |= (uint8_t)lane[i] << (2 * i);
-        Serial.print(' '); printNode(rowNode(ROW_D, LANE_COL[i])); Serial.print('='); Serial.print("?OX"[lane[i]]);
+    for (uint8_t k = 0; k < N_LANE; k++) {
+        packed |= (uint8_t)lane[k] << (2 * k);
+        Serial.print(' '); printNode(rowNode(ROW_D, LANE_COL[k])); Serial.print('='); Serial.print("?OX"[lane[k]]);
     }
     Serial.println();
     runlogAdd(RL_LANE, packed);
 }
 
-// 통로 상태 기록 + 추론: 열린 곳을 찾았으면 나머지는 막힘, 막힌 곳을 다 찾았으면 남은 곳은 열림
-static void setLane(uint8_t i, LaneState st)
-{
-    if (lane[i] == st) return;
-    lane[i] = st;
-    uint8_t nOpen = 0, nBlk = 0;
-    for (uint8_t k = 0; k < 3; k++) { nOpen += lane[k] == L_OPEN; nBlk += lane[k] == L_BLOCKED; }
-    LaneState fill = L_UNKNOWN;
-    if (nOpen >= OPEN_LANES) fill = L_BLOCKED;
-    else if (nBlk >= 3 - OPEN_LANES) fill = L_OPEN;
-    if (fill != L_UNKNOWN) for (uint8_t k = 0; k < 3; k++) if (lane[k] == L_UNKNOWN) lane[k] = fill;
-    for (uint8_t k = 0; k < 3; k++) if (lane[k] == L_OPEN) openLane = k;
-    logLanes();
-}
-
 // ----------------------------------------------------------------- Nav 콜백
-// 전방 IR 장애물 감시: 아직 모르는 통로를 G행 → C행 사이로 지나갈 때만 (그 밖에서는 적재함 등을 장애물로 착각하지 않게)
+// 전방 거리센서 감시: 아직 모르는 통로를 F행 → D행으로 올라갈 때만 (다른 곳에서는 적재물·가림막을 장애물로 착각하지 않게)
 static bool hopCheck(uint8_t from, uint8_t to)
 {
     if (colOf(from) != colOf(to)) return false;
     int8_t i = laneOfCol(colOf(to));
     if (i < 0 || lane[i] != L_UNKNOWN) return false;
     uint8_t r1 = rowOf(from), r2 = rowOf(to);
-    return r1 >= 2 && r1 <= ROW_G && r2 >= 2 && r2 <= ROW_G;       // C(2) ~ G(6)
+    return r1 >= ROW_D && r1 <= ROW_F && r2 >= ROW_D && r2 <= ROW_F;
 }
 
 // D 교차점을 지나갔다 = 그 통로는 열림
@@ -104,7 +92,7 @@ static void onNode(uint8_t n)
 }
 
 // ----------------------------------------------------------------- 경로 (교차점 목록 → 직선 구간마다 이동)
-static uint8_t g_pts[12];
+static uint8_t g_pts[8];
 static uint8_t g_np = 0;
 
 static void addPt(uint8_t n)
@@ -112,22 +100,15 @@ static void addPt(uint8_t n)
     if (g_np == 0 || g_pts[g_np - 1] != n) g_pts[g_np++] = n;
 }
 
-static bool isNorth(uint8_t n) { return rowOf(n) <= ROW_B; }
-
-// from → to 경로: 같은 열의 연결 행(B/G) → 연결 행을 따라 → (남↔북이면) 열린 통로 → 연결 행 → to 의 열 → to
-static void buildPath(uint8_t from, uint8_t to)
+// 지금 위치 → (같은 열의 fromRow) → (fromRow 를 따라 통로 열) → 통로로 D행을 건너 toRow → (toRow 를 따라 to 의 열) → to
+static void buildVia(uint8_t to, uint8_t fromRow, uint8_t toRow, uint8_t laneCol)
 {
     g_np = 0;
-    addPt(from);
-    uint8_t fr = isNorth(from) ? ROW_B : ROW_G;
-    uint8_t tr = isNorth(to) ? ROW_B : ROW_G;
-    addPt(rowNode(fr, colOf(from)));
-    if (fr != tr) {
-        if (openLane < 0) uiFatal(F("open lane unknown"), 23);
-        addPt(rowNode(fr, LANE_COL[openLane]));
-        addPt(rowNode(tr, LANE_COL[openLane]));
-    }
-    addPt(rowNode(tr, colOf(to)));
+    addPt(nav.node);
+    addPt(rowNode(fromRow, colOf(nav.node)));
+    addPt(rowNode(fromRow, laneCol));
+    addPt(rowNode(toRow, laneCol));
+    addPt(rowNode(toRow, colOf(to)));
     addPt(to);
 }
 
@@ -149,115 +130,67 @@ static NavResult runPath()
     return NAV_OK;
 }
 
-static void goTo(uint8_t to)
+// 확인된 통로로 이동 (운반 중·두 번째 가는 길)
+static void goVia(uint8_t to, uint8_t fromRow, uint8_t toRow)
 {
-    buildPath(nav.node, to);
+    if (openLane < 0) uiFatal(F("open lane unknown"), 23);
+    buildVia(to, fromRow, toRow, LANE_COL[openLane]);
     if (runPath() != NAV_OK) uiFatal(F("obstacle on known lane"), 24);
 }
 
-// ----------------------------------------------------------------- ① 통로 찾기
-//  PROBE_ORDER 순서대로 (D4 → D2 → D6). 2곳이 막힌 걸 알면 남은 곳은 setLane 이 열림으로 정해서 반복이 끝난다
-static void findLane()
+// ----------------------------------------------------------------- 첫 이동: 통로를 확인하며 북쪽으로
+//  F행에서 통로 열로 가서 북쪽으로. 장애물이면 F행으로 물러난 뒤 다음(서쪽) 통로로 다시.
+static void goNorthProbing(uint8_t to)
 {
-    while (openLane < 0) {
-        int8_t pick = -1;
-        for (uint8_t k = 0; k < 3 && pick < 0; k++)
-            if (lane[PROBE_ORDER[k]] == L_UNKNOWN) pick = PROBE_ORDER[k];
-        if (pick < 0) uiFatal(F("no lane left"), 12);
-
-        uint8_t g = rowNode(ROW_G, LANE_COL[pick]);
-        uint8_t b = rowNode(ROW_B, LANE_COL[pick]);
-        Serial.print(F("[probe] ")); printNode(rowNode(ROW_D, LANE_COL[pick])); Serial.println();
-
-        // 지금 위치 → G행 → 그 통로의 G 교차점 → 북쪽 B 교차점 (장애물 감시)
-        g_np = 0;
-        addPt(nav.node);
-        addPt(rowNode(ROW_G, colOf(nav.node)));
-        addPt(g);
-        addPt(b);
+    for (uint8_t k = 0; k < N_LANE; k++) {
+        if (lane[k] == L_BLOCKED) continue;
+        uint8_t c = LANE_COL[k];
+        Serial.print(F("[probe] ")); printNode(rowNode(ROW_D, c)); Serial.println();
+        buildVia(to, ROW_F, ROW_B, c);
         if (runPath() == NAV_OK) {
-            setLane(pick, L_OPEN);                   // B행 도착 = 열린 통로
-        } else {
-            setLane(pick, L_BLOCKED);
-#if OBST_BACK
-            nav.backTo(g);                           // 장애물 → G행까지 앞으로 간 칸 수만큼 교차점을 세며 후진 → G 교차점에 정렬
-#else
-            nav.uturnOnEdge();                       // 장애물 → 그 자리에서 U턴 → (다음 경로에서) 앞으로 간 칸 수만큼 되돌아 G행으로
-#endif
+            setLane(k, L_OPEN);
+            return;
         }
+        setLane(k, L_BLOCKED);
+#if OBST_BACK
+        nav.backTo(rowNode(ROW_F, c));              // 교차점을 세며 F행까지 후진 → F 교차점에 정렬 (큰 장애물 앞에서 돌지 않음)
+#else
+        nav.uturnOnEdge();                          // 그 자리에서 U턴 → 다음 경로에서 F행으로 되돌아감
+#endif
     }
+    uiFatal(F("no open lane"), 12);
 }
 
-// ----------------------------------------------------------------- ② 적재함 들기·내리기
-static void shortMove(int ms)                        // 정렬 후 앞(+)/뒤(-)로 조금: 리프트를 적재함 중심에 맞춤
+// ----------------------------------------------------------------- 적재물 들기·내리기
+static void shortMove(int ms)                        // 정렬 후 앞(+)/뒤(-)로 조금: 리프트를 적재물 중심에 맞춤
 {
     if (ms > 0)      { Forward(SPEED_APPROACH);  waitMs(ms);  Brake(); }
     else if (ms < 0) { Backward(SPEED_APPROACH); waitMs(-ms); Brake(); }
 }
 
-static void pickAt(uint8_t at)
+static void pickHere()                               // 적재물 밑 교차점에 정렬된 상태에서
 {
-    goTo(at);                                        // 적재함 밑 교차점에 정렬 (리프트는 내린 상태로 밑으로 들어감)
-    runlogAdd(RL_PICK, at);
+    runlogAdd(RL_PICK, nav.node);
     Serial.println(F("[pallet] PICK"));
     shortMove(PICK_ADJ_MS);
-    LiftUp();
+    LiftUp();                                        // 리프트 올림 (바닥 IR 값도 '든 상태' 값으로 바뀜)
     nav.cruise = min(SPEED_CRUISE, SPEED_CARRY);     // 들고 있는 동안 천천히 (낙하 방지)
 #if PICK_BACK
-    nav.backTo(rowNode(ROW_B, colOf(at)));           // 든 채로 B행까지 후진
-#endif                                               // (0 이면 다음 이동에서 교차점 위 U턴)
+    nav.backTo(stepNode(nav.node, reverseH(nav.hdg)));   // 든 채로 한 칸 후진
+#endif                                               // (0 이면 다음 이동을 시작할 때 이 교차점 위에서 U턴)
 }
 
-static void dropAt(uint8_t at)
+static void dropHere(bool last)                      // 하역 교차점에 정렬된 상태에서
 {
-    goTo(at);                                        // 도착 교차점에 정렬 = 적재함 중심이 도착 구역 안
-    runlogAdd(RL_DROP, at);
+    runlogAdd(RL_DROP, nav.node);
     Serial.println(F("[pallet] DROP"));
     shortMove(DROP_ADJ_MS);
     LiftDown();
     nav.cruise = SPEED_CRUISE;
+    if (last) return;                                // 마지막 하역 = 종료 (빠져나오지 않음)
 #if DROP_BACK == 1
-    nav.backTo(rowNode(ROW_G, colOf(at)));           // G행까지 후진 → 적재함 밑에서 완전히 빠져나옴
-#elif DROP_BACK == 0
-    // 후진 없음: 다음 이동을 시작할 때 이 교차점 위에서 U턴(센서로 선을 찾아 멈춤) → 앞으로 달려 적재함 밑에서 빠져나옴
-#else
-    Backward(EXIT_BACK_PWM);                         // 적재함 밑에서 빠져나올 만큼 후진
-    waitMs(EXIT_BACK_MS);
-    Brake();
-    uint8_t back = reverseH(nav.hdg);
-    uint8_t behind = stepNode(nav.node, back);
-    runlogAdd(RL_TURN, 'E');
-    UTurnOnEdge();                                   // 칸 중간 U턴 (선을 찾아 멈춤) → G행 교차점으로 접근
-    nav.setApproach(behind, back);
-#endif
-}
-
-// ----------------------------------------------------------------- 배송 순서 (예상 시간 비교)
-static uint16_t orderCost(uint8_t first)
-{
-    const Job& j1 = JOBS[first];
-    const Job& j2 = JOBS[1 - first];
-    const uint8_t goals[5] = { j1.from, j1.to, j2.from, j2.to, PARK_NODE };
-    uint8_t n = nav.node, h = nav.hdg;
-    uint16_t cost = 0;
-    for (uint8_t k = 0; k < 5; k++) {
-        buildPath(n, goals[k]);
-        for (uint8_t i = 0; i + 1 < g_np; i++) {
-            uint8_t d = (uint8_t)headingTo(g_pts[i], g_pts[i + 1]);
-            uint8_t dt = (d - h) & 3;
-            cost += straightDist(g_pts[i], g_pts[i + 1]) * PLAN_COST_HOP
-                  + (dt == 2 ? PLAN_COST_UTURN : (dt ? PLAN_COST_TURN : 0));
-            h = d;
-        }
-        n = goals[k];
-        if ((k == 0 || k == 2) && PICK_BACK) { n = rowNode(ROW_B, colOf(n)); cost += PLAN_COST_HOP; }   // 든 뒤 B행까지 후진
-        if ((k == 1 || k == 3) && DROP_BACK != 0) {                                              // 내린 뒤 G행 쪽으로
-            n = rowNode(ROW_G, colOf(n));
-            cost += PLAN_COST_HOP;
-            if (DROP_BACK == 2) h = reverseH(h);
-        }
-    }
-    return cost;
+    nav.backTo(stepNode(nav.node, reverseH(nav.hdg)));   // 한 칸 후진으로 빠져나옴
+#endif                                               // (0 이면 다음 이동을 시작할 때 이 교차점 위에서 U턴 후 전진)
 }
 
 // ----------------------------------------------------------------- main
@@ -286,22 +219,16 @@ void setup()
     if (START_XING_PASSED) nav.setAt(START_NODE, START_HDG);
     else                   nav.setApproach(START_NODE, START_HDG);
 
-    findLane();                      // ① 빈 차로 열린 통로 찾기
+    goNorthProbing(PICK1);           // ① 적재물까지 (통로 확인)
+    pickHere();
+    goVia(DROP1, ROW_B, ROW_H);      // ① 운반 → H2
+    dropHere(false);
 
-    uint8_t first = 0;
-#if AUTO_ORDER
-    if (orderCost(1) < orderCost(0)) first = 1;
-#endif
-    Serial.print(F("[order] first=")); Serial.println(first + 1);
-
-    for (uint8_t k = 0; k < 2; k++) {               // ② 배송 2건
-        const Job& j = JOBS[k == 0 ? first : 1 - first];
-        pickAt(j.from);
-        dropAt(j.to);
-    }
-
-    goTo(PARK_NODE);                                // ③ 복귀 + 2초 정지
-    nav.hold(STOP_HOLD_MS);
+    goVia(PICK2, ROW_H, ROW_B);      // ② 적재물까지
+    pickHere();
+    // ② 운반 → H6.  통로가 2열·1열이면 H행으로 가다 H2 의 ① 과 부딪히므로 G행으로 돌아간다
+    goVia(DROP2, ROW_B, LANE_COL[openLane] <= colOf(DROP1) ? ROW_G : ROW_H);
+    dropHere(true);                  // 내리면 종료
 
     Stop();
     runlogAdd(RL_DONE);
