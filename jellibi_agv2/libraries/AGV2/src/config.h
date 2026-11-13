@@ -145,7 +145,7 @@
 #endif
 // 후진할 때의 좌우 보정 (motor_balance 'b' 로 측정, PWM 70). 후진하는 모든 동작에 적용: 교차점 세며 후진, U턴 전 후진 등
 #ifndef MOTOR_L_GAIN_REV
-#define MOTOR_L_GAIN_REV     94    // [현장] 94 = 후진 보정 적용 전과 같음 (전진 값 그대로). 11-12 motor_balance 측정값은 99 → 후진이 휘면 99 로
+#define MOTOR_L_GAIN_REV     99    // [현장] 11-12 motor_balance 실측: 후진 L 99 / R 100. (94 = 전진 값 그대로 → 후진이 한쪽으로 휘어 라인 이탈) 11-13 다시 적용
 #endif
 #ifndef MOTOR_R_GAIN_REV
 #define MOTOR_R_GAIN_REV    100    // [현장]
@@ -309,7 +309,7 @@
 #define PICK_BACK           0    // [현장] 적재물 든 뒤 → 0: A 교차점까지만 짧게 후진해 정렬 → 그 위에서 U턴   1: B행까지 후진 (U턴 없음)
 #endif
 #ifndef DROP_BACK
-#define DROP_BACK           0    // [현장] ① 내린 뒤 → 0: H 교차점까지만 짧게(약 5cm) 후진해 정렬 → 그 위에서 회전 (11-13: G행까지 후진하면 라인 이탈)  1: G행까지 후진
+#define DROP_BACK           1    // [현장] ① 내린 뒤 → 1: T자·H·G 선을 세며 G 교차점까지 후진 → 화물 밖에서 회전 (11-13)  0: H 교차점까지만 후진해 화물 밑에서 회전
 #endif
 #ifndef REV_SETTLE
 #define REV_SETTLE          0    // [현장] 1 = 목표 교차점보다 한 칸 더 후진한 뒤 선 따라 한 칸 전진해 정렬 (옆 어긋남을 바로잡음, 약 1.5초 더 걸림)
