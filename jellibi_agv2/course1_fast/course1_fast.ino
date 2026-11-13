@@ -88,7 +88,8 @@ void setup()
 #endif
     Serial.print(F("fast: CRUISE ")); Serial.print(C1F_CRUISE);
     Serial.print(F("  LATE_BRAKE ")); Serial.print(C1F_LATE_BRAKE_PCT);
-    Serial.print(F("%  SMOOTH ")); Serial.println(C1F_LT_SMOOTH);
+    Serial.print(F("%  SMOOTH ")); Serial.print(C1F_LT_SMOOTH);
+    Serial.print(F("  HOLD ")); Serial.print(C1F_HOLD_MS); Serial.println(F("ms"));
     Serial.println(F("COURSE1 fast ready - waiting start"));
     beepReady();
     uiWaitStart();
@@ -140,7 +141,7 @@ void setup()
         // ④ 2초 정차
         if (st.hold) {
             Serial.print(F(" HOLD"));
-            Hold(STOP_HOLD_MS);
+            Hold(C1F_HOLD_MS);                  // 정차: 중간(C5)과 마지막(종료 위치) 모두 이 시간만큼 멈춘 뒤 다음 동작/종료
         }
 
         // ⑤ 회전

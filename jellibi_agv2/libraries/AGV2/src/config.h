@@ -179,6 +179,9 @@
 #ifndef C1F_LATE_BRAKE_PCT
 #define C1F_LATE_BRAKE_PCT 40   // [현장] 정차할 칸의 앞부분을 통과 속도로 달리는 비율 (한 칸의 %). 0 = 끔 (정차 칸 전체를 SPEED_APPROACH)
 #endif
+#ifndef C1F_HOLD_MS
+#define C1F_HOLD_MS      2200   // [현장] course1_fast 의 정차 시간(ms): 중간 정차(C5)와 마지막 종료 위치 모두. 원본은 STOP_HOLD_MS(2300)
+#endif
 #ifndef C1F_LT_SMOOTH
 #define C1F_LT_SMOOTH       0   // [현장] 0 = 원본과 같은 조향 (LT_KP), 1 = 부드러운 PD 조향 (V3_LT_*)
 #endif
