@@ -12,3 +12,4 @@ for f in 0 1; do
   $CXX -DFRONT_CHECK_WHILE_CARRY=$f "$D/sim_course2.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" "$L/10_planner/Planner.cpp" "$L/07_logistics/Pallet.cpp" -o "$O/c2_$f" && "$O/c2_$f"
 done
 $CXX -DSIM_SXP=0 -DCOURSE1_INO='"../../course1_fast/course1_fast.ino"' "$D/sim_course1.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" -o "$O/c1f" && echo "[fast]" && "$O/c1f"
+$CXX -DSIM_SXP=0 -DCOURSE1_INO='"../../course1_fast2/course1_fast2.ino"' "$D/sim_course1.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" -o "$O/c1f2" && echo "[fast2]" && "$O/c1f2"

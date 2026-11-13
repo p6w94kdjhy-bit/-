@@ -52,3 +52,4 @@
 | 11-13 | `FRONT_OBSTACLE_TH` 250→600 | | 너무 멀리서 감지 → 원하는 정지 거리(약 3cm)에서 잰 값 659 의 약 90% |
 | 11-13 | 종목① 종료 위치를 T자로: `END_AT_BAR` 1, `BAR_MAX_MS` 900 (신규) — course1_drive, course1_fast | | 실제 맵: 종료 위치가 H6 바깥 T자. H6 정렬 후 T자를 센서가 보는 순간 정지 → 2초 정차 (종목② 하역과 같은 방식) |
 | 11-13 | `C1F_HOLD_MS` 2200 (신규) | | course1_fast 정차 시간을 2.2초로 지정 (중간 정차·종료 모두). 이전에는 STOP_HOLD_MS 2300 을 썼음. 원본 course1_drive 는 2300 그대로 |
+| 11-13 | course1_fast2 추가: `C1F2_CRUISE` 220, `C1F2_LATE_BRAKE_PCT` 60, `C1F2_APPROACH` 85, `C1F2_ALIGN_MS` 110 (신규) | | course1_fast(200/40%, 완주 확인)는 그대로. 통과 속도·정차 칸·접근 속도를 한 단계씩 더 올림. 실물 미검증 |

@@ -179,6 +179,27 @@
 #ifndef C1F_LATE_BRAKE_PCT
 #define C1F_LATE_BRAKE_PCT 40   // [현장] 정차할 칸의 앞부분을 통과 속도로 달리는 비율 (한 칸의 %). 0 = 끔 (정차 칸 전체를 SPEED_APPROACH)
 #endif
+// course1_fast2 전용 (course1_fast 보다 더 빠른 판). course1_fast / course1_drive 는 영향 없음
+//   정차할 칸: 앞부분 C1F2_LATE_BRAKE_PCT % 는 통과 속도 → 남은 구간은 C1F2_APPROACH 로 접근 → 교차점을 본 뒤 C1F2_ALIGN_MS 더 가서 정지
+//   ┌────────────────────────────────────┬─────────────────────────────────────────────┐
+//   │ 증상                                │ 바꿀 값                                       │
+//   ├────────────────────────────────────┼─────────────────────────────────────────────┤
+//   │ 교차점을 지나쳐서 섬 / 회전이 넘어감   │ C1F2_ALIGN_MS ↓ (110→95), 그래도면 C1F2_LATE_BRAKE_PCT ↓ (60→45) │
+//   │ 교차점에 못 미쳐서 섬                 │ C1F2_ALIGN_MS ↑ (110→125)                     │
+//   │ 직선에서 흔들림 / 선 이탈             │ C1F2_CRUISE ↓ (220→200)                       │
+//   └────────────────────────────────────┴─────────────────────────────────────────────┘
+#ifndef C1F2_CRUISE
+#define C1F2_CRUISE        220   // [현장] 통과 구간 속도 (course1_fast 200, 원본 168)
+#endif
+#ifndef C1F2_LATE_BRAKE_PCT
+#define C1F2_LATE_BRAKE_PCT 60   // [현장] 정차할 칸의 앞부분을 통과 속도로 달리는 비율 % (course1_fast 40)
+#endif
+#ifndef C1F2_APPROACH
+#define C1F2_APPROACH       85   // [현장] 정차·회전 직전 접근 속도 (course1_fast·원본은 SPEED_APPROACH 70)
+#endif
+#ifndef C1F2_ALIGN_MS
+#define C1F2_ALIGN_MS      110   // [현장] 접근 속도 85 에 맞춘 정렬 시간 (70 → 130ms, 98 → 93ms 였던 기록 사이 값)
+#endif
 #ifndef C1F_HOLD_MS
 #define C1F_HOLD_MS      2200   // [현장] course1_fast 의 정차 시간(ms): 중간 정차(C5)와 마지막 종료 위치 모두. 원본은 STOP_HOLD_MS(2300)
 #endif
