@@ -129,6 +129,14 @@ void setup()
         // ③ 교차점 위에 정지
         AlignOnCross();
 
+        // ③-2 마지막 교차점이면 종료 위치(T자)까지: 선 따라 천천히 더 가서 센서가 T자를 보는 순간 정지
+#if END_AT_BAR
+        if (st.act == END) {
+            bool bar = LineTraceToBar(SPEED_APPROACH, BAR_MAX_MS);
+            Serial.print(bar ? F(" T") : F(" (T자 못 찾음)"));
+        }
+#endif
+
         // ④ 2초 정차
         if (st.hold) {
             Serial.print(F(" HOLD"));

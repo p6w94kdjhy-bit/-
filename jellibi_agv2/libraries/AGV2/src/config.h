@@ -231,6 +231,13 @@
 #define HOP_TIMEOUT_MS    4000   // [현장] 한 칸에서 이 시간 안에 교차점을 못 찾으면 정지(선 이탈·맵 밖 주행 방지)
 #endif
                                  //  가장 느린 칸 시간의 2~3배. 0 = 사용 안 함
+// 종료 위치 = 마지막 교차점(H6) 바깥의 T자: 교차점에 정렬한 뒤 선 따라 더 가서 센서가 T자를 보는 순간 정지
+#ifndef END_AT_BAR
+#define END_AT_BAR          1    // [현장] 1 = 종목① 마지막(END)은 T자까지 가서 정지,  0 = 교차점 위에서 정지 (예전 방식)
+#endif
+#ifndef BAR_MAX_MS
+#define BAR_MAX_MS        900    // [현장] 교차점에서 T자를 찾는 최대 시간. 못 찾으면 그 자리에 정지 (맵 밖으로 안 나가게)
+#endif
 #ifndef STOP_HOLD_MS
 #define STOP_HOLD_MS      2300   // '2초 정차' + 여유
 #endif

@@ -26,6 +26,10 @@ bool LineTraceToCross(int speed, bool checkObstacle = false);
 // 교차점 감지 직후 호출: ALIGN_MS 동안 더 가서 바퀴축 중점을 교차점 위에 두고 정지
 void AlignOnCross();
 
+// T자(선 끝의 짧은 가로선)까지: 바깥 행 교차점에 정지한 상태에서 선 따라 천천히 전진 → 두 센서가 T자를 보는 순간 정지
+//   찾으면 true. maxMs 안에 못 찾으면 그 자리에 정지하고 false
+bool LineTraceToBar(int speed, unsigned long maxMs);
+
 // 비례 제어(LT_MODE 1) 강도를 스케치마다 따로 정할 때 (setup 에서 1번)
 //   kp: 한쪽 IR이 선 위에 완전히 올라갔을 때 안쪽 바퀴를 줄이는 %
 //   kd: 흔들림 억제 (0 = 안 씀)

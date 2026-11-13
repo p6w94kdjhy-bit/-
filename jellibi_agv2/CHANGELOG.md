@@ -50,3 +50,4 @@
 | 11-12 | config_local.h (노트북 전용, GitHub 에 안 올라감) 지원 — config.h 모든 값을 덮어쓸 수 있게 | | 노트북에서 config.h 를 직접 고치면 Pull 충돌 → 앞으로는 config_local.h 에 |
 | 11-13 | `FRONT_OBSTACLE_TH` 400→250 | | 대회장 실측: 비었을 때 65/73/79, 검은 장애물(20cm) 10cm 거리 467. 400 은 여유가 작아 더 일찍 감지하도록 |
 | 11-13 | `FRONT_OBSTACLE_TH` 250→600 | | 너무 멀리서 감지 → 원하는 정지 거리(약 3cm)에서 잰 값 659 의 약 90% |
+| 11-13 | 종목① 종료 위치를 T자로: `END_AT_BAR` 1, `BAR_MAX_MS` 900 (신규) — course1_drive, course1_fast | | 실제 맵: 종료 위치가 H6 바깥 T자. H6 정렬 후 T자를 센서가 보는 순간 정지 → 2초 정차 (종목② 하역과 같은 방식) |

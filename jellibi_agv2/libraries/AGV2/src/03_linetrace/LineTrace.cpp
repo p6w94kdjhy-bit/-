@@ -216,6 +216,44 @@ bool LineTraceToCross(int speed, bool checkObstacle)
     }
 }
 
+// ---- T자(선 끝의 짧은 가로선)까지 전진해서 정지 ----
+//  맵 바깥쪽: 각 열의 선이 H행 밖으로 약 50mm 더 나와 있고 끝에 짧은 가로선(T자)이 있다 = 출발·종료 위치.
+//  바깥 행 교차점에 정렬·정지한 상태에서 호출: 선을 따라 천천히 가다 두 센서가 동시에 검정(T자)이면 그 순간 정지.
+//  (센서가 아직 교차점 가로선 위에 있을 수 있으므로, 먼저 '양쪽 검정이 아님'을 본 뒤부터 T자를 찾는다)
+//  maxMs 안에 못 찾으면 그 자리에 정지하고 false (맵 밖으로 나가지 않게)
+bool LineTraceToBar(int speed, unsigned long maxMs)
+{
+    lineTraceReset();
+    uint8_t both = 0, notBoth = 0;
+    bool armed = false, found = false;
+    unsigned long t0 = millis(), lastMs = t0;
+    int spd = 0;
+    for (;;) {
+        IrSample s = readIr();
+        if (s.l > XING_TH_L && s.r > XING_TH_R) {
+            notBoth = 0;
+            if (armed && ++both >= XING_CONFIRM_SAMPLES) { found = true; break; }
+        } else {
+            both = 0;
+            if (notBoth < 255) notBoth++;
+            if (notBoth >= XING_CLEAR_SAMPLES) armed = true;
+        }
+        unsigned long now = millis();
+        if (now - t0 > maxMs) break;
+        if (spd < speed) {
+            spd += (int)(now - lastMs) * ACCEL_PER_MS;
+            if (spd > speed) spd = speed;
+        }
+        lastMs = now;
+        lineTraceStep(s, spd);
+        uiCheckAbort();
+    }
+    Brake();
+    lineTraceReset();
+    if (found) beepNode();
+    return found;
+}
+
 // ---- 교차점 위에 정지 ----
 // 바닥 IR은 바퀴축보다 앞에 있으므로, 교차점을 본 뒤 ALIGN_MS 만큼 더 가야 바퀴축이 교차점 위에 온다
 void AlignOnCross()
