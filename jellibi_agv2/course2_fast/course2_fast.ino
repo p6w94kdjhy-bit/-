@@ -5,6 +5,7 @@
 //    2) 늦은 감속       정차할 칸의 앞부분 C2F_LATE_BRAKE_PCT % 를 통과 속도로 → 남은 구간만 접근 속도
 //  화물을 든 동안: 통과 속도 C2F_CARRY (course2_drive 는 SPEED_CARRY)
 //  회전하려고 멈추는 교차점 직전: 접근 속도 C2F_TURN_APPROACH + 정렬 시간 C2F_TURN_ALIGN_MS (빈 차·운반 공통)
+//  통로: config.h C2F_KNOWN_OPEN_COL 이 3·2·1 이면 그 열이 열렸다고 가정하고 장애물 확인 없이 바로 달린다 (0 이면 서서 확인)
 //  그대로인 것: 회전·U턴·후진의 모터값(TURN_PWM, UTURN_BACK_PWM, REV_PWM), 적재·하역·측정 위치에 설 때의 속도(70)와 정렬,
 //             T자 인식, 리프트, 장애물 확인
 //
@@ -113,7 +114,7 @@ static bool hopCheck(uint8_t from, uint8_t to)
 }
 
 // 교차점에 정지한 상태에서 전방 거리센서를 여러 번 읽어 평균 → th 보다 가까우면(값이 크면) true
-static bool frontBlocked(int th)
+__attribute__((unused)) static bool frontBlocked(int th)
 {
     long sum = 0;
     for (uint8_t i = 0; i < 16; i++) { sum += irFront(); delay(4); }
@@ -188,7 +189,7 @@ static void goVia(uint8_t to, uint8_t fromRow, uint8_t toRow)
 //    없음 → 그대로 북쪽으로 D 를 지나 B행 → 적재 위치
 //    있음 → 조금 물러나 U턴 → F 교차점으로 돌아가 서쪽 옆 통로에서 다시  (교차점을 세며 후진하지 않는다)
 //  교차점에 선 뒤에 재므로 로봇은 언제나 자기 위치(E 교차점)를 정확히 안다.
-static void goNorthProbing(uint8_t to)
+__attribute__((unused)) static void goNorthProbing(uint8_t to)
 {
     for (uint8_t k = 0; k < N_LANE; k++) {
         if (lane[k] == L_BLOCKED) continue;
@@ -336,6 +337,9 @@ void setup()
     Serial.print(F("%  / 운반 ")); Serial.print(C2F_CARRY);
     Serial.print(F("  / 회전 전 ")); Serial.print(C2F_TURN_APPROACH);
     Serial.print(F(" 정렬 ")); Serial.print(C2F_TURN_ALIGN_MS); Serial.println(F("ms"));
+#if C2F_KNOWN_OPEN_COL > 0
+    Serial.print(F("★ 장애물 확인 안 함: ")); Serial.print(C2F_KNOWN_OPEN_COL); Serial.println(F("열이 열려 있다고 가정"));
+#endif
     Serial.println(F("COURSE2 fast ready - waiting start"));
     beepReady();
     uiWaitStart();                   // 출발 신호: 버튼 또는 RFID 카드 태그 (config.h START_MODE)
@@ -358,7 +362,17 @@ void setup()
         runlogAdd(RL_NODE, (uint8_t)(START_NODE | (START_HDG << 6)), lines);
     }
 
+#if C2F_KNOWN_OPEN_COL > 0
+    // 열린 통로를 이미 안다고 가정 → 장애물 확인 없이, E 교차점에 서지 않고 D 구역을 통과 속도로 지나간다
+    {
+        int8_t known = laneOfCol(C2F_KNOWN_OPEN_COL - 1);
+        if (known < 0) uiFatal(F("C2F_KNOWN_OPEN_COL 은 3, 2, 1 중 하나"), 26);
+        setLane((uint8_t)known, L_OPEN);
+        goVia(PICK1, ROW_F, ROW_B);  // ① 적재물까지: H5 → F5 → F열 → (D) → B행 → A6
+    }
+#else
     goNorthProbing(PICK1);           // ① 적재물까지 (통로 확인)
+#endif
     pickHere();
     goVia(DROP1, ROW_B, ROW_F);      // ① 운반 → F행에서 2열로 → 남쪽으로 H2 (T자까지는 dropHere 가)
     dropHere(false);                 //    내리고 0.6초 후진 → U턴 (다음 교차점 = G2)

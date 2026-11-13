@@ -45,6 +45,9 @@ static std::string checkPallets()
 
 static int runCase(int westBlocked1, int westBlocked2, int eastBlocked, const char* label)
 {
+#ifdef SIM_KNOWN_COL                                                      // 스케치가 그 열을 열렸다고 가정 → 그 열이 막힌 경우는 시험하지 않음
+    if (westBlocked1 == SIM_KNOWN_COL - 1 || westBlocked2 == SIM_KNOWN_COL - 1) { printf("%s  (가정과 다른 배치 — 건너뜀)\n", label); return 0; }
+#endif
     worldStart(START_NODE, START_HDG);
     W.edgeAllowed = gridEdge;
     for (int c = 3; c <= 5; c++) W.blocked[3 * 8 + c] = true;            // 가림막

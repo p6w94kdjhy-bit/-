@@ -291,6 +291,11 @@
 #ifndef C2F_CRUISE
 #define C2F_CRUISE        230   // [현장] 빈 차 통과 구간 속도 (course2_drive 는 SPEED_CRUISE 168). 11-13: 200 → 230. 최대 255
 #endif
+// (course2_fast) 열린 통로를 미리 알고 있을 때: 그 열 번호(3, 2, 1). 장애물 확인 없이 그 통로로 바로 달린다 (E 교차점에 서지 않음)
+//   ★ 그 열의 D 교차점에 장애물이 있으면 그대로 민다 → 추첨 결과를 눈으로 확인한 뒤에만 사용.  0 = 평소처럼 서서 확인하며 주행
+#ifndef C2F_KNOWN_OPEN_COL
+#define C2F_KNOWN_OPEN_COL  3   // [현장] 11-13: D3 에 장애물이 없다고 가정 (3). 배치가 바뀌면 0 또는 열린 열 번호로
+#endif
 #ifndef C2F_CARRY
 #define C2F_CARRY         110   // [현장] 화물을 든 동안의 통과 속도 (course2_drive 는 SPEED_CARRY 98). 11-13: 110
 #endif
