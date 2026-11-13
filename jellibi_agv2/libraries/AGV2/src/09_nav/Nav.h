@@ -28,6 +28,7 @@ public:
     bool moving = false;
 
     int cruise = SPEED_CRUISE;          // 통과 구간 속도 (운반 중엔 낮춤)
+    uint8_t lateBrakePct = LATE_BRAKE_PCT;   // 늦은 감속: 정차 칸의 앞부분을 통과 속도로 달리는 비율 % (0 = 끔)
     HopCheckFn hopCheck = nullptr;
     NodeFn onNode = nullptr;
 

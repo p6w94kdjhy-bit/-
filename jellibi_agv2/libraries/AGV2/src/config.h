@@ -284,6 +284,17 @@
 //   │ 후진하면서 비뚤어짐 (tune_drive 'B')    │ 오른쪽으로 휘면 REV_L_GAIN ↓, 왼쪽이면 REV_R_GAIN ↓ │
 //   │ 다시 찾은 뒤 바퀴축이 교차점 앞/뒤       │ REV_ALIGN_MS ↑(덜 감) / ↓(지나침)  │
 //   └──────────────────────────────────────┴─────────────────────────────┘
+// course2_fast 전용 (속도 올린 판). course2_drive 는 영향 없음.  화물을 들고 있지 않을 때만 빨라진다
+//   화물을 든 동안은 course2_drive 와 똑같다 (SPEED_CARRY, 늦은 감속 없음)
+//   올리는 순서: 그대로 완주 확인 → C2F_LATE_BRAKE_PCT 40 → 55 → 70 → C2F_CRUISE 200 → 220
+//   교차점을 지나쳐 서거나 회전이 틀어지면 C2F_LATE_BRAKE_PCT ↓, 직선에서 흔들리거나 선을 벗어나면 C2F_CRUISE ↓
+#ifndef C2F_CRUISE
+#define C2F_CRUISE        200   // [현장] 빈 차 통과 구간 속도 (course2_drive 는 SPEED_CRUISE 168)
+#endif
+#ifndef C2F_LATE_BRAKE_PCT
+#define C2F_LATE_BRAKE_PCT 40   // [현장] 빈 차일 때 정차할 칸의 앞부분을 통과 속도로 달리는 비율 % (0 = 끔)
+#endif
+
 // course2_drive: T자(선 끝의 짧은 가로선) 위치에서 멈추기 — 하역 위치 H2·H6 은 H행 교차점을 지나 T자에서 정지
 #ifndef DROP_AT_BAR
 #define DROP_AT_BAR         1    // [현장] 1 = 하역은 H 교차점 정렬 후 T자까지 더 가서 정지,  0 = H 교차점 위에서 하역

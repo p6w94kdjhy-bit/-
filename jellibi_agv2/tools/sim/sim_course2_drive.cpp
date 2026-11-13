@@ -3,7 +3,10 @@
 #include "sim_hw.inc"
 #define setup sketch_setup
 #define loop sketch_loop
-#include "../../course2_drive/course2_drive.ino"
+#ifndef COURSE2_INO
+#define COURSE2_INO "../../course2_drive/course2_drive.ino"
+#endif
+#include COURSE2_INO
 #undef setup
 #undef loop
 

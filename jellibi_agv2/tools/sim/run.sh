@@ -13,3 +13,4 @@ done
 for f in 0; do
   $CXX "$D/sim_course2_drive.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" -o "$O/c2d" && echo "[course2_drive]" && "$O/c2d"
 done
+$CXX -DCOURSE2_INO='"../../course2_fast/course2_fast.ino"' "$D/sim_course2_drive.cpp" "$L/09_nav/Nav.cpp" "$L/08_map/Grid.cpp" -o "$O/c2f" && echo "[course2_fast]" && "$O/c2f"

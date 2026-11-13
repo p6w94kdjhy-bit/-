@@ -127,12 +127,11 @@ NavResult Nav::hops(uint8_t count, bool stopAtEnd)
         if (chk && spd > SPEED_ZONE) spd = SPEED_ZONE;
 
         if (hopMsSpeed != cruise) { hopMsSpeed = cruise; hopMs = 0; }   // 통과 속도가 바뀌면 다시 잼
-#if LATE_BRAKE_PCT > 0
         // 늦은 감속: 정차할 칸의 앞부분은 통과 속도로 달리고, 남은 구간만 SPEED_APPROACH 로 접근
-        //   달리는 시간 = (이번 주행에서 잰 한 칸 통과 시간) × LATE_BRAKE_PCT %  → 배터리가 바뀌어도 같은 거리
-        if (last && stopAtEnd && !chk && hopMs > 0 && cruise > spd)
-            lineTraceBoost(cruise, (unsigned long)hopMs * LATE_BRAKE_PCT / 100);
-#endif
+        //   달리는 시간 = (이번 주행에서 잰 한 칸 통과 시간) × lateBrakePct %  → 배터리가 바뀌어도 같은 거리
+        //   lateBrakePct 기본값 = config.h LATE_BRAKE_PCT (0 = 끔). 스케치가 주행 중에 바꿀 수 있다
+        if (lateBrakePct > 0 && last && stopAtEnd && !chk && hopMs > 0 && cruise > spd)
+            lineTraceBoost(cruise, (unsigned long)hopMs * lateBrakePct / 100);
         bool wasMoving = moving;
         unsigned long tHop = millis();
 
