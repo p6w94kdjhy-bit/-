@@ -1,8 +1,9 @@
 """Usage: python3 topdf.py <src.md|src.txt> <out.pdf> <title>"""
-import sys, html, re, markdown
+import sys, html, re, markdown, os
 import subprocess, json, os
 
 src, out, title = sys.argv[1:4]
+src, out = os.path.abspath(src), os.path.abspath(out)
 text = open(src, encoding="utf-8").read()
 
 CSS = """
@@ -20,7 +21,10 @@ code { font-family: 'NanumGothicCoding', monospace; font-size: 8.5pt; background
 blockquote { margin: 10px 0; padding: 8px 12px; background: #fff8e6; border-left: 4px solid #e0a800;
              color: #5a4500; }
 blockquote p { margin: 3px 0; }
-table { border-collapse: collapse; margin: 8px 0; width: 100%; font-size: 9.5pt; break-inside: avoid; }
+table { border-collapse: collapse; margin: 8px 0; width: 100%; font-size: 9.5pt; }
+tr { break-inside: avoid; }
+td:first-child, th:first-child { white-space: nowrap; width: 1%; }
+td:nth-child(2) { min-width: 6.5em; }
 th, td { border: 1px solid #c8d1db; padding: 4px 8px; text-align: left; vertical-align: top; }
 th { background: #e8eef5; }
 li { margin: 2px 0; }
